@@ -8,10 +8,10 @@
     <div class="grid md:grid-cols-4 gap-8" style="margin-bottom: 3rem;">
       <!-- About -->
       <div>
-        <h4 style="margin-bottom: 1rem; font-size: 1.125rem; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
-          Система Бронникова
-        </h4>
-        <p style="color: var(--color-gray-600); font-size: 0.875rem; line-height: 1.6;">
+        <div style="margin-bottom: 1rem;">
+          <%= image_tag "logo-veis.png", alt: "Проект Веис", style: "height: 32px; width: auto;" %>
+        </div>
+        <p style="color: var(--gray-600); font-size: 0.875rem; line-height: 1.6;">
           Образовательная платформа для развития сверхспособностей и информационного развития человека.
         </p>
       </div>
@@ -64,8 +64,8 @@
       flex-wrap: wrap;
       gap: 1rem;
     ">
-      <p style="color: var(--color-gray-500); font-size: 0.875rem; margin: 0;">
-        © <%= Time.current.year %> Система Бронникова. Все права защищены.
+      <p style="color: var(--gray-600); font-size: 0.875rem; margin: 0;">
+        © <%= Time.current.year %> Проект Веис. Все права защищены.
       </p>
       <div style="display: flex; gap: 1rem;">
         <a href="#" style="
