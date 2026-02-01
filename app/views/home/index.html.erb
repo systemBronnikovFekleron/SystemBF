@@ -1,0 +1,276 @@
+<!-- Hero Section -->
+<section style="
+  padding: 6rem 0 4rem;
+  background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
+  position: relative;
+  overflow: hidden;
+">
+  <!-- Decorative background elements -->
+  <div style="
+    position: absolute;
+    top: -100px;
+    right: -100px;
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(99, 102, 241, 0.1), transparent 70%);
+    border-radius: 50%;
+    animation: pulse 4s ease-in-out infinite;
+  "></div>
+
+  <div class="container">
+    <div class="text-center fade-in">
+      <div style="display: inline-block; margin-bottom: 1.5rem;">
+        <span class="badge badge-featured" style="font-size: 0.875rem; padding: 0.5rem 1rem;">
+          ✧ Новая эра образования
+        </span>
+      </div>
+
+      <h1 class="text-gradient fade-in stagger-1" style="margin-bottom: 1.5rem;">
+        Система Бронникова
+      </h1>
+
+      <p class="fade-in stagger-2" style="
+        font-size: 1.25rem;
+        color: var(--color-gray-600);
+        max-width: 700px;
+        margin: 0 auto 2rem;
+        line-height: 1.8;
+      ">
+        Образовательная платформа для развития сверхспособностей<br/>
+        и информационного развития человека
+      </p>
+
+      <div class="fade-in stagger-3" style="display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap;">
+        <a href="/products" class="btn btn-primary btn-lg">
+          <span>Начать обучение</span>
+          <span>→</span>
+        </a>
+        <a href="#features" class="btn btn-outline btn-lg">
+          <span>Узнать больше</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Featured Products -->
+<% if @featured_products.any? %>
+<section class="container" style="padding: 4rem 0;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h2 class="text-gradient" style="margin-bottom: 0.5rem;">Избранные курсы</h2>
+    <p style="color: var(--color-gray-600);">Популярные программы для вашего развития</p>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <% @featured_products.each_with_index do |product, index| %>
+      <div class="card card-product fade-in stagger-<%= index + 1 %>" onclick="window.location.href='/products/<%= product.slug %>'">
+        <div class="product-image">
+          <span><%= product_icon(product.product_type) %></span>
+          <span class="badge badge-featured" style="position: absolute; top: 1rem; right: 1rem;">
+            Избранное
+          </span>
+        </div>
+
+        <div>
+          <span class="badge badge-primary" style="margin-bottom: 0.75rem;">
+            <%= product_type_label(product.product_type) %>
+          </span>
+
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-gray-900);">
+            <%= product.name %>
+          </h3>
+
+          <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
+            <%= truncate(product.description, length: 100) %>
+          </p>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <%= product.price.format %>
+              </div>
+            </div>
+            <button class="btn btn-primary btn-sm">
+              Подробнее
+            </button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</section>
+<% end %>
+
+<!-- Features -->
+<section id="features" style="background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.03)); padding: 4rem 0;">
+  <div class="container">
+    <div style="text-align: center; margin-bottom: 3rem;">
+      <h2 class="text-gradient">Возможности платформы</h2>
+    </div>
+
+    <div class="grid md:grid-cols-3 gap-6">
+      <div class="card fade-in stagger-1" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Личный кабинет</h3>
+        <p style="color: var(--color-gray-600); line-height: 1.6;">
+          Управление профилем, внутренним кошельком и рейтинговой системой
+        </p>
+      </div>
+
+      <div class="card fade-in stagger-2" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🛍️</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Магазин курсов</h3>
+        <p style="color: var(--color-gray-600); line-height: 1.6;">
+          Покупка курсов, книг, видеоматериалов и услуг с мгновенным доступом
+        </p>
+      </div>
+
+      <div class="card fade-in stagger-3" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Рейтинг и достижения</h3>
+        <p style="color: var(--color-gray-600); line-height: 1.6;">
+          Отслеживайте свой прогресс и получайте бонусы за активность
+        </p>
+      </div>
+
+      <div class="card fade-in stagger-4" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🏪</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Маркетплейс</h3>
+        <p style="color: var(--color-gray-600); line-height: 1.6;">
+          Найдите центры и представителей системы в вашем регионе
+        </p>
+      </div>
+
+      <div class="card fade-in stagger-5" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Календарь событий</h3>
+        <p style="color: var(--color-gray-600); line-height: 1.6;">
+          Афиша мероприятий, запись на курсы и семинары онлайн
+        </p>
+      </div>
+
+      <div class="card fade-in stagger-6" style="text-align: center;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
+        <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Единый вход</h3>
+        <p style="color: var(--color-gray-600); line-height: 1.6;">
+          Одна авторизация для доступа ко всем сервисам системы
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Recent Products -->
+<% if @recent_products.any? %>
+<section class="container" style="padding: 4rem 0;">
+  <div style="text-align: center; margin-bottom: 3rem;">
+    <h2 class="text-gradient">Новые материалы</h2>
+  </div>
+
+  <div class="grid md:grid-cols-3 gap-6">
+    <% @recent_products.limit(6).each_with_index do |product, index| %>
+      <div class="card card-product fade-in stagger-<%= (index % 3) + 1 %>" onclick="window.location.href='/products/<%= product.slug %>'">
+        <div class="product-image">
+          <span><%= product_icon(product.product_type) %></span>
+        </div>
+
+        <div>
+          <span class="badge badge-primary" style="margin-bottom: 0.75rem;">
+            <%= product_type_label(product.product_type) %>
+          </span>
+
+          <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">
+            <%= product.name %>
+          </h3>
+
+          <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">
+              <%= product.price.format %>
+            </span>
+            <button class="btn btn-primary btn-sm">
+              Купить
+            </button>
+          </div>
+        </div>
+      </div>
+    <% end %>
+  </div>
+
+  <div style="text-align: center; margin-top: 3rem;">
+    <a href="/products" class="btn btn-outline btn-lg">
+      Смотреть все материалы →
+    </a>
+  </div>
+</section>
+<% end %>
+
+<!-- CTA Section -->
+<section style="
+  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+  padding: 4rem 0;
+  position: relative;
+  overflow: hidden;
+">
+  <div style="
+    position: absolute;
+    inset: 0;
+    background-image: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px),
+                      radial-gradient(circle at 80% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px);
+    background-size: 50px 50px;
+    opacity: 0.3;
+  "></div>
+
+  <div class="container" style="position: relative; z-index: 1;">
+    <div style="text-align: center; color: white;">
+      <h2 style="color: white; margin-bottom: 1rem; font-size: 2.25rem;">
+        Начните свой путь развития сегодня
+      </h2>
+      <p style="font-size: 1.125rem; margin-bottom: 2rem; opacity: 0.9;">
+        Присоединяйтесь к тысячам учеников по всему миру
+      </p>
+      <a href="/products" class="btn" style="
+        background: white;
+        color: var(--color-primary-600);
+        font-weight: 600;
+        padding: 1rem 2.5rem;
+        font-size: 1.125rem;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      ">
+        Выбрать курс
+      </a>
+    </div>
+  </div>
+</section>
+
+<% content_for :head do %>
+  <style>
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 0.5; }
+      50% { transform: scale(1.05); opacity: 0.8; }
+    }
+  </style>
+<% end %>
+
+<%# Helper methods %>
+<%
+  def product_icon(type)
+    case type
+    when 'video' then '🎬'
+    when 'book' then '📚'
+    when 'course' then '🎓'
+    when 'service' then '💼'
+    when 'event_access' then '🎫'
+    else '📦'
+    end
+  end
+
+  def product_type_label(type)
+    {
+      'video' => 'Видео',
+      'book' => 'Книга',
+      'course' => 'Курс',
+      'service' => 'Услуга',
+      'event_access' => 'Событие'
+    }[type] || type.capitalize
+  end
+%>

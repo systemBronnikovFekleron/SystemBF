@@ -1,0 +1,178 @@
+<% content_for :title, "#{@product.name} - Система Бронникова" %>
+
+<section class="container" style="padding: 3rem 0;">
+  <!-- Breadcrumbs -->
+  <nav style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center; color: var(--color-gray-500); font-size: 0.875rem;">
+    <%= link_to "Главная", root_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
+    <span>→</span>
+    <%= link_to "Магазин", products_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
+    <% if @product.category %>
+      <span>→</span>
+      <%= link_to @product.category.name, products_path(category_id: @product.category.id), style: "color: var(--color-gray-500); text-decoration: none;" %>
+    <% end %>
+    <span>→</span>
+    <span style="color: var(--color-gray-900); font-weight: 500;"><%= @product.name %></span>
+  </nav>
+
+  <div class="grid lg:grid-cols-2" style="gap: 3rem;">
+    <!-- Product Image -->
+    <div class="fade-in">
+      <div class="card" style="padding: 4rem 2rem; text-align: center; position: relative; overflow: hidden;">
+        <div style="
+          position: absolute;
+          inset: 0;
+          background: linear-gradient(135deg, var(--color-primary-50), var(--color-secondary-50));
+          opacity: 0.5;
+        "></div>
+
+        <div style="position: relative; z-index: 1;">
+          <div style="font-size: 8rem; margin-bottom: 1rem;">
+            <%= product_icon(@product.product_type) %>
+          </div>
+
+          <% if @product.featured? %>
+            <span class="badge badge-featured" style="font-size: 1rem; padding: 0.5rem 1rem;">
+              ⭐ Избранный курс
+            </span>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Product Stats -->
+      <div class="grid grid-cols-3 gap-3" style="margin-top: 1.5rem;">
+        <div class="stat-card">
+          <div class="stat-icon">📊</div>
+          <div class="stat-label">Тип</div>
+          <div style="color: var(--color-gray-700); font-weight: 600; margin-top: 0.5rem;">
+            <%= product_type_label(@product.product_type) %>
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">⭐</div>
+          <div class="stat-label">Рейтинг</div>
+          <div style="color: var(--color-gray-700); font-weight: 600; margin-top: 0.5rem;">
+            4.9/5
+          </div>
+        </div>
+
+        <div class="stat-card">
+          <div class="stat-icon">👥</div>
+          <div class="stat-label">Учеников</div>
+          <div style="color: var(--color-gray-700); font-weight: 600; margin-top: 0.5rem;">
+            <%= rand(100..1000) %>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Info -->
+    <div class="fade-in stagger-1">
+      <div style="margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem;">
+          <span class="badge badge-primary">
+            <%= product_type_label(@product.product_type) %>
+          </span>
+          <% if @product.category %>
+            <span class="badge" style="background: var(--color-gray-100); color: var(--color-gray-700);">
+              <%= @product.category.name %>
+            </span>
+          <% end %>
+        </div>
+
+        <h1 style="font-size: 2.5rem; margin-bottom: 1rem; line-height: 1.2;">
+          <%= @product.name %>
+        </h1>
+
+        <div style="font-size: 3rem; font-weight: 700; margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          <%= @product.price.format %>
+        </div>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: 1rem; margin-bottom: 3rem;">
+        <%= button_to "🛒 Добавить в корзину",
+                      add_item_cart_path(product_id: @product.id),
+                      method: :post,
+                      class: "btn btn-primary btn-lg",
+                      style: "flex: 1;" %>
+
+        <%= button_to "⚡ Купить сейчас",
+                      orders_path(product_id: @product.id),
+                      method: :post,
+                      class: "btn btn-secondary btn-lg",
+                      style: "flex: 1;" %>
+      </div>
+
+      <!-- Description -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">О продукте</h3>
+        <p style="color: var(--color-gray-700); line-height: 1.8; white-space: pre-line;">
+          <%= @product.description %>
+        </p>
+      </div>
+
+      <!-- What's Included -->
+      <div class="card">
+        <h3 style="margin-bottom: 1rem;">Что входит:</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
+          <li style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
+            <span style="color: var(--color-gray-700);">Пожизненный доступ к материалам</span>
+          </li>
+          <li style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
+            <span style="color: var(--color-gray-700);">Сертификат о прохождении</span>
+          </li>
+          <li style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
+            <span style="color: var(--color-gray-700);">Поддержка преподавателя</span>
+          </li>
+          <li style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
+            <span style="color: var(--color-gray-700);">Дополнительные материалы</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products -->
+  <% related_products = Product.published.where(category: @product.category).where.not(id: @product.id).limit(3) %>
+  <% if related_products.any? %>
+    <section style="margin-top: 4rem;">
+      <h2 class="text-gradient" style="margin-bottom: 2rem; text-align: center;">
+        Похожие продукты
+      </h2>
+
+      <div class="grid md:grid-cols-3">
+        <% related_products.each do |product| %>
+          <div class="card card-product" onclick="window.location.href='<%= product_path(product) %>'">
+            <div class="product-image">
+              <span><%= product_icon(product.product_type) %></span>
+            </div>
+
+            <div>
+              <span class="badge badge-primary" style="margin-bottom: 0.75rem;">
+                <%= product_type_label(product.product_type) %>
+              </span>
+
+              <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">
+                <%= product.name %>
+              </h3>
+
+              <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
+                <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">
+                  <%= product.price.format %>
+                </span>
+                <button class="btn btn-primary btn-sm">
+                  Смотреть
+                </button>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </section>
+  <% end %>
+</section>

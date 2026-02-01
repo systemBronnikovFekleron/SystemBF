@@ -1,0 +1,111 @@
+<% content_for :title, "Магазин - Система Бронникова" %>
+
+<!-- Header -->
+<section style="padding: 3rem 0 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));">
+  <div class="container">
+    <h1 class="text-gradient" style="margin-bottom: 0.5rem;">Магазин</h1>
+    <p style="color: var(--color-gray-600); font-size: 1.125rem;">
+      Курсы, книги, видеоматериалы и услуги для вашего развития
+    </p>
+  </div>
+</section>
+
+<!-- Filters -->
+<section class="container" style="padding: 2rem 0;">
+  <div class="card" style="padding: 1.5rem;">
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
+      <span style="font-weight: 600; color: var(--color-gray-700);">Фильтры:</span>
+
+      <!-- Category Filter -->
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <%= link_to "Все", products_path, class: "btn #{params[:category_id].blank? && params[:product_type].blank? ? 'btn-primary' : 'btn-ghost'} btn-sm" %>
+
+        <% @categories.each do |category| %>
+          <%= link_to category.name,
+                      products_path(category_id: category.id),
+                      class: "btn #{params[:category_id] == category.id.to_s ? 'btn-primary' : 'btn-ghost'} btn-sm" %>
+        <% end %>
+      </div>
+
+      <div style="width: 1px; height: 2rem; background: var(--color-gray-200);"></div>
+
+      <!-- Type Filter -->
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <% Product.product_types.keys.each do |type| %>
+          <%= link_to products_path(product_type: type),
+                      class: "btn #{params[:product_type] == type.to_s ? 'btn-secondary' : 'btn-ghost'} btn-sm" do %>
+            <span style="margin-right: 0.25rem;"><%= product_icon(type.to_s) %></span>
+            <span><%= product_type_label(type.to_s) %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Products Grid -->
+<section class="container" style="padding: 2rem 0 4rem;">
+  <% if @products.any? %>
+    <div class="grid md:grid-cols-3 lg:grid-cols-4">
+      <% @products.each_with_index do |product, index| %>
+        <div class="card card-product fade-in stagger-<%= (index % 4) + 1 %>"
+             onclick="window.location.href='<%= product_path(product) %>'">
+          <!-- Product Image -->
+          <div class="product-image">
+            <span style="font-size: 3.5rem;"><%= product_icon(product.product_type) %></span>
+
+            <% if product.featured? %>
+              <span class="badge badge-featured" style="position: absolute; top: 1rem; right: 1rem;">
+                ⭐ Хит
+              </span>
+            <% end %>
+          </div>
+
+          <!-- Product Info -->
+          <div>
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+              <span class="badge badge-primary">
+                <%= product_type_label(product.product_type) %>
+              </span>
+
+              <% if product.category %>
+                <span style="font-size: 0.75rem; color: var(--color-gray-500);">
+                  <%= product.category.name %>
+                </span>
+              <% end %>
+            </div>
+
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray-900);">
+              <%= product.name %>
+            </h3>
+
+            <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
+              <%= truncate(product.description, length: 80) %>
+            </p>
+
+            <!-- Price & Action -->
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
+              <div>
+                <div style="font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                  <%= product.price.format %>
+                </div>
+              </div>
+              <button class="btn btn-primary btn-sm">
+                Купить
+              </button>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="card" style="text-align: center; padding: 4rem 2rem;">
+      <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📦</div>
+      <h3 style="margin-bottom: 0.5rem;">Продукты не найдены</h3>
+      <p style="color: var(--color-gray-600); margin-bottom: 2rem;">
+        По выбранным фильтрам нет доступных продуктов
+      </p>
+      <%= link_to "Сбросить фильтры", products_path, class: "btn btn-outline" %>
+    </div>
+  <% end %>
+</section>

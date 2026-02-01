@@ -1,0 +1,142 @@
+<% content_for :title, "Регистрация - Система Бронникова" %>
+
+<section style="min-height: calc(100vh - 20rem); display: flex; align-items: center; justify-content: center; padding: 2rem 0;">
+  <div class="container-narrow">
+    <div class="grid lg:grid-cols-2 gap-8" style="align-items: center;">
+      <!-- Left Side - Branding -->
+      <div class="fade-in" style="text-align: center; padding: 2rem;">
+        <div style="font-size: 5rem; margin-bottom: 2rem;">✧</div>
+        <h1 class="text-gradient" style="margin-bottom: 1rem;">
+          Начните обучение
+        </h1>
+        <p style="color: var(--color-gray-600); font-size: 1.125rem; line-height: 1.8; margin-bottom: 2rem;">
+          Создайте аккаунт и присоединяйтесь к тысячам учеников по всему миру
+        </p>
+
+        <!-- Benefits -->
+        <div style="text-align: left; display: flex; flex-direction: column; gap: 1rem;">
+          <div style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="font-size: 1.5rem;">✓</span>
+            <div>
+              <div style="font-weight: 600; color: var(--color-gray-900); margin-bottom: 0.25rem;">
+                Доступ к курсам
+              </div>
+              <div style="font-size: 0.875rem; color: var(--color-gray-600);">
+                Более 100 образовательных программ
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="font-size: 1.5rem;">✓</span>
+            <div>
+              <div style="font-weight: 600; color: var(--color-gray-900); margin-bottom: 0.25rem;">
+                Рейтинговая система
+              </div>
+              <div style="font-size: 0.875rem; color: var(--color-gray-600);">
+                Отслеживайте свой прогресс
+              </div>
+            </div>
+          </div>
+
+          <div style="display: flex; align-items: start; gap: 0.75rem;">
+            <span style="font-size: 1.5rem;">✓</span>
+            <div>
+              <div style="font-weight: 600; color: var(--color-gray-900); margin-bottom: 0.25rem;">
+                Сообщество
+              </div>
+              <div style="font-size: 0.875rem; color: var(--color-gray-600);">
+                Общайтесь с единомышленниками
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side - Registration Form -->
+      <div class="card fade-in stagger-1">
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.75rem;">Регистрация</h2>
+        <p style="color: var(--color-gray-600); margin-bottom: 2rem;">
+          Заполните форму для создания аккаунта
+        </p>
+
+        <%= form_with model: @user, url: register_path, method: :post, local: true do |f| %>
+          <div class="grid md:grid-cols-2 gap-4">
+            <div class="form-group">
+              <%= f.label :first_name, "Имя", class: "form-label" %>
+              <%= f.text_field :first_name,
+                               required: true,
+                               autofocus: true,
+                               placeholder: "Иван",
+                               class: "form-input" %>
+            </div>
+
+            <div class="form-group">
+              <%= f.label :last_name, "Фамилия", class: "form-label" %>
+              <%= f.text_field :last_name,
+                               required: true,
+                               placeholder: "Иванов",
+                               class: "form-input" %>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :email, "Email адрес", class: "form-label" %>
+            <%= f.email_field :email,
+                              required: true,
+                              autocomplete: "email",
+                              placeholder: "your@email.com",
+                              class: "form-input" %>
+            <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 0.25rem;">
+              Используйте действующий email для восстановления доступа
+            </p>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :password, "Пароль", class: "form-label" %>
+            <%= f.password_field :password,
+                                 required: true,
+                                 autocomplete: "new-password",
+                                 placeholder: "Минимум 8 символов",
+                                 class: "form-input" %>
+          </div>
+
+          <div class="form-group">
+            <%= f.label :password_confirmation, "Подтверждение пароля", class: "form-label" %>
+            <%= f.password_field :password_confirmation,
+                                 required: true,
+                                 autocomplete: "new-password",
+                                 placeholder: "Повторите пароль",
+                                 class: "form-input" %>
+          </div>
+
+          <div style="margin-bottom: 1.5rem;">
+            <label style="display: flex; align-items: start; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" required style="width: 1rem; height: 1rem; margin-top: 0.125rem; border-radius: 0.25rem;">
+              <span style="font-size: 0.875rem; color: var(--color-gray-700);">
+                Я принимаю <a href="/terms" style="color: var(--color-primary-600); text-decoration: none;">условия использования</a> и <a href="/privacy" style="color: var(--color-primary-600); text-decoration: none;">политику конфиденциальности</a>
+              </span>
+            </label>
+          </div>
+
+          <%= f.submit "Создать аккаунт", class: "btn btn-primary w-full btn-lg" %>
+        <% end %>
+
+        <div style="margin-top: 1.5rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--color-gray-200);">
+          <p style="color: var(--color-gray-600); margin-bottom: 1rem;">
+            Уже есть аккаунт?
+          </p>
+          <a href="/login" class="btn btn-outline w-full">
+            Войти
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .w-full {
+    width: 100%;
+  }
+</style>

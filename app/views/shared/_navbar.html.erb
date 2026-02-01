@@ -1,0 +1,93 @@
+<nav class="navbar" data-controller="navbar">
+  <div class="navbar-content">
+    <a href="/" class="navbar-logo">
+      ✧ Система Бронникова
+    </a>
+
+    <ul class="navbar-nav">
+      <% if user_signed_in? %>
+        <!-- Авторизованный пользователь -->
+        <li>
+          <a href="/products" class="navbar-link">
+            <span>Магазин</span>
+          </a>
+        </li>
+        <li>
+          <a href="/dashboard/orders" class="navbar-link">
+            <span>Мои заказы</span>
+          </a>
+        </li>
+        <li>
+          <a href="/cart" class="navbar-link">
+            <span>🛒 Корзина</span>
+            <% if defined?(@cart_count) && @cart_count > 0 %>
+              <span class="badge badge-primary" style="margin-left: 0.25rem;"><%= @cart_count %></span>
+            <% end %>
+          </a>
+        </li>
+        <li>
+          <a href="/dashboard" class="navbar-link">
+            <span>👤 Профиль</span>
+          </a>
+        </li>
+        <li>
+          <%= button_to "Выход", logout_path, method: :delete, class: "btn btn-ghost btn-sm", style: "padding: 0.5rem 1rem;" %>
+        </li>
+      <% else %>
+        <!-- Неавторизованный пользователь -->
+        <li>
+          <a href="/products" class="navbar-link">
+            <span>Магазин</span>
+          </a>
+        </li>
+        <li>
+          <a href="/categories" class="navbar-link">
+            <span>Категории</span>
+          </a>
+        </li>
+        <li>
+          <a href="/#features" class="navbar-link">
+            <span>О платформе</span>
+          </a>
+        </li>
+        <li>
+          <a href="/login" class="btn btn-ghost btn-sm">
+            Вход
+          </a>
+        </li>
+        <li>
+          <a href="/register" class="btn btn-primary btn-sm">
+            Регистрация
+          </a>
+        </li>
+      <% end %>
+    </ul>
+
+    <!-- Mobile menu toggle (будет реализовано позже) -->
+    <button class="mobile-menu-toggle" style="display: none;">
+      <span>☰</span>
+    </button>
+  </div>
+</nav>
+
+<script>
+  // Scroll effect для navbar
+  document.addEventListener('turbo:load', () => {
+    const navbar = document.querySelector('.navbar');
+    if (!navbar) return;
+
+    let lastScroll = 0;
+
+    window.addEventListener('scroll', () => {
+      const currentScroll = window.pageYOffset;
+
+      if (currentScroll > 50) {
+        navbar.classList.add('scrolled');
+      } else {
+        navbar.classList.remove('scrolled');
+      }
+
+      lastScroll = currentScroll;
+    });
+  });
+</script>

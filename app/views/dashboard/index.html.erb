@@ -1,0 +1,247 @@
+<% content_for :page_title, "Обзор" %>
+<% content_for :page_subtitle, "Добро пожаловать в ваш личный кабинет" %>
+
+<!-- Welcome Section -->
+<div class="card fade-in" style="margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); color: white; position: relative; overflow: hidden;">
+  <div style="position: absolute; inset: 0; background-image: radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 1px, transparent 1px); background-size: 30px 30px; opacity: 0.3;"></div>
+
+  <div style="position: relative; z-index: 1;">
+    <h2 style="color: white; margin-bottom: 0.5rem; font-size: 1.75rem;">
+      Добро пожаловать, <%= @user.first_name %>! 👋
+    </h2>
+    <p style="opacity: 0.9; margin-bottom: 1.5rem;">
+      Продолжайте свой путь развития. Вы на <%= @stats[:active_days] %> дне вашего обучения.
+    </p>
+
+    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+      <a href="/products" class="btn" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3);" onmouseover="this.style.background='rgba(255, 255, 255, 0.3)'" onmouseout="this.style.background='rgba(255, 255, 255, 0.2)'">
+        Исследовать курсы
+      </a>
+      <a href="/dashboard/my-courses" class="btn" style="background: white; color: var(--color-primary-600);">
+        Мои курсы →
+      </a>
+    </div>
+  </div>
+</div>
+
+<!-- Stats Grid -->
+<div class="grid md:grid-cols-4 gap-4 fade-in stagger-1" style="margin-bottom: 2rem;">
+  <div class="stat-card">
+    <div class="stat-icon">💰</div>
+    <div class="stat-value"><%= format_currency(@user.wallet.balance_kopecks) %></div>
+    <div class="stat-label">Баланс кошелька</div>
+    <a href="/dashboard/wallet" style="font-size: 0.75rem; color: var(--color-primary-600); text-decoration: none; margin-top: 0.5rem; display: inline-block;">
+      Пополнить →
+    </a>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">⭐</div>
+    <div class="stat-value"><%= @user.rating.points %></div>
+    <div class="stat-label">Рейтинг (Ур. <%= @user.rating.level %>)</div>
+    <div style="width: 100%; height: 4px; background: var(--color-gray-200); border-radius: 2px; margin-top: 0.5rem; overflow: hidden;">
+      <div style="width: <%= [@user.rating.points % 100, 100].min %>%; height: 100%; background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500)); transition: width 0.5s;"></div>
+    </div>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">📦</div>
+    <div class="stat-value"><%= @stats[:total_orders] %></div>
+    <div class="stat-label">Всего заказов</div>
+    <a href="/dashboard/orders" style="font-size: 0.75rem; color: var(--color-primary-600); text-decoration: none; margin-top: 0.5rem; display: inline-block;">
+      Смотреть →
+    </a>
+  </div>
+
+  <div class="stat-card">
+    <div class="stat-icon">🎓</div>
+    <div class="stat-value"><%= @product_accesses.count %></div>
+    <div class="stat-label">Активных курсов</div>
+    <a href="/dashboard/my-courses" style="font-size: 0.75rem; color: var(--color-primary-600); text-decoration: none; margin-top: 0.5rem; display: inline-block;">
+      Открыть →
+    </a>
+  </div>
+</div>
+
+<!-- Main Content Grid -->
+<div class="grid lg:grid-cols-3 gap-6">
+  <!-- Recent Orders -->
+  <div class="lg:col-span-2">
+    <div class="card fade-in stagger-2">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 600;">Последние заказы</h3>
+        <a href="/dashboard/orders" style="font-size: 0.875rem; color: var(--color-primary-600); text-decoration: none;">
+          Все заказы →
+        </a>
+      </div>
+
+      <% if @recent_orders.any? %>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <% @recent_orders.each do |order| %>
+            <div style="
+              padding: 1rem;
+              border: 1px solid var(--color-gray-200);
+              border-radius: 0.75rem;
+              transition: all 0.2s;
+              cursor: pointer;
+            " onmouseover="this.style.borderColor='var(--color-primary-300)'; this.style.background='var(--color-gray-50)'" onmouseout="this.style.borderColor='var(--color-gray-200)'; this.style.background='transparent'" onclick="window.location.href='/orders/<%= order.id %>'">
+              <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.5rem;">
+                <div>
+                  <div style="font-weight: 600; color: var(--color-gray-900); margin-bottom: 0.25rem;">
+                    Заказ #<%= order.order_number %>
+                  </div>
+                  <div style="font-size: 0.75rem; color: var(--color-gray-600);">
+                    <%= order.created_at.strftime('%d.%m.%Y %H:%M') %>
+                  </div>
+                </div>
+                <div style="text-align: right;">
+                  <div style="font-weight: 700; color: var(--color-primary-600); margin-bottom: 0.25rem;">
+                    <%= order.total.format %>
+                  </div>
+                  <% case order.status %>
+                  <% when 'paid', 'completed' %>
+                    <span class="badge badge-success"><%= order.status == 'paid' ? 'Оплачен' : 'Завершен' %></span>
+                  <% when 'pending' %>
+                    <span class="badge badge-warning">Ожидание</span>
+                  <% when 'failed' %>
+                    <span class="badge badge-error">Отменен</span>
+                  <% end %>
+                </div>
+              </div>
+              <div style="font-size: 0.875rem; color: var(--color-gray-600);">
+                <%= order.order_items.count %> <%= 'товар'.pluralize(order.order_items.count) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div style="text-align: center; padding: 3rem 1rem; color: var(--color-gray-500);">
+          <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.5;">📦</div>
+          <div>У вас пока нет заказов</div>
+          <a href="/products" class="btn btn-primary" style="margin-top: 1rem;">
+            Начать покупки
+          </a>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- My Courses -->
+  <div>
+    <div class="card fade-in stagger-3">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+        <h3 style="font-size: 1.25rem; font-weight: 600;">Мои курсы</h3>
+        <a href="/dashboard/my-courses" style="font-size: 0.875rem; color: var(--color-primary-600); text-decoration: none;">
+          Все →
+        </a>
+      </div>
+
+      <% if @product_accesses.any? %>
+        <div style="display: flex; flex-direction: column; gap: 1rem;">
+          <% @product_accesses.each do |access| %>
+            <div style="
+              padding: 1rem;
+              border: 1px solid var(--color-gray-200);
+              border-radius: 0.75rem;
+              transition: all 0.2s;
+              cursor: pointer;
+            " onmouseover="this.style.borderColor='var(--color-primary-300)'; this.style.background='var(--color-gray-50)'" onmouseout="this.style.borderColor='var(--color-gray-200)'; this.style.background='transparent'" onclick="window.location.href='/products/<%= access.product.slug %>'">
+              <div style="display: flex; align-items: center; gap: 0.75rem;">
+                <div style="
+                  width: 3rem;
+                  height: 3rem;
+                  border-radius: 0.5rem;
+                  background: linear-gradient(135deg, var(--color-primary-100), var(--color-secondary-100));
+                  display: flex;
+                  align-items: center;
+                  justify-content: center;
+                  font-size: 1.5rem;
+                ">
+                  <%= product_icon(access.product.product_type) %>
+                </div>
+                <div style="flex: 1; min-width: 0;">
+                  <div style="font-weight: 600; color: var(--color-gray-900); font-size: 0.875rem; margin-bottom: 0.25rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                    <%= access.product.name %>
+                  </div>
+                  <div style="font-size: 0.75rem; color: var(--color-gray-600);">
+                    <%= product_type_label(access.product.product_type) %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Progress bar placeholder -->
+              <div style="margin-top: 0.75rem;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.25rem;">
+                  <span style="font-size: 0.75rem; color: var(--color-gray-600);">Прогресс</span>
+                  <span style="font-size: 0.75rem; font-weight: 600; color: var(--color-primary-600);">
+                    <%= rand(20..80) %>%
+                  </span>
+                </div>
+                <div style="width: 100%; height: 4px; background: var(--color-gray-200); border-radius: 2px; overflow: hidden;">
+                  <div style="width: <%= rand(20..80) %>%; height: 100%; background: linear-gradient(90deg, var(--color-primary-500), var(--color-secondary-500));"></div>
+                </div>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <div style="text-align: center; padding: 2rem 1rem; color: var(--color-gray-500);">
+          <div style="font-size: 2.5rem; margin-bottom: 0.75rem; opacity: 0.5;">🎓</div>
+          <div style="font-size: 0.875rem;">Нет активных курсов</div>
+          <a href="/products?product_type=course" class="btn btn-outline btn-sm" style="margin-top: 1rem;">
+            Выбрать курс
+          </a>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Quick Actions Card -->
+    <div class="card fade-in stagger-4" style="margin-top: 1.5rem;">
+      <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 1rem;">Быстрые действия</h3>
+
+      <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+        <a href="/dashboard/wallet" style="
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          background: var(--color-gray-50);
+          text-decoration: none;
+          transition: all 0.2s;
+        " onmouseover="this.style.background='var(--color-primary-50)'" onmouseout="this.style.background='var(--color-gray-50)'">
+          <span style="font-size: 1.5rem;">💳</span>
+          <span style="color: var(--color-gray-700); font-weight: 500;">Пополнить кошелек</span>
+        </a>
+
+        <a href="/products" style="
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          background: var(--color-gray-50);
+          text-decoration: none;
+          transition: all 0.2s;
+        " onmouseover="this.style.background='var(--color-primary-50)'" onmouseout="this.style.background='var(--color-gray-50)'">
+          <span style="font-size: 1.5rem;">🛍️</span>
+          <span style="color: var(--color-gray-700); font-weight: 500;">Магазин</span>
+        </a>
+
+        <a href="/dashboard/achievements" style="
+          display: flex;
+          align-items: center;
+          gap: 0.75rem;
+          padding: 0.75rem;
+          border-radius: 0.5rem;
+          background: var(--color-gray-50);
+          text-decoration: none;
+          transition: all 0.2s;
+        " onmouseover="this.style.background='var(--color-primary-50)'" onmouseout="this.style.background='var(--color-gray-50)'">
+          <span style="font-size: 1.5rem;">🏆</span>
+          <span style="color: var(--color-gray-700); font-weight: 500;">Достижения</span>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>

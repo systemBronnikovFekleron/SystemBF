@@ -1,0 +1,60 @@
+<% if flash.any? %>
+  <div class="flash-messages" style="position: fixed; top: 6rem; right: 2rem; z-index: 9999; max-width: 400px;">
+    <% flash.each do |type, message| %>
+      <div class="flash-message flash-<%= type %> fade-in" style="
+        background: <%= type == 'notice' ? 'linear-gradient(135deg, #10b981, #059669)' : 'linear-gradient(135deg, #ef4444, #dc2626)' %>;
+        color: white;
+        padding: 1rem 1.5rem;
+        border-radius: 0.75rem;
+        margin-bottom: 1rem;
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        animation: slideIn 0.3s ease-out;
+      ">
+        <span style="font-size: 1.5rem;"><%= type == 'notice' ? '✓' : '✕' %></span>
+        <span style="flex: 1;"><%= message %></span>
+        <button onclick="this.parentElement.remove()" style="
+          background: none;
+          border: none;
+          color: white;
+          font-size: 1.25rem;
+          cursor: pointer;
+          opacity: 0.8;
+          transition: opacity 0.2s;
+        " onmouseover="this.style.opacity='1'" onmouseout="this.style.opacity='0.8'">
+          ×
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <style>
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateX(100px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
+    }
+  </style>
+
+  <script>
+    // Auto-dismiss flash messages after 5 seconds
+    document.addEventListener('turbo:load', () => {
+      setTimeout(() => {
+        const flashMessages = document.querySelectorAll('.flash-message');
+        flashMessages.forEach(msg => {
+          msg.style.transition = 'opacity 0.3s, transform 0.3s';
+          msg.style.opacity = '0';
+          msg.style.transform = 'translateX(100px)';
+          setTimeout(() => msg.remove(), 300);
+        });
+      }, 5000);
+    });
+  </script>
+<% end %>

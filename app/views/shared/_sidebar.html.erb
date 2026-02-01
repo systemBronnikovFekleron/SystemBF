@@ -1,0 +1,214 @@
+<aside class="dashboard-sidebar">
+  <!-- Logo -->
+  <div class="sidebar-header">
+    <a href="/" style="text-decoration: none;">
+      <div style="
+        font-size: 1.5rem;
+        font-weight: 700;
+        background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 0.5rem;
+        text-align: center;
+      ">
+        ✧ Система Бронникова
+      </div>
+    </a>
+    <div style="font-size: 0.75rem; color: var(--color-gray-500); text-align: center;">
+      Личный кабинет
+    </div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="sidebar-nav">
+    <div class="sidebar-nav-section">
+      <div class="sidebar-nav-label">Главное</div>
+
+      <a href="/dashboard" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard') %>">
+        <span class="sidebar-nav-icon">🏠</span>
+        <span>Обзор</span>
+      </a>
+
+      <a href="/dashboard/wallet" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/wallet') %>">
+        <span class="sidebar-nav-icon">💳</span>
+        <span>Кошелек</span>
+        <span class="sidebar-nav-badge badge badge-primary"><%= format_currency(current_user&.wallet&.balance_kopecks || 0) %></span>
+      </a>
+
+      <a href="/dashboard/rating" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/rating') %>">
+        <span class="sidebar-nav-icon">⭐</span>
+        <span>Рейтинг</span>
+        <span class="sidebar-nav-badge">Ур. <%= current_user&.rating&.level || 1 %></span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-section">
+      <div class="sidebar-nav-label">Обучение</div>
+
+      <a href="/dashboard/my-courses" class="sidebar-nav-item">
+        <span class="sidebar-nav-icon">🎓</span>
+        <span>Мои курсы</span>
+        <span class="sidebar-nav-badge">3</span>
+      </a>
+
+      <a href="/products" class="sidebar-nav-item">
+        <span class="sidebar-nav-icon">🛍️</span>
+        <span>Магазин</span>
+      </a>
+
+      <a href="/dashboard/orders" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/orders') %>">
+        <span class="sidebar-nav-icon">📦</span>
+        <span>Мои заказы</span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-section">
+      <div class="sidebar-nav-label">Дополнительно</div>
+
+      <a href="/dashboard/achievements" class="sidebar-nav-item">
+        <span class="sidebar-nav-icon">🏆</span>
+        <span>Достижения</span>
+      </a>
+
+      <a href="/dashboard/notifications" class="sidebar-nav-item">
+        <span class="sidebar-nav-icon">🔔</span>
+        <span>Уведомления</span>
+        <span class="sidebar-nav-badge badge badge-error">3</span>
+      </a>
+    </div>
+  </nav>
+
+  <!-- Logout Button -->
+  <div class="sidebar-footer">
+    <%= button_to "🚪 Выйти", "/api/v1/logout", method: :delete, class: "btn btn-ghost", style: "width: 100%; justify-content: flex-start; gap: 0.75rem;" %>
+  </div>
+</aside>
+
+<style>
+  /* Sidebar Styles */
+  .dashboard-sidebar {
+    position: fixed;
+    left: 0;
+    top: 0;
+    width: 280px;
+    height: 100vh;
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(12px);
+    border-right: 1px solid rgba(99, 102, 241, 0.1);
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    z-index: 1000;
+    transition: transform 0.3s ease;
+  }
+
+  .sidebar-header {
+    padding: 2rem 1.5rem 1.5rem;
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+  }
+
+  .sidebar-nav {
+    flex: 1;
+    padding: 1rem 0;
+    overflow-y: auto;
+  }
+
+  .sidebar-nav-section {
+    margin-bottom: 1.5rem;
+  }
+
+  .sidebar-nav-label {
+    padding: 0.5rem 1.5rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-gray-500);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .sidebar-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem 1.5rem;
+    color: var(--color-gray-700);
+    text-decoration: none;
+    transition: all 0.2s;
+    position: relative;
+  }
+
+  .sidebar-nav-item::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 3px;
+    background: linear-gradient(180deg, var(--color-primary-600), var(--color-secondary-600));
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+
+  .sidebar-nav-item:hover {
+    background: rgba(99, 102, 241, 0.05);
+    color: var(--color-primary-600);
+  }
+
+  .sidebar-nav-item.active {
+    background: linear-gradient(90deg, rgba(99, 102, 241, 0.1), transparent);
+    color: var(--color-primary-600);
+    font-weight: 500;
+  }
+
+  .sidebar-nav-item.active::before {
+    opacity: 1;
+  }
+
+  .sidebar-nav-icon {
+    font-size: 1.25rem;
+    width: 1.5rem;
+    text-align: center;
+  }
+
+  .sidebar-nav-badge {
+    margin-left: auto;
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+  }
+
+  .sidebar-footer {
+    padding: 1rem 1.5rem;
+    border-top: 1px solid rgba(99, 102, 241, 0.1);
+  }
+
+  /* Mobile Responsive */
+  @media (max-width: 1024px) {
+    .dashboard-sidebar {
+      transform: translateX(-100%);
+    }
+
+    .dashboard-sidebar.open {
+      transform: translateX(0);
+      box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.5);
+    }
+  }
+
+  /* Scrollbar Styling */
+  .sidebar-nav::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-thumb {
+    background: var(--color-gray-300);
+    border-radius: 2px;
+  }
+
+  .sidebar-nav::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gray-400);
+  }
+</style>

@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <title><%= content_for(:title) || "Личный кабинет - Система Бронникова" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="application-name" content="Система Бронникова">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <link rel="icon" href="/icon.png" type="image/png">
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png">
+
+    <!-- Google Fonts: IBM Plex Sans для кириллицы -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700&family=IBM+Plex+Serif:wght@400;600&display=swap" rel="stylesheet">
+
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="dashboard-layout">
+    <!-- Sidebar -->
+    <%= render "shared/sidebar" %>
+
+    <!-- Main Content Area -->
+    <div class="dashboard-main">
+      <!-- Top Header -->
+      <header class="dashboard-header">
+        <div class="dashboard-header-content">
+          <div>
+            <h1 style="font-size: 1.5rem; font-weight: 600; color: var(--color-gray-900); margin: 0;">
+              <%= content_for?(:page_title) ? yield(:page_title) : "Личный кабинет" %>
+            </h1>
+            <% if content_for?(:page_subtitle) %>
+              <p style="color: var(--color-gray-600); margin: 0.25rem 0 0 0; font-size: 0.875rem;">
+                <%= yield(:page_subtitle) %>
+              </p>
+            <% end %>
+          </div>
+
+          <!-- User Profile & Actions -->
+          <div style="display: flex; gap: 1rem; align-items: center;">
+            <!-- Wallet Balance -->
+            <a href="/dashboard/wallet" class="header-stat-btn" title="Баланс кошелька">
+              <span style="font-size: 1rem;">💰</span>
+              <span style="font-weight: 600; color: var(--color-primary-600);">
+                <%= format_currency(current_user&.wallet&.balance_kopecks || 0) %>
+              </span>
+            </a>
+
+            <!-- Rating -->
+            <a href="/dashboard/rating" class="header-stat-btn" title="Ваш рейтинг">
+              <span style="font-size: 1rem;">⭐</span>
+              <span style="font-weight: 600; color: var(--color-secondary-600);">
+                <%= current_user&.rating&.points || 0 %>
+              </span>
+            </a>
+
+            <div style="width: 1px; height: 2rem; background: var(--color-gray-200);"></div>
+
+            <!-- Cart -->
+            <a href="/cart" class="dashboard-icon-btn" title="Корзина">
+              <span style="font-size: 1.25rem;">🛒</span>
+              <% if defined?(@cart_count) && @cart_count > 0 %>
+                <span class="badge badge-primary" style="position: absolute; top: -0.25rem; right: -0.25rem; font-size: 0.625rem; padding: 0.125rem 0.375rem;"><%= @cart_count %></span>
+              <% end %>
+            </a>
+
+            <!-- Notifications -->
+            <a href="/dashboard/notifications" class="dashboard-icon-btn" title="Уведомления">
+              <span style="font-size: 1.25rem;">🔔</span>
+              <span class="badge badge-error" style="position: absolute; top: -0.25rem; right: -0.25rem; font-size: 0.625rem; padding: 0.125rem 0.375rem;">3</span>
+            </a>
+
+            <div style="width: 1px; height: 2rem; background: var(--color-gray-200);"></div>
+
+            <!-- User Profile -->
+            <a href="/dashboard/profile" class="header-profile-btn" title="Профиль">
+              <div style="
+                width: 2.5rem;
+                height: 2.5rem;
+                border-radius: 50%;
+                background: linear-gradient(135deg, var(--color-primary-100), var(--color-secondary-100));
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.25rem;
+              ">
+                👤
+              </div>
+              <div style="text-align: left;">
+                <div style="font-weight: 600; color: var(--color-gray-900); font-size: 0.875rem; line-height: 1.2;">
+                  <%= current_user&.first_name || "Пользователь" %> <%= current_user&.last_name %>
+                </div>
+                <div style="font-size: 0.625rem;">
+                  <%= classification_badge(current_user&.classification || 'guest') %>
+                </div>
+              </div>
+            </a>
+
+            <!-- Settings -->
+            <a href="/dashboard/settings" class="dashboard-icon-btn" title="Настройки">
+              <span style="font-size: 1.25rem;">⚙️</span>
+            </a>
+          </div>
+        </div>
+      </header>
+
+      <!-- Content -->
+      <main class="dashboard-content">
+        <%= render "shared/flash" if flash.any? %>
+        <%= yield %>
+      </main>
+    </div>
+
+    <!-- Mobile Sidebar Toggle -->
+    <button class="mobile-sidebar-toggle" onclick="document.querySelector('.dashboard-sidebar').classList.toggle('open')">
+      <span>☰</span>
+    </button>
+  </body>
+</html>
+
+<style>
+  /* Dashboard Layout Styles */
+  .dashboard-layout {
+    display: flex;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #faf5ff 100%);
+  }
+
+  .dashboard-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    margin-left: 280px;
+    transition: margin-left 0.3s ease;
+  }
+
+  .dashboard-header {
+    background: rgba(255, 255, 255, 0.8);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(99, 102, 241, 0.1);
+    padding: 1.5rem 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+
+  .dashboard-header-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .dashboard-icon-btn {
+    position: relative;
+    width: 2.5rem;
+    height: 2.5rem;
+    border-radius: 0.75rem;
+    background: var(--color-gray-100);
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    text-decoration: none;
+  }
+
+  .dashboard-icon-btn:hover {
+    background: var(--color-gray-200);
+    transform: translateY(-2px);
+  }
+
+  .header-stat-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .header-stat-btn:hover {
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1));
+    transform: translateY(-2px);
+  }
+
+  .header-profile-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 1rem;
+    border-radius: 0.75rem;
+    background: rgba(255, 255, 255, 0.8);
+    border: 1px solid rgba(99, 102, 241, 0.1);
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .header-profile-btn:hover {
+    background: rgba(255, 255, 255, 1);
+    border-color: rgba(99, 102, 241, 0.2);
+    transform: translateY(-2px);
+  }
+
+  .dashboard-content {
+    flex: 1;
+    padding: 2rem;
+  }
+
+  .mobile-sidebar-toggle {
+    display: none;
+    position: fixed;
+    bottom: 2rem;
+    right: 2rem;
+    width: 3.5rem;
+    height: 3.5rem;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+    color: white;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 8px 20px rgba(99, 102, 241, 0.4);
+    z-index: 1001;
+  }
+
+  @media (max-width: 1024px) {
+    .dashboard-main {
+      margin-left: 0;
+    }
+
+    .mobile-sidebar-toggle {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .dashboard-header {
+      padding: 1rem 1.5rem;
+    }
+
+    .dashboard-header-content {
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .header-stat-btn {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.875rem;
+    }
+
+    .header-profile-btn {
+      padding: 0.5rem;
+    }
+
+    .header-profile-btn > div:last-child {
+      display: none;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .dashboard-content {
+      padding: 1rem;
+    }
+
+    .dashboard-header-content h1 {
+      font-size: 1.25rem !important;
+    }
+  }
+</style>

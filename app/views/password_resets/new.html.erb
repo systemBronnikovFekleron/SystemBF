@@ -1,0 +1,47 @@
+<% content_for :title, "Восстановление пароля - Система Бронникова" %>
+
+<section style="min-height: calc(100vh - 20rem); display: flex; align-items: center; justify-content: center; padding: 2rem 0;">
+  <div class="container-narrow">
+    <div class="card fade-in" style="max-width: 500px; margin: 0 auto;">
+      <div style="text-align: center; margin-bottom: 2rem;">
+        <div style="font-size: 3rem; margin-bottom: 1rem;">🔑</div>
+        <h2 style="margin-bottom: 0.5rem; font-size: 1.75rem;">Восстановление пароля</h2>
+        <p style="color: var(--color-gray-600);">
+          Введите ваш email, и мы отправим инструкции по восстановлению пароля
+        </p>
+      </div>
+
+      <%= form_with url: forgot_password_path, method: :post, local: true do |f| %>
+        <div class="form-group">
+          <%= f.label :email, "Email адрес", class: "form-label" %>
+          <%= f.email_field :email,
+                            required: true,
+                            autofocus: true,
+                            autocomplete: "email",
+                            placeholder: "your@email.com",
+                            class: "form-input" %>
+          <p style="font-size: 0.75rem; color: var(--color-gray-500); margin-top: 0.25rem;">
+            Мы отправим ссылку для сброса пароля на этот адрес
+          </p>
+        </div>
+
+        <%= f.submit "Отправить инструкции", class: "btn btn-primary w-full btn-lg" %>
+      <% end %>
+
+      <div style="margin-top: 1.5rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--color-gray-200);">
+        <p style="color: var(--color-gray-600); margin-bottom: 1rem;">
+          Вспомнили пароль?
+        </p>
+        <a href="/login" class="btn btn-outline w-full">
+          Вернуться ко входу
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .w-full {
+    width: 100%;
+  }
+</style>

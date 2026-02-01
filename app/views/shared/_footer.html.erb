@@ -1,0 +1,116 @@
+<footer style="
+  margin-top: 6rem;
+  padding: 3rem 0 2rem;
+  background: linear-gradient(180deg, transparent, rgba(99, 102, 241, 0.05));
+  border-top: 1px solid rgba(99, 102, 241, 0.1);
+">
+  <div class="container">
+    <div class="grid md:grid-cols-4 gap-8" style="margin-bottom: 3rem;">
+      <!-- About -->
+      <div>
+        <h4 style="margin-bottom: 1rem; font-size: 1.125rem; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+          Система Бронникова
+        </h4>
+        <p style="color: var(--color-gray-600); font-size: 0.875rem; line-height: 1.6;">
+          Образовательная платформа для развития сверхспособностей и информационного развития человека.
+        </p>
+      </div>
+
+      <!-- Navigation -->
+      <div>
+        <h5 style="margin-bottom: 1rem; font-weight: 600; color: var(--color-gray-900);">Навигация</h5>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+          <li><a href="/products" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Магазин</a></li>
+          <li><a href="/categories" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Категории</a></li>
+          <li><a href="/orders" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Мои заказы</a></li>
+          <li><a href="/dashboard" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Личный кабинет</a></li>
+        </ul>
+      </div>
+
+      <!-- Support -->
+      <div>
+        <h5 style="margin-bottom: 1rem; font-weight: 600; color: var(--color-gray-900);">Поддержка</h5>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.5rem;">
+          <li><a href="#" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">FAQ</a></li>
+          <li><a href="#" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Контакты</a></li>
+          <li><a href="#" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Политика конфиденциальности</a></li>
+          <li><a href="#" style="color: var(--color-gray-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" onmouseover="this.style.color='var(--color-primary-600)'" onmouseout="this.style.color='var(--color-gray-600)'">Условия использования</a></li>
+        </ul>
+      </div>
+
+      <!-- Contact -->
+      <div>
+        <h5 style="margin-bottom: 1rem; font-weight: 600; color: var(--color-gray-900);">Связаться</h5>
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gray-600); font-size: 0.875rem;">
+            <span style="font-size: 1.25rem;">📧</span>
+            <span>info@bronnikov.com</span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-gray-600); font-size: 0.875rem;">
+            <span style="font-size: 1.25rem;">📱</span>
+            <span>+7 (800) 123-45-67</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div style="
+      padding-top: 2rem;
+      border-top: 1px solid rgba(99, 102, 241, 0.1);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    ">
+      <p style="color: var(--color-gray-500); font-size: 0.875rem; margin: 0;">
+        © <%= Time.current.year %> Система Бронникова. Все права защищены.
+      </p>
+      <div style="display: flex; gap: 1rem;">
+        <a href="#" style="
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-primary-100), var(--color-secondary-100));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-primary-600);
+          text-decoration: none;
+          transition: all 0.3s;
+        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(99, 102, 241, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+          VK
+        </a>
+        <a href="#" style="
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-primary-100), var(--color-secondary-100));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-primary-600);
+          text-decoration: none;
+          transition: all 0.3s;
+        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(99, 102, 241, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+          TG
+        </a>
+        <a href="#" style="
+          width: 2.5rem;
+          height: 2.5rem;
+          border-radius: 50%;
+          background: linear-gradient(135deg, var(--color-primary-100), var(--color-secondary-100));
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: var(--color-primary-600);
+          text-decoration: none;
+          transition: all 0.3s;
+        " onmouseover="this.style.transform='translateY(-4px)'; this.style.boxShadow='0 8px 16px rgba(99, 102, 241, 0.3)'" onmouseout="this.style.transform=''; this.style.boxShadow=''">
+          YT
+        </a>
+      </div>
+    </div>
+  </div>
+</footer>
