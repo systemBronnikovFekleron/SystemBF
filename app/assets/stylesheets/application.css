@@ -434,7 +434,7 @@ a:hover {
 
 .footer-bottom p {
   font-size: 0.8125rem;
-  color: var(--gray-500);
+  color: var(--gray-600);
 }
 
 /* ==================== GRID SYSTEM ==================== */
@@ -479,8 +479,8 @@ a:hover {
 .text-right { text-align: right; }
 
 .text-primary { color: var(--blue-600); }
-.text-secondary { color: var(--gray-600); }
-.text-muted { color: var(--gray-500); }
+.text-secondary { color: var(--gray-700); }
+.text-muted { color: var(--gray-600); }
 
 .bg-primary { background: var(--blue-600); }
 .bg-secondary { background: var(--gray-100); }
