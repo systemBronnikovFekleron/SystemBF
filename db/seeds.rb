@@ -3,11 +3,19 @@
 # Очистка базы данных (только для development)
 if Rails.env.development?
   puts "🗑️  Очистка базы данных..."
+  # Integration data
+  IntegrationStatistic.destroy_all
+  IntegrationLog.destroy_all
+  EmailTemplate.destroy_all
+  IntegrationSetting.destroy_all
+  # Shop data
   ProductAccess.destroy_all
   OrderItem.destroy_all
   Order.destroy_all
   Product.destroy_all
   Category.destroy_all
+  # User data
+  InteractionHistory.destroy_all
   Rating.destroy_all
   Wallet.destroy_all
   Profile.destroy_all
@@ -245,3 +253,10 @@ puts "  Директор:    director@bronnikov.com / password123"
 puts "  Специалист:  specialist@bronnikov.com / password123"
 puts "  Клиент:      client@example.com / password123"
 puts "  Гость:       guest@example.com / password123"
+
+# Load integration settings and email templates
+puts "\n📧 Загрузка настроек интеграций..."
+load Rails.root.join('db/seeds/integrations.rb')
+
+puts "\n📨 Загрузка email шаблонов..."
+load Rails.root.join('db/seeds/email_templates.rb')

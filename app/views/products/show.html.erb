@@ -1,6 +1,12 @@
 <% content_for :title, "#{@product.name} - Система Бронникова" %>
 
-<section class="container" style="padding: 3rem 0;">
+<section class="container" style="padding: 3rem 0;"
+         data-controller="analytics"
+         data-analytics-event-value="view_item"
+         data-analytics-product-id-value="<%= @product.id %>"
+         data-analytics-product-name-value="<%= @product.name %>"
+         data-analytics-price-value="<%= @product.price_kopecks / 100.0 %>"
+         data-analytics-category-value="<%= @product.category&.name || 'Uncategorized' %>">
   <!-- Breadcrumbs -->
   <nav style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center; color: var(--color-gray-500); font-size: 0.875rem;">
     <%= link_to "Главная", root_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
@@ -89,20 +95,62 @@
         </div>
       </div>
 
-      <!-- Actions -->
-      <div style="display: flex; gap: 1rem; margin-bottom: 3rem;">
-        <%= button_to "🛒 Добавить в корзину",
-                      add_item_cart_path(product_id: @product.id),
-                      method: :post,
-                      class: "btn btn-primary btn-lg",
-                      style: "flex: 1;" %>
+      <!-- Purchase Action -->
+      <% if logged_in? %>
+        <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-info-50), var(--color-primary-50));">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+            <span style="font-weight: 600; color: var(--color-gray-700);">
+              💰 Баланс кошелька:
+            </span>
+            <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">
+              <%= humanized_money_with_symbol(current_user.wallet.balance) %>
+            </span>
+          </div>
 
-        <%= button_to "⚡ Купить сейчас",
-                      orders_path(product_id: @product.id),
-                      method: :post,
-                      class: "btn btn-secondary btn-lg",
-                      style: "flex: 1;" %>
-      </div>
+          <% if current_user.wallet.balance_kopecks < @product.price_kopecks %>
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-warning); font-weight: 500; padding: 0.75rem; background: var(--color-warning-50); border-radius: 8px;">
+              <span>⚠️</span>
+              <span>Недостаточно средств (не хватает <%= humanized_money_with_symbol(Money.new(@product.price_kopecks - current_user.wallet.balance_kopecks, 'RUB')) %>)</span>
+            </div>
+          <% else %>
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-success); font-weight: 500; padding: 0.75rem; background: var(--color-success-50); border-radius: 8px;">
+              <span>✓</span>
+              <span>Достаточно средств для покупки</span>
+            </div>
+          <% end %>
+        </div>
+
+        <%= form_with url: order_requests_path, method: :post, style: "margin-bottom: 3rem;" do |f| %>
+          <%= f.hidden_field :product_id, value: @product.id %>
+          <%= f.submit "⚡ Купить сейчас",
+                       class: "btn btn-primary btn-lg",
+                       style: "width: 100%;",
+                       data: {
+                         controller: "analytics",
+                         action: "click->analytics#trackPurchase",
+                         analytics_product_id_value: @product.id,
+                         analytics_product_name_value: @product.name,
+                         analytics_price_value: @product.price_kopecks / 100.0,
+                         analytics_category_value: @product.category&.name || 'Uncategorized'
+                       } %>
+        <% end %>
+
+        <p style="text-align: center; color: var(--color-gray-600); font-size: 0.875rem;">
+          <% if @product.auto_approve %>
+            ⚡ Мгновенный доступ после покупки
+          <% else %>
+            📋 Заявка будет рассмотрена администратором
+          <% end %>
+        </p>
+      <% else %>
+        <div class="card" style="margin-bottom: 3rem; background: linear-gradient(135deg, var(--color-primary-50), var(--color-secondary-50)); text-align: center;">
+          <p style="margin-bottom: 1rem; color: var(--color-gray-700);">
+            Для покупки необходимо войти в систему
+          </p>
+          <%= link_to "Войти", login_path, class: "btn btn-primary btn-lg", style: "margin-right: 0.5rem;" %>
+          <%= link_to "Регистрация", register_path, class: "btn btn-secondary btn-lg" %>
+        </div>
+      <% end %>
 
       <!-- Description -->
       <div class="card" style="margin-bottom: 1.5rem;">
@@ -145,7 +193,7 @@
         Похожие продукты
       </h2>
 
-      <div class="grid md:grid-cols-3">
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <% related_products.each do |product| %>
           <div class="card card-product" onclick="window.location.href='<%= product_path(product) %>'">
             <div class="product-image">

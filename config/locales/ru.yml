@@ -30,3 +30,38 @@ ru:
       long: "%d %B %Y, %H:%M"
     am: "утра"
     pm: "вечера"
+
+  order_status:
+    pending: "Ожидает оплаты"
+    paid: "Оплачен"
+    completed: "Завершен"
+    cancelled: "Отменен"
+    refunded: "Возвращен"
+
+  user_classification:
+    guest: "Гость"
+    client: "Клиент"
+    club_member: "Участник клуба"
+    representative: "Представитель"
+    trainee: "Стажер"
+    instructor_1: "Инструктор 1 категории"
+    instructor_2: "Инструктор 2 категории"
+    instructor_3: "Инструктор 3 категории"
+    specialist: "Специалист"
+    expert: "Эксперт"
+    center_director: "Директор центра"
+    curator: "Куратор"
+    manager: "Менеджер"
+    admin: "Администратор"
+
+  interaction_type:
+    call: "Звонок"
+    meeting: "Встреча"
+    email: "Email"
+    chat: "Чат"
+    note: "Заметка"
+
+  interaction_status:
+    planned: "Запланировано"
+    completed: "Завершено"
+    cancelled: "Отменено"

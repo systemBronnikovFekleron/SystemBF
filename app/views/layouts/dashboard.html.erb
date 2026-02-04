@@ -64,13 +64,10 @@
 
             <div style="width: 1px; height: 2rem; background: var(--color-gray-200);"></div>
 
-            <!-- Cart -->
-            <a href="/cart" class="dashboard-icon-btn" title="Корзина">
-              <span style="font-size: 1.25rem;">🛒</span>
-              <% if defined?(@cart_count) && @cart_count > 0 %>
-                <span class="badge badge-primary" style="position: absolute; top: -0.25rem; right: -0.25rem; font-size: 0.625rem; padding: 0.125rem 0.375rem;"><%= @cart_count %></span>
-              <% end %>
-            </a>
+            <!-- My Requests -->
+            <%= link_to order_requests_path, class: "dashboard-icon-btn", title: "Мои заявки" do %>
+              <span style="font-size: 1.25rem;">📋</span>
+            <% end %>
 
             <!-- Notifications -->
             <a href="/dashboard/notifications" class="dashboard-icon-btn" title="Уведомления">

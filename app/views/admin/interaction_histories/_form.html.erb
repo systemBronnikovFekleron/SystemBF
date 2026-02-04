@@ -1,0 +1,82 @@
+<%= form_with model: [:admin, interaction_history], style: "display: grid; gap: var(--space-6);" do |f| %>
+  <% if interaction_history.errors.any? %>
+    <div style="padding: var(--space-4); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); color: var(--color-error);">
+      <strong><%= pluralize(interaction_history.errors.count, 'ошибка', 'ошибки', 'ошибок') %>:</strong>
+      <ul style="margin-top: var(--space-2); padding-left: var(--space-5);">
+        <% interaction_history.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card" style="padding: var(--space-6);">
+    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-6);">Основная информация</h3>
+
+    <div style="display: grid; gap: var(--space-5);">
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Клиент *</label>
+        <%= f.collection_select :user_id, @users, :id, :email, { include_blank: 'Выберите клиента' }, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        <span style="font-size: 0.875rem; color: var(--gray-600);">Email пользователя</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Тип взаимодействия *</label>
+          <%= f.select :interaction_type, [
+            ['Звонок', 'call'],
+            ['Встреча', 'meeting'],
+            ['Email', 'email'],
+            ['Чат', 'chat'],
+            ['Заметка', 'note']
+          ], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Статус *</label>
+          <%= f.select :status, [
+            ['Запланировано', 'planned'],
+            ['Завершено', 'completed'],
+            ['Отменено', 'cancelled']
+          ], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        </div>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Тема *</label>
+        <%= f.text_field :subject, placeholder: "Краткая тема взаимодействия", style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Описание</label>
+        <%= f.text_area :description, rows: 6, placeholder: "Подробное описание взаимодействия, обсуждаемые вопросы, договоренности и т.д.", style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); resize: vertical;" %>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Дата взаимодействия *</label>
+          <%= f.datetime_local_field :interaction_date, value: interaction_history.interaction_date&.strftime('%Y-%m-%dT%H:%M'), style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+          <span style="font-size: 0.875rem; color: var(--gray-600);">Когда произошло взаимодействие</span>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Дата следующего шага</label>
+          <%= f.datetime_local_field :follow_up_date, value: interaction_history.follow_up_date&.strftime('%Y-%m-%dT%H:%M'), style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+          <span style="font-size: 0.875rem; color: var(--gray-600);">Когда планируется следующий контакт (необязательно)</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="padding: var(--space-4); background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: var(--radius-md);">
+    <p style="font-size: 0.875rem; color: var(--blue-700); line-height: 1.5;">
+      <strong>Совет:</strong> Используйте это для фиксации всех контактов с клиентами - звонки, встречи, переписка.
+      Это поможет отслеживать историю взаимодействий и планировать следующие шаги.
+    </p>
+  </div>
+
+  <div style="display: flex; gap: var(--space-3);">
+    <%= f.submit interaction_history.new_record? ? "Создать запись" : "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+    <%= link_to "Отменить", interaction_history.new_record? ? admin_interaction_histories_path : admin_interaction_history_path(interaction_history), style: "padding: var(--space-3) var(--space-6); background: var(--gray-100); color: var(--gray-700); text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+  </div>
+<% end %>

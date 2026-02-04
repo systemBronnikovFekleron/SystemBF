@@ -1,0 +1,154 @@
+<% content_for :page_title, "Мои курсы" %>
+<% content_for :page_subtitle, "Все ваши активные курсы и материалы" %>
+
+<!-- Filters -->
+<div style="margin-bottom: var(--space-6);">
+  <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
+    <button class="btn btn-sm" style="background: var(--blue-600); color: white;" onclick="filterCourses('all')">
+      Все (<%= @product_accesses.count %>)
+    </button>
+    <button class="btn btn-sm btn-outline" onclick="filterCourses('video_course')">
+      🎬 Видеокурсы (<%= @product_accesses.joins(:product).where(products: { product_type: 'video_course' }).count %>)
+    </button>
+    <button class="btn btn-sm btn-outline" onclick="filterCourses('book')">
+      📚 Книги (<%= @product_accesses.joins(:product).where(products: { product_type: 'book' }).count %>)
+    </button>
+    <button class="btn btn-sm btn-outline" onclick="filterCourses('course')">
+      🎓 Курсы (<%= @product_accesses.joins(:product).where(products: { product_type: 'course' }).count %>)
+    </button>
+    <button class="btn btn-sm btn-outline" onclick="filterCourses('service')">
+      💼 Услуги (<%= @product_accesses.joins(:product).where(products: { product_type: 'service' }).count %>)
+    </button>
+  </div>
+</div>
+
+<% if @product_accesses.any? %>
+  <!-- Courses Grid - 3 columns -->
+  <div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: var(--space-6);">
+    <% @product_accesses.each do |access| %>
+      <div class="card fade-in course-card" data-product-type="<%= access.product.product_type %>" style="cursor: pointer;" onclick="window.location.href='/products/<%= access.product.slug %>'">
+        <!-- Product Icon Header -->
+        <div style="
+          width: 60px;
+          height: 60px;
+          border-radius: var(--radius-lg);
+          background: var(--blue-50);
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 2rem;
+          margin-bottom: var(--space-4);
+        ">
+          <%= product_icon(access.product.product_type) %>
+        </div>
+
+        <!-- Product Name & Type -->
+        <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
+          <%= access.product.name %>
+        </h3>
+        <div style="display: inline-block; padding: 4px 8px; background: var(--blue-100); color: var(--blue-700); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 500; margin-bottom: var(--space-4);">
+          <%= product_type_label(access.product.product_type) %>
+        </div>
+
+        <!-- Description (truncated) -->
+        <% if access.product.description.present? %>
+          <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-4); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
+            <%= access.product.description %>
+          </p>
+        <% end %>
+
+        <!-- Progress Section -->
+        <div style="margin-bottom: var(--space-4);">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
+            <span style="font-size: 0.8125rem; color: var(--gray-600); font-weight: 500;">Прогресс</span>
+            <span style="font-size: 0.8125rem; font-weight: 600; color: var(--blue-600);">
+              <%= rand(15..95) %>%
+            </span>
+          </div>
+          <div style="width: 100%; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden;">
+            <div style="width: <%= rand(15..95) %>%; height: 100%; background: linear-gradient(90deg, var(--blue-500), var(--blue-600)); transition: width 0.5s;"></div>
+          </div>
+        </div>
+
+        <!-- Access Date -->
+        <div style="font-size: 0.75rem; color: var(--gray-500); display: flex; align-items: center; gap: var(--space-1);">
+          <span>🗓️</span>
+          <span>Доступ с <%= access.created_at.strftime('%d.%m.%Y') %></span>
+        </div>
+
+        <!-- CTA Button -->
+        <div style="margin-top: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
+          <a href="/products/<%= access.product.slug %>" class="btn btn-primary" style="width: 100%; text-align: center;" onclick="event.stopPropagation();">
+            Продолжить →
+          </a>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <!-- Empty State -->
+  <div class="card fade-in" style="text-align: center; padding: var(--space-16) var(--space-8);">
+    <div style="font-size: 5rem; margin-bottom: var(--space-6); opacity: 0.3;">🎓</div>
+    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+      Нет активных курсов
+    </h3>
+    <p style="font-size: 1rem; color: var(--gray-600); margin-bottom: var(--space-6); max-width: 400px; margin-left: auto; margin-right: auto;">
+      Начните свой путь обучения с нашей коллекции курсов, видеоматериалов и книг
+    </p>
+    <a href="/products" class="btn btn-primary" style="padding: var(--space-3) var(--space-8);">
+      Исследовать курсы
+    </a>
+  </div>
+<% end %>
+
+<script>
+  function filterCourses(type) {
+    const cards = document.querySelectorAll('.course-card');
+    const buttons = document.querySelectorAll('button[onclick^="filterCourses"]');
+
+    // Update button styles
+    buttons.forEach(btn => {
+      if (btn.getAttribute('onclick').includes(`'${type}'`)) {
+        btn.className = 'btn btn-sm';
+        btn.style.background = 'var(--blue-600)';
+        btn.style.color = 'white';
+      } else {
+        btn.className = 'btn btn-sm btn-outline';
+        btn.style.background = '';
+        btn.style.color = '';
+      }
+    });
+
+    // Filter cards
+    cards.forEach(card => {
+      if (type === 'all' || card.dataset.productType === type) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>
+
+<style>
+  @media (max-width: 1280px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  .card {
+    transition: all var(--transition-base);
+  }
+
+  .card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+</style>

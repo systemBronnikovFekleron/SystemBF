@@ -73,3 +73,7 @@ Thumbs.db
 
 # Ignore credentials
 /config/credentials/*.key
+
+# Ignore key files for decrypting credentials and more.
+/config/credentials/*.key
+

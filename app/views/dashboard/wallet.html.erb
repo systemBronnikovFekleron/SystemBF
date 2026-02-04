@@ -1,0 +1,312 @@
+<% content_for :page_title, "Кошелек" %>
+<% content_for :page_subtitle, "Управление вашим балансом" %>
+
+<!-- Balance Card -->
+<div class="card fade-in" style="margin-bottom: var(--space-8); background: linear-gradient(135deg, var(--blue-600), var(--blue-700)); color: white; border: none; text-align: center; padding: var(--space-10) var(--space-6);">
+  <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: var(--space-3);">
+    Доступный баланс
+  </div>
+
+  <div style="font-size: 3.5rem; font-weight: 700; margin-bottom: var(--space-6);">
+    <%= format_currency(@user.wallet.balance_kopecks) %>
+  </div>
+
+  <div style="display: flex; gap: var(--space-3); justify-content: center; flex-wrap: wrap;">
+    <button
+      data-controller="wallet"
+      data-action="click->wallet#openModal"
+      class="btn"
+      style="background: white; color: var(--blue-600); padding: var(--space-3) var(--space-6); font-weight: 600;">
+      💳 Пополнить кошелек
+    </button>
+
+    <a href="#history" class="btn" style="background: rgba(255, 255, 255, 0.2); color: white; border: 1px solid rgba(255, 255, 255, 0.3); padding: var(--space-3) var(--space-6);">
+      📊 История операций
+    </a>
+  </div>
+</div>
+
+<!-- Info Grid - 3 columns -->
+<div class="grid" style="grid-template-columns: repeat(3, 1fr); gap: var(--space-6); margin-bottom: var(--space-8);">
+  <div class="card fade-in">
+    <div style="
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: var(--blue-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: var(--space-4);
+    ">
+      💸
+    </div>
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
+      Без комиссии
+    </h3>
+    <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.6;">
+      Оплачивайте товары и услуги из кошелька без дополнительных комиссий
+    </p>
+  </div>
+
+  <div class="card fade-in">
+    <div style="
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: var(--yellow-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: var(--space-4);
+    ">
+      🔒
+    </div>
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
+      Безопасность
+    </h3>
+    <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.6;">
+      Все транзакции защищены современными методами шифрования
+    </p>
+  </div>
+
+  <div class="card fade-in">
+    <div style="
+      width: 56px;
+      height: 56px;
+      border-radius: var(--radius-lg);
+      background: var(--green-50);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      margin-bottom: var(--space-4);
+    ">
+      ⚡
+    </div>
+    <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
+      Мгновенно
+    </h3>
+    <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.6;">
+      Средства поступают на счет сразу после подтверждения платежа
+    </p>
+  </div>
+</div>
+
+<!-- Transactions History -->
+<div class="card fade-in" id="history">
+  <h3 style="font-size: 1.25rem; font-weight: 600; margin-bottom: var(--space-5);">
+    История транзакций
+  </h3>
+
+  <% if @transactions.empty? %>
+    <div style="text-align: center; padding: var(--space-16) var(--space-8); color: var(--gray-600);">
+      <div style="font-size: 5rem; margin-bottom: var(--space-6); opacity: 0.3;">💸</div>
+      <h4 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
+        Нет транзакций
+      </h4>
+      <p style="font-size: 0.9375rem;">
+        Здесь будет отображаться история всех операций
+      </p>
+    </div>
+  <% else %>
+    <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+      <% @transactions.each do |transaction| %>
+        <div style="
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: var(--space-4);
+          border: 1px solid var(--gray-200);
+          border-radius: var(--radius-md);
+          transition: all var(--transition-base);
+        " onmouseover="this.style.borderColor='var(--blue-300)'; this.style.background='var(--gray-50)'" onmouseout="this.style.borderColor='var(--gray-200)'; this.style.background='transparent'">
+          <div style="display: flex; gap: var(--space-4); align-items: center;">
+            <div style="
+              width: 48px;
+              height: 48px;
+              border-radius: var(--radius-md);
+              background: <%= transaction[:type] == 'credit' ? 'var(--green-50)' : 'var(--red-50)' %>;
+              display: flex;
+              align-items: center;
+              justify-content: center;
+              font-size: 1.5rem;
+            ">
+              <%= transaction[:type] == 'credit' ? '💰' : '🛒' %>
+            </div>
+
+            <div>
+              <div style="font-weight: 500; color: var(--gray-900); margin-bottom: var(--space-1);">
+                <%= transaction[:description] %>
+              </div>
+              <div style="font-size: 0.8125rem; color: var(--gray-600);">
+                <%= transaction[:date].strftime('%d.%m.%Y %H:%M') %>
+              </div>
+            </div>
+          </div>
+
+          <div style="
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: <%= transaction[:type] == 'credit' ? 'var(--green-600)' : 'var(--red-600)' %>;
+          ">
+            <%= transaction[:type] == 'credit' ? '+' : '−' %><%= format_currency(transaction[:amount_kopecks]) %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<!-- Deposit Modal -->
+<div
+  id="deposit-modal"
+  data-controller="wallet"
+  style="
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+    padding: var(--space-4);
+  ">
+  <div style="
+    background: white;
+    border-radius: var(--radius-xl);
+    max-width: 500px;
+    width: 100%;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    animation: fadeIn 0.3s;
+  " onclick="event.stopPropagation()">
+    <!-- Modal Header -->
+    <div style="padding: var(--space-6); border-bottom: 1px solid var(--gray-200);">
+      <div style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900);">
+          💳 Пополнение кошелька
+        </h3>
+        <button
+          data-action="click->wallet#closeModal"
+          style="
+            width: 32px;
+            height: 32px;
+            border: none;
+            background: var(--gray-100);
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+            color: var(--gray-600);
+            transition: all var(--transition-base);
+          "
+          onmouseover="this.style.background='var(--gray-200)'"
+          onmouseout="this.style.background='var(--gray-100)'">
+          ×
+        </button>
+      </div>
+    </div>
+
+    <!-- Modal Body -->
+    <%= form_with url: deposit_wallet_path, method: :post, data: { controller: 'wallet', action: 'submit->wallet#submitDeposit' } do |f| %>
+      <div style="padding: var(--space-6);">
+        <!-- Quick Amount Selection -->
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 500; color: var(--gray-900); margin-bottom: var(--space-3);">
+            Выберите сумму:
+          </label>
+          <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-3);">
+            <% [500, 1000, 2000, 5000].each do |amount| %>
+              <button
+                type="button"
+                class="amount-option"
+                data-amount="<%= amount %>"
+                data-action="click->wallet#selectAmount"
+                style="
+                  padding: var(--space-4);
+                  border: 2px solid var(--gray-200);
+                  border-radius: var(--radius-md);
+                  background: white;
+                  font-weight: 600;
+                  font-size: 1.125rem;
+                  cursor: pointer;
+                  transition: all var(--transition-base);
+                "
+                onmouseover="this.style.borderColor='var(--blue-300)'"
+                onmouseout="if(!this.classList.contains('selected')) this.style.borderColor='var(--gray-200)'">
+                <%= amount %> ₽
+              </button>
+            <% end %>
+          </div>
+        </div>
+
+        <!-- Custom Amount Input -->
+        <div style="margin-bottom: var(--space-6);">
+          <label style="display: block; font-weight: 500; color: var(--gray-900); margin-bottom: var(--space-3);">
+            Или введите свою сумму:
+          </label>
+          <%= f.number_field :amount,
+            id: 'custom-amount',
+            placeholder: 'Введите сумму',
+            min: 100,
+            step: 100,
+            class: 'form-input',
+            style: 'width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; transition: border-color var(--transition-base);',
+            data: { action: 'input->wallet#updateAmount' } %>
+          <div style="margin-top: var(--space-2); font-size: 0.8125rem; color: var(--gray-600);">
+            Минимальная сумма: 100 ₽
+          </div>
+        </div>
+
+        <!-- Info -->
+        <div style="padding: var(--space-4); background: var(--blue-50); border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+          <div style="display: flex; gap: var(--space-3); align-items: start;">
+            <div style="font-size: 1.25rem;">ℹ️</div>
+            <div style="font-size: 0.875rem; color: var(--gray-700); line-height: 1.6;">
+              После нажатия кнопки вы будете перенаправлены на страницу оплаты CloudPayments. Средства поступят на ваш счет мгновенно после успешной оплаты.
+            </div>
+          </div>
+        </div>
+
+        <!-- Submit Button -->
+        <%= f.submit 'Перейти к оплате',
+          class: 'btn btn-primary',
+          style: 'width: 100%; padding: var(--space-4); font-size: 1rem; font-weight: 600;' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+  @media (max-width: 1024px) {
+    .grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+
+  .amount-option.selected {
+    border-color: var(--blue-500) !important;
+    background: var(--blue-50) !important;
+    color: var(--blue-700);
+  }
+
+  #deposit-modal[style*="display: flex"] {
+    animation: fadeIn 0.3s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+</style>

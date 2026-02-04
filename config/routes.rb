@@ -20,8 +20,11 @@ Rails.application.routes.draw do
   get 'register', to: 'registrations#new'
   post 'register', to: 'registrations#create'
 
-  get 'forgot-password', to: 'password_resets#new'
-  post 'forgot-password', to: 'password_resets#create'
+  # Password reset routes
+  get 'forgot-password', to: 'password_resets#new', as: :new_password_reset
+  post 'password-resets', to: 'password_resets#create', as: :password_resets
+  get 'password-reset/:token/edit', to: 'password_resets#edit', as: :edit_password_reset
+  patch 'password-reset/:token', to: 'password_resets#update', as: :password_reset
 
   # API routes
   namespace :api do
@@ -38,12 +41,18 @@ Rails.application.routes.draw do
   resources :categories, only: [:index, :show]
   resources :products, only: [:index, :show]
 
-  resource :cart, only: [:show, :update, :destroy] do
-    post 'add_item', on: :collection
-    delete 'remove_item/:product_id', to: 'carts#remove_item', on: :collection, as: :remove_item
+  # Order requests (new purchase flow)
+  resources :order_requests, only: [:index, :show, :create] do
+    member do
+      get :payment_options
+      post :pay
+    end
   end
 
-  resources :orders, only: [:index, :show, :create] do
+  # External forms integration
+  post 'external_forms/submit', to: 'external_forms#submit', as: :external_forms_submit
+
+  resources :orders, only: [:index, :show] do
     resource :payment, only: [:new, :create], controller: 'order_payments'
   end
 
@@ -52,16 +61,59 @@ Rails.application.routes.draw do
     post 'cloudpayments/pay', to: 'cloud_payments#pay'
     post 'cloudpayments/fail', to: 'cloud_payments#fail'
     post 'cloudpayments/refund', to: 'cloud_payments#refund'
+    post 'telegram/:token', to: 'telegram#webhook'
+  end
+
+  # Telegram linking
+  get 'telegram/link/:token', to: 'telegram#link', as: :telegram_link
+
+  # Admin routes
+  namespace :admin do
+    root to: 'dashboard#index'
+    resources :products do
+      post :bulk_action, on: :collection
+      resource :form_generator, only: [:show]
+    end
+    resources :orders, only: [:index, :show, :update]
+    resources :users, only: [:index, :show, :edit, :update]
+    resources :interaction_histories
+    resources :order_requests, only: [:index, :show] do
+      member do
+        post :approve
+        post :reject
+      end
+    end
+
+    # Integrations management
+    resources :integrations, only: [:index, :show, :edit, :update] do
+      member do
+        post :test_connection
+        post :toggle_status
+        get :logs
+        get :statistics
+      end
+    end
+
+    # Email templates management
+    resources :email_templates do
+      member do
+        get :preview
+        post :send_test
+        post :duplicate
+      end
+    end
   end
 
   # Dashboard routes
   get 'dashboard', to: 'dashboard#index'
-  get 'dashboard/profile', to: 'dashboard#profile'
-  get 'dashboard/wallet', to: 'dashboard#wallet'
-  get 'dashboard/rating', to: 'dashboard#rating'
-  get 'dashboard/orders', to: 'dashboard#orders'
-  get 'dashboard/my-courses', to: 'dashboard#my_courses'
-  get 'dashboard/achievements', to: 'dashboard#achievements'
-  get 'dashboard/notifications', to: 'dashboard#notifications'
-  get 'dashboard/settings', to: 'dashboard#settings'
+  get 'dashboard/profile', to: 'dashboard#profile', as: :dashboard_profile
+  patch 'dashboard/profile', to: 'dashboard#update_profile'
+  get 'dashboard/wallet', to: 'dashboard#wallet', as: :dashboard_wallet
+  post 'dashboard/wallet/deposit', to: 'dashboard#deposit_wallet', as: :deposit_wallet
+  get 'dashboard/rating', to: 'dashboard#rating', as: :dashboard_rating
+  get 'dashboard/orders', to: 'dashboard#orders', as: :dashboard_orders
+  get 'dashboard/my-courses', to: 'dashboard#my_courses', as: :dashboard_my_courses
+  get 'dashboard/achievements', to: 'dashboard#achievements', as: :dashboard_achievements
+  get 'dashboard/notifications', to: 'dashboard#notifications', as: :dashboard_notifications
+  get 'dashboard/settings', to: 'dashboard#settings', as: :dashboard_settings
 end

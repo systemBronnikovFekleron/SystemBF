@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+    .success-box { background: #d1fae5; padding: 20px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #10b981; }
+    .button { display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+    .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✓ Покупка завершена!</h1>
+    </div>
+    <div class="content">
+      <p>Здравствуйте, <%= @user.full_name %>!</p>
+
+      <div class="success-box">
+        <p style="font-size: 18px; font-weight: bold; color: #065f46; margin-bottom: 10px;">
+          🎉 Поздравляем! Ваша покупка успешно завершена.
+        </p>
+        <p>После пополнения кошелька ваша заявка <strong><%= @order_request.request_number %></strong> была автоматически оплачена.</p>
+      </div>
+
+      <p><strong>Продукт:</strong> <%= @product.name %></p>
+      <p><strong>Сумма:</strong> <%= humanized_money_with_symbol(@order_request.total) %></p>
+      <p><strong>Номер заказа:</strong> <%= @order.order_number %></p>
+
+      <p>Доступ к продукту открыт в вашем личном кабинете.</p>
+
+      <p style="margin-top: 30px;">
+        <a href="<%= dashboard_my_courses_url %>" class="button">Перейти к моим курсам</a>
+      </p>
+    </div>
+    <div class="footer">
+      <p>Система Бронникова © <%= Time.current.year %></p>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<%= form_with model: [:admin, product], style: "display: grid; gap: var(--space-6);" do |f| %>
+  <% if product.errors.any? %>
+    <div style="padding: var(--space-4); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: var(--radius-md); color: var(--color-error);">
+      <strong><%= pluralize(product.errors.count, 'ошибка', 'ошибки', 'ошибок') %>:</strong>
+      <ul style="margin-top: var(--space-2); padding-left: var(--space-5);">
+        <% product.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="card" style="padding: var(--space-6);">
+    <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-6);">Основная информация</h3>
+
+    <div style="display: grid; gap: var(--space-5);">
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Название *</label>
+        <%= f.text_field :name, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Slug (URL)</label>
+        <%= f.text_field :slug, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        <span style="font-size: 0.875rem; color: var(--gray-600);">Оставьте пустым для автогенерации</span>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Описание</label>
+        <%= f.text_area :description, rows: 4, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); resize: vertical;" %>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Категория *</label>
+          <%= f.collection_select :category_id, @categories, :id, :name, {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Цена (в копейках) *</label>
+          <%= f.number_field :price_kopecks, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+          <span style="font-size: 0.875rem; color: var(--gray-600);">1000 копеек = 10 ₽</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Тип продукта *</label>
+          <%= f.select :product_type, [['Видеокурс', 'video_course'], ['Книга', 'book'], ['Курс', 'course'], ['Услуга', 'service'], ['Мероприятие', 'event']], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Статус *</label>
+          <%= f.select :status, [['Черновик', 'draft'], ['Опубликовано', 'published'], ['Архив', 'archived']], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Длительность (минуты)</label>
+          <%= f.number_field :duration_minutes, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500;">Срок доступа (дни)</label>
+          <%= f.number_field :access_duration_days, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md);" %>
+          <span style="font-size: 0.875rem; color: var(--gray-600);">Оставьте пустым для вечного доступа</span>
+        </div>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-3);">
+        <%= f.check_box :featured, style: "width: 18px; height: 18px;" %>
+        <label style="font-weight: 500;">Популярный продукт (featured)</label>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: var(--space-3);">
+    <%= f.submit product.new_record? ? "Создать продукт" : "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+    <%= link_to "Отменить", admin_products_path, style: "padding: var(--space-3) var(--space-6); background: var(--gray-100); color: var(--gray-700); text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+  </div>
+<% end %>

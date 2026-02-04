@@ -61,7 +61,7 @@
     <p style="color: var(--color-gray-600);">Популярные программы для вашего развития</p>
   </div>
 
-  <div class="grid md:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @featured_products.each_with_index do |product, index| %>
       <div class="card card-product fade-in stagger-<%= index + 1 %>" onclick="window.location.href='/products/<%= product.slug %>'">
         <div class="product-image">
@@ -108,7 +108,7 @@
       <h2 class="text-gradient">Возможности платформы</h2>
     </div>
 
-    <div class="grid md:grid-cols-3 gap-6">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <div class="card fade-in stagger-1" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Личный кабинет</h3>
@@ -167,7 +167,7 @@
     <h2 class="text-gradient">Новые материалы</h2>
   </div>
 
-  <div class="grid md:grid-cols-3 gap-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
     <% @recent_products.limit(6).each_with_index do |product, index| %>
       <div class="card card-product fade-in stagger-<%= (index % 3) + 1 %>" onclick="window.location.href='/products/<%= product.slug %>'">
         <div class="product-image">

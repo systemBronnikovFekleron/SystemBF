@@ -1,0 +1,117 @@
+<% content_for :title, @interaction_history.subject %>
+
+<div style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center;">
+  <%= link_to "← Назад к списку", admin_interaction_histories_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+  <%= link_to "Редактировать", edit_admin_interaction_history_path(@interaction_history), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">
+  <%= @interaction_history.subject %>
+</h1>
+
+<div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-8);">
+  <span style="<%= interaction_status_badge_style(@interaction_history.status) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
+    <%= interaction_status_label(@interaction_history.status) %>
+  </span>
+  <span style="<%= interaction_type_badge_style(@interaction_history.interaction_type) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
+    <%= interaction_type_label(@interaction_history.interaction_type) %>
+  </span>
+</div>
+
+<div style="display: grid; gap: var(--space-6);">
+  <!-- Информация о клиенте -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Информация о клиенте</h2>
+
+    <dl style="display: grid; gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Email:</dt>
+        <dd><%= @interaction_history.user.email %></dd>
+      </div>
+
+      <% if @interaction_history.user.first_name.present? || @interaction_history.user.last_name.present? %>
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+          <dt style="font-weight: 500; color: var(--gray-600);">Имя:</dt>
+          <dd><%= @interaction_history.user.full_name %></dd>
+        </div>
+      <% end %>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Классификация:</dt>
+        <dd>
+          <span style="<%= classification_badge_style(@interaction_history.user.classification) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
+            <%= classification_label(@interaction_history.user.classification) %>
+          </span>
+        </dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Баланс:</dt>
+        <dd style="font-weight: 600;"><%= humanized_money_with_symbol(@interaction_history.user.wallet.balance) %></dd>
+      </div>
+
+      <div style="display: flex; gap: var(--space-3); margin-top: var(--space-2);">
+        <%= link_to "Просмотр профиля клиента", admin_user_path(@interaction_history.user), style: "padding: var(--space-2) var(--space-4); background: var(--gray-100); color: var(--gray-700); text-decoration: none; border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 500;" %>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Детали взаимодействия -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Детали взаимодействия</h2>
+
+    <dl style="display: grid; gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Тип взаимодействия:</dt>
+        <dd><%= interaction_type_label(@interaction_history.interaction_type) %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Дата:</dt>
+        <dd style="font-weight: 500;"><%= l(@interaction_history.interaction_date, format: :long) %></dd>
+      </div>
+
+      <% if @interaction_history.follow_up_date.present? %>
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+          <dt style="font-weight: 500; color: var(--gray-600);">Следующий шаг:</dt>
+          <dd style="font-weight: 500; color: var(--blue-600);"><%= l(@interaction_history.follow_up_date, format: :long) %></dd>
+        </div>
+      <% end %>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Статус:</dt>
+        <dd><%= interaction_status_label(@interaction_history.status) %></dd>
+      </div>
+
+      <% if @interaction_history.description.present? %>
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+          <dt style="font-weight: 500; color: var(--gray-600);">Описание:</dt>
+          <dd style="line-height: 1.6; white-space: pre-wrap;"><%= @interaction_history.description %></dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+
+  <!-- Системная информация -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Системная информация</h2>
+
+    <dl style="display: grid; gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Создал:</dt>
+        <dd><%= @interaction_history.admin_user.email %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Создано:</dt>
+        <dd><%= l(@interaction_history.created_at, format: :long) %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Обновлено:</dt>
+        <dd><%= l(@interaction_history.updated_at, format: :long) %></dd>
+      </div>
+    </dl>
+  </div>
+</div>
+

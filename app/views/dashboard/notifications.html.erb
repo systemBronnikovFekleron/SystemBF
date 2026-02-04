@@ -1,0 +1,201 @@
+<% content_for :page_title, "Уведомления" %>
+<% content_for :page_subtitle, "История всех событий и обновлений" %>
+
+<!-- Action Bar -->
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
+  <div style="display: flex; gap: var(--space-2);">
+    <button class="btn btn-sm" style="background: var(--blue-600); color: white;" onclick="filterNotifications('all')">
+      Все (<%= @notifications.count %>)
+    </button>
+    <button class="btn btn-sm btn-outline" onclick="filterNotifications('unread')">
+      Непрочитанные (<%= @notifications.select { |n| !n[:read] }.count %>)
+    </button>
+  </div>
+
+  <button class="btn btn-sm btn-outline" onclick="markAllAsRead()" style="color: var(--blue-600);">
+    ✓ Отметить все как прочитанные
+  </button>
+</div>
+
+<% if @notifications.any? %>
+  <!-- Notifications Timeline -->
+  <div style="max-width: 800px;">
+    <% @notifications.group_by { |n| n[:created_at].to_date }.each do |date, day_notifications| %>
+      <!-- Date Header -->
+      <div style="margin-bottom: var(--space-4); position: sticky; top: 0; background: var(--gray-50); padding: var(--space-2) 0; z-index: 10;">
+        <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.05em;">
+          <% if date == Date.today %>
+            Сегодня
+          <% elsif date == Date.yesterday %>
+            Вчера
+          <% else %>
+            <%= date.strftime('%d %B %Y') %>
+          <% end %>
+        </h3>
+      </div>
+
+      <!-- Notifications for this day -->
+      <div style="display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-8);">
+        <% day_notifications.each do |notification| %>
+          <div class="card notification-card fade-in <%= 'unread' unless notification[:read] %>"
+               data-read="<%= notification[:read] %>"
+               style="position: relative; <%= 'border-left: 4px solid var(--blue-500);' unless notification[:read] %>">
+
+            <!-- Notification Icon & Type -->
+            <div style="display: flex; gap: var(--space-4);">
+              <!-- Icon Circle -->
+              <div style="
+                width: 48px;
+                height: 48px;
+                flex-shrink: 0;
+                border-radius: 50%;
+                background: <%= notification_background(notification[:type]) %>;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 1.5rem;
+              ">
+                <%= notification_icon(notification[:type]) %>
+              </div>
+
+              <!-- Notification Content -->
+              <div style="flex: 1;">
+                <!-- Title & Time -->
+                <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-2);">
+                  <h4 style="font-size: 1rem; font-weight: <%= notification[:read] ? '500' : '600' %>; color: var(--gray-900);">
+                    <%= notification[:title] %>
+                  </h4>
+                  <span style="font-size: 0.75rem; color: var(--gray-500); white-space: nowrap; margin-left: var(--space-3);">
+                    <%= notification[:created_at].strftime('%H:%M') %>
+                  </span>
+                </div>
+
+                <!-- Description -->
+                <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-3);">
+                  <%= notification[:message] %>
+                </p>
+
+                <!-- Action Button (if applicable) -->
+                <% if notification[:action_url] %>
+                  <a href="<%= notification[:action_url] %>" class="btn btn-sm btn-outline" style="margin-top: var(--space-2);">
+                    <%= notification[:action_text] || 'Подробнее' %> →
+                  </a>
+                <% end %>
+              </div>
+            </div>
+
+            <!-- Unread Badge -->
+            <% unless notification[:read] %>
+              <div style="position: absolute; top: 16px; right: 16px;">
+                <div style="width: 8px; height: 8px; background: var(--blue-500); border-radius: 50%;"></div>
+              </div>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% else %>
+  <!-- Empty State -->
+  <div class="card fade-in" style="text-align: center; padding: var(--space-16) var(--space-8);">
+    <div style="font-size: 5rem; margin-bottom: var(--space-6); opacity: 0.3;">🔔</div>
+    <h3 style="font-size: 1.5rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-3);">
+      Нет уведомлений
+    </h3>
+    <p style="font-size: 1rem; color: var(--gray-600); max-width: 400px; margin: 0 auto;">
+      Здесь будут отображаться важные события и обновления
+    </p>
+  </div>
+<% end %>
+
+<style>
+  .notification-card {
+    transition: all var(--transition-base);
+  }
+
+  .notification-card:hover {
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  .notification-card.unread {
+    background: linear-gradient(to right, rgba(59, 130, 246, 0.03), transparent);
+  }
+</style>
+
+<script>
+  function filterNotifications(filter) {
+    const cards = document.querySelectorAll('.notification-card');
+    const buttons = document.querySelectorAll('button[onclick^="filterNotifications"]');
+
+    // Update button styles
+    buttons.forEach(btn => {
+      if (btn.getAttribute('onclick').includes(`'${filter}'`)) {
+        btn.className = 'btn btn-sm';
+        btn.style.background = 'var(--blue-600)';
+        btn.style.color = 'white';
+      } else {
+        btn.className = 'btn btn-sm btn-outline';
+        btn.style.background = '';
+        btn.style.color = '';
+      }
+    });
+
+    // Filter cards
+    cards.forEach(card => {
+      if (filter === 'all') {
+        card.style.display = 'block';
+      } else if (filter === 'unread' && card.dataset.read === 'false') {
+        card.style.display = 'block';
+      } else if (filter === 'unread') {
+        card.style.display = 'none';
+      }
+    });
+  }
+
+  function markAllAsRead() {
+    const unreadCards = document.querySelectorAll('.notification-card.unread');
+
+    unreadCards.forEach(card => {
+      card.classList.remove('unread');
+      card.style.borderLeft = 'none';
+      card.style.background = 'white';
+
+      const badge = card.querySelector('[style*="width: 8px"]')?.parentElement;
+      if (badge) badge.remove();
+    });
+
+    // Update counters
+    const unreadButton = document.querySelector('button[onclick*="unread"]');
+    if (unreadButton) {
+      unreadButton.innerHTML = 'Непрочитанные (0)';
+    }
+
+    // Show success message (optional)
+    alert('Все уведомления отмечены как прочитанные');
+  }
+</script>
+
+<%
+# Helper methods for notification styling (inline for simplicity)
+def notification_icon(type)
+  {
+    'order_paid' => '✅',
+    'product_access_granted' => '🎓',
+    'achievement_unlocked' => '🏆',
+    'wallet_deposit' => '💰',
+    'profile_updated' => '👤',
+    'system' => '⚙️'
+  }[type] || '📢'
+end
+
+def notification_background(type)
+  {
+    'order_paid' => 'var(--green-100)',
+    'product_access_granted' => 'var(--blue-100)',
+    'achievement_unlocked' => 'var(--yellow-100)',
+    'wallet_deposit' => 'var(--green-100)',
+    'profile_updated' => 'var(--gray-100)',
+    'system' => 'var(--gray-100)'
+  }[type] || 'var(--gray-100)'
+end
+%>

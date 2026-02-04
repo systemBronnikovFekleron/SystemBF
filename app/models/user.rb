@@ -24,15 +24,49 @@ class User < ApplicationRecord
   has_one :profile, dependent: :destroy
   has_one :wallet, dependent: :destroy
   has_one :rating, dependent: :destroy
-  has_one :business_account, dependent: :nullify
+  # has_one :business_account, dependent: :nullify # TODO: Phase 2 - Бизнес-аккаунт
   has_many :orders, dependent: :destroy
   has_many :product_accesses, dependent: :destroy
+  has_many :order_requests, dependent: :destroy
+  has_many :approved_requests, class_name: 'OrderRequest', foreign_key: :approved_by_id, dependent: :nullify, inverse_of: :approved_by
 
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 8 }, if: -> { new_record? || password.present? }
 
   before_save :normalize_email
   after_create :create_associated_records
+
+  # Проверка прав администратора (admin, manager, curator)
+  def admin_role?
+    classification_admin? || classification_manager? || classification_curator?
+  end
+
+  # Проверка возможности одобрять заявки
+  def can_approve_requests?
+    admin_role? || classification_center_director? || classification_specialist?
+  end
+
+  # Полное имя пользователя
+  def full_name
+    [first_name, last_name].compact.join(' ').presence || email
+  end
+
+  # Password reset methods
+  def create_reset_password_token!
+    self.reset_password_token = SecureRandom.urlsafe_base64(32)
+    self.reset_password_sent_at = Time.current
+    save!(validate: false)
+  end
+
+  def reset_password_token_expired?
+    reset_password_sent_at.nil? || reset_password_sent_at < 24.hours.ago
+  end
+
+  def clear_reset_password_token!
+    self.reset_password_token = nil
+    self.reset_password_sent_at = nil
+    save!(validate: false)
+  end
 
   private
 

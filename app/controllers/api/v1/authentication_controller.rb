@@ -4,6 +4,7 @@ module Api
   module V1
     class AuthenticationController < BaseController
       skip_before_action :authenticate_request, only: [:login, :logout]
+      before_action :set_cors_headers, only: [:validate_token]
 
       def login
         user = User.find_by(email: params[:email]&.downcase)
@@ -50,6 +51,14 @@ module Api
       end
 
       private
+
+      def set_cors_headers
+        wordpress_domain = ENV.fetch('WORDPRESS_DOMAIN', '*')
+        response.headers['Access-Control-Allow-Origin'] = wordpress_domain
+        response.headers['Access-Control-Allow-Credentials'] = 'true'
+        response.headers['Access-Control-Allow-Methods'] = 'GET, OPTIONS'
+        response.headers['Access-Control-Allow-Headers'] = 'Authorization, Content-Type'
+      end
 
       def user_data(user)
         {

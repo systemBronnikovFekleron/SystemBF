@@ -1,0 +1,101 @@
+<% content_for :title, "Редактирование: #{@user.email}" %>
+
+<div style="margin-bottom: var(--space-6);">
+  <%= link_to "← Назад к пользователям", admin_users_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-8); color: var(--gray-900);">
+  Редактирование: <%= @user.email %>
+</h1>
+
+<div class="card" style="padding: var(--space-8); max-width: 800px;">
+  <%= form_with model: [:admin, @user], style: "display: grid; gap: var(--space-6);" do |f| %>
+    <!-- Email -->
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+        Email
+      </label>
+      <%= f.email_field :email, required: true, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+      <% if @user.errors[:email].any? %>
+        <div style="margin-top: var(--space-2); font-size: 0.875rem; color: var(--color-error);">
+          <%= @user.errors[:email].join(', ') %>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Классификация -->
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+        Классификация
+      </label>
+      <%= f.select :classification, [
+        ['Гость', 'guest'],
+        ['Клиент', 'client'],
+        ['Участник клуба', 'club_member'],
+        ['Представитель', 'representative'],
+        ['Стажер', 'trainee'],
+        ['Инструктор 1 категории', 'instructor_1'],
+        ['Инструктор 2 категории', 'instructor_2'],
+        ['Инструктор 3 категории', 'instructor_3'],
+        ['Специалист', 'specialist'],
+        ['Эксперт-Диагност', 'expert'],
+        ['Директор Центра', 'center_director'],
+        ['Куратор', 'curator'],
+        ['Менеджер платформы', 'manager'],
+        ['Администратор', 'admin']
+      ], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+      <div style="margin-top: var(--space-2); font-size: 0.875rem; color: var(--gray-600);">
+        Определяет уровень доступа и права пользователя в системе
+      </div>
+    </div>
+
+    <!-- Разделитель -->
+    <div style="border-top: 1px solid var(--gray-200);"></div>
+
+    <!-- Профиль -->
+    <%= f.fields_for :profile do |profile_fields| %>
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+          Полное имя
+        </label>
+        <%= profile_fields.text_field :full_name, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+          Телефон
+        </label>
+        <%= profile_fields.text_field :phone, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-4);">
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+            Город
+          </label>
+          <%= profile_fields.text_field :city, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+        </div>
+
+        <div>
+          <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+            Страна
+          </label>
+          <%= profile_fields.text_field :country, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+        </div>
+      </div>
+
+      <div>
+        <label style="display: block; margin-bottom: var(--space-2); font-weight: 500; color: var(--gray-700);">
+          Дата рождения
+        </label>
+        <%= profile_fields.date_field :birth_date, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+      </div>
+    <% end %>
+
+    <!-- Кнопки -->
+    <div style="display: flex; gap: var(--space-4); padding-top: var(--space-4); border-top: 1px solid var(--gray-200);">
+      <%= f.submit "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer; transition: all 0.2s;" %>
+      <%= link_to "Отмена", admin_user_path(@user), style: "padding: var(--space-3) var(--space-6); color: var(--gray-700); text-decoration: none; border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-weight: 500; transition: all 0.2s;" %>
+    </div>
+  <% end %>
+</div>

@@ -1,0 +1,11 @@
+<% content_for :title, "Редактирование: #{@product.name}" %>
+
+<div style="margin-bottom: var(--space-6);">
+  <%= link_to "← Назад к продуктам", admin_products_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-8); color: var(--gray-900);">
+  Редактирование: <%= @product.name %>
+</h1>
+
+<%= render 'form', product: @product %>

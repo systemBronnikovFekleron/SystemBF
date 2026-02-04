@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title><%= content_for(:title) || "Административная панель" %> - Система Бронникова</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body style="background: var(--gray-50);">
+  <!-- Admin Navbar -->
+  <nav style="background: white; border-bottom: 1px solid var(--gray-200); position: sticky; top: 0; z-index: 100;">
+    <div style="max-width: 1400px; margin: 0 auto; padding: 0 var(--space-6); display: flex; align-items: center; justify-content: space-between; height: 64px;">
+      <!-- Logo -->
+      <div style="display: flex; align-items: center; gap: var(--space-6);">
+        <%= link_to admin_root_path, style: "display: flex; align-items: center; gap: var(--space-3); text-decoration: none;" do %>
+          <%= image_tag "logo-veis.png", alt: "Проект Веис", style: "height: 34px; width: auto;" %>
+          <span style="font-weight: 600; color: var(--gray-800); font-size: 0.875rem; padding: var(--space-2) var(--space-3); background: var(--blue-50); border-radius: var(--radius-md); color: var(--blue-700);">
+            ADMIN
+          </span>
+        <% end %>
+      </div>
+
+      <!-- User Info -->
+      <div style="display: flex; align-items: center; gap: var(--space-4);">
+        <span style="color: var(--gray-700); font-size: 0.875rem;">
+          <%= current_user.email %>
+        </span>
+
+        <%= link_to "Вернуться на сайт", root_path, style: "color: var(--blue-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" %>
+
+        <%= button_to logout_path, method: :delete, style: "background: none; border: none; color: var(--gray-600); cursor: pointer; font-size: 0.875rem; transition: color 0.2s;" do %>
+          Выйти
+        <% end %>
+      </div>
+    </div>
+  </nav>
+
+  <div style="display: flex; min-height: calc(100vh - 64px);">
+    <!-- Sidebar -->
+    <aside style="width: 240px; background: white; border-right: 1px solid var(--gray-200); flex-shrink: 0;">
+      <nav style="padding: var(--space-6) 0;">
+        <%= link_to admin_root_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if current_page?(admin_root_path)}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="3" width="7" height="7"></rect>
+            <rect x="14" y="3" width="7" height="7"></rect>
+            <rect x="14" y="14" width="7" height="7"></rect>
+            <rect x="3" y="14" width="7" height="7"></rect>
+          </svg>
+          Dashboard
+        <% end %>
+
+        <%= link_to admin_products_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'products' && action_name != 'index'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+            <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+          </svg>
+          Продукты
+        <% end %>
+
+        <%= link_to admin_users_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'users' && action_name != 'index'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+          </svg>
+          Клиенты
+        <% end %>
+
+        <%= link_to admin_interaction_histories_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'interaction_histories'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Взаимодействия
+        <% end %>
+
+        <div style="margin: var(--space-4) var(--space-6); border-top: 1px solid var(--gray-200);"></div>
+
+        <%= link_to admin_integrations_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'integrations'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="3"></circle>
+            <path d="M12 1v6m0 6v6"></path>
+            <path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24"></path>
+            <path d="m19.07 4.93-4.24 4.24m-5.66 5.66-4.24 4.24"></path>
+          </svg>
+          Интеграции
+        <% end %>
+
+        <%= link_to admin_email_templates_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'email_templates'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="4" width="20" height="16" rx="2"></rect>
+            <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
+          </svg>
+          Email Шаблоны
+        <% end %>
+      </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main style="flex: 1; padding: var(--space-8); overflow-x: auto; min-width: 0;">
+      <% if flash[:notice] %>
+        <div style="padding: var(--space-4); background: var(--color-success); color: white; border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+          <%= flash[:notice] %>
+        </div>
+      <% end %>
+
+      <% if flash[:alert] %>
+        <div style="padding: var(--space-4); background: var(--color-error); color: white; border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+          <%= flash[:alert] %>
+        </div>
+      <% end %>
+
+      <%= yield %>
+    </main>
+  </div>
+</body>
+</html>

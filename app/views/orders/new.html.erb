@@ -1,0 +1,133 @@
+<div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
+  <h1 class="page-title" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    Оформление заказа
+  </h1>
+
+  <div style="display: grid; grid-template-columns: 1fr 400px; gap: 2rem;">
+    <!-- Левая колонка: Форма заказа -->
+    <div>
+      <%= form_with url: orders_path, method: :post, data: { controller: "checkout" } do |form| %>
+        <!-- Контактная информация -->
+        <div class="glass-card" style="padding: 2rem; margin-bottom: 2rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+            Контактная информация
+          </h2>
+
+          <div style="display: grid; gap: 1rem;">
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">Email</label>
+              <input type="email" value="<%= current_user.email %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text);">
+            </div>
+
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">Имя</label>
+              <input type="text" value="<%= current_user.profile&.first_name || current_user.first_name %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text);">
+            </div>
+
+            <div>
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">Телефон</label>
+              <input type="tel" value="<%= current_user.profile&.phone %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text);">
+            </div>
+          </div>
+        </div>
+
+        <!-- Способ оплаты -->
+        <div class="glass-card" style="padding: 2rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+            Способ оплаты
+          </h2>
+
+          <div style="display: grid; gap: 1rem;">
+            <!-- Оплата кошельком -->
+            <label class="payment-method" data-action="click->checkout#selectPaymentMethod" style="display: flex; align-items: center; padding: 1.5rem; background: var(--surface); border: 2px solid rgba(255,255,255,0.1); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;">
+              <%= form.radio_button :payment_method, "wallet",
+                  checked: true,
+                  data: { checkout_target: "paymentMethod" },
+                  style: "margin-right: 1rem; width: 1.25rem; height: 1.25rem;" %>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">Оплата из кошелька</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                  Доступно: <%= humanized_money_with_symbol(current_user.wallet.balance) %>
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                <path d="M21 12V7H5a2 2 0 0 1 0-4h14v4"></path>
+                <path d="M3 5v14a2 2 0 0 0 2 2h16v-5"></path>
+                <path d="M18 12a2 2 0 0 0 0 4h4v-4Z"></path>
+              </svg>
+            </label>
+
+            <!-- Оплата картой -->
+            <label class="payment-method" data-action="click->checkout#selectPaymentMethod" style="display: flex; align-items: center; padding: 1.5rem; background: var(--surface); border: 2px solid rgba(255,255,255,0.1); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;">
+              <%= form.radio_button :payment_method, "cloudpayments",
+                  data: { checkout_target: "paymentMethod" },
+                  style: "margin-right: 1rem; width: 1.25rem; height: 1.25rem;" %>
+              <div style="flex: 1;">
+                <div style="font-weight: 600; margin-bottom: 0.25rem;">Оплата картой</div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                  Visa, MasterCard, МИР
+                </div>
+              </div>
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color: var(--accent);">
+                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                <line x1="1" y1="10" x2="23" y2="10"></line>
+              </svg>
+            </label>
+          </div>
+
+          <!-- Предупреждение о недостаточном балансе -->
+          <% if current_user.wallet.balance < @cart.total_price %>
+            <div data-checkout-target="walletWarning" style="margin-top: 1rem; padding: 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3); border-radius: 0.5rem; color: #EF4444; font-size: 0.875rem;">
+              Недостаточно средств в кошельке. Выберите оплату картой.
+            </div>
+          <% end %>
+
+          <button type="submit" data-checkout-target="submitButton" style="width: 100%; margin-top: 2rem; padding: 1rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; border-radius: 0.75rem; font-weight: 600; font-size: 1.125rem; cursor: pointer; transition: all 0.3s ease;">
+            Оформить заказ
+          </button>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Правая колонка: Итого -->
+    <div>
+      <div class="glass-card" style="padding: 2rem; position: sticky; top: 2rem;">
+        <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+          Итого
+        </h2>
+
+        <!-- Список товаров -->
+        <div style="margin-bottom: 1.5rem;">
+          <% @items.each do |item| %>
+            <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+              <div style="flex: 1;">
+                <div style="font-weight: 500; margin-bottom: 0.25rem;">
+                  <%= item[:product].name %>
+                </div>
+                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                  <%= item[:quantity] %> шт. × <%= humanized_money_with_symbol(item[:product].price) %>
+                </div>
+              </div>
+              <div style="font-weight: 600; white-space: nowrap; margin-left: 1rem;">
+                <%= humanized_money_with_symbol(item[:subtotal]) %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+
+        <!-- Итоговая сумма -->
+        <div style="display: flex; justify-content: space-between; padding-top: 1rem; border-top: 2px solid rgba(255,255,255,0.1); margin-bottom: 1.5rem;">
+          <span style="font-size: 1.25rem; font-weight: 600;">Итого:</span>
+          <span style="font-size: 1.5rem; font-weight: 700; color: var(--accent);">
+            <%= humanized_money_with_symbol(@cart.total_price) %>
+          </span>
+        </div>
+
+        <!-- Информация о цифровых продуктах -->
+        <div style="padding: 1rem; background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.3); border-radius: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+          После оплаты вы получите доступ ко всем цифровым продуктам в вашем личном кабинете.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

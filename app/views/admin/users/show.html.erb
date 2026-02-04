@@ -1,0 +1,144 @@
+<% content_for :title, @user.email %>
+
+<div style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center;">
+  <%= link_to "← Назад к пользователям", admin_users_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+  <%= link_to "Редактировать", edit_admin_user_path(@user), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">
+  <%= @user.email %>
+</h1>
+
+<div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-8);">
+  <span style="<%= classification_badge_style(@user.classification) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
+    <%= classification_label(@user.classification) %>
+  </span>
+</div>
+
+<div style="display: grid; gap: var(--space-6);">
+  <!-- Основная информация -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Основная информация</h2>
+
+    <dl style="display: grid; gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Email:</dt>
+        <dd><%= @user.email %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Имя:</dt>
+        <dd><%= @user.full_name %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Телефон:</dt>
+        <dd><%= @user.profile&.phone.presence || "—" %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Город:</dt>
+        <dd><%= @user.profile&.city.presence || "—" %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Дата рождения:</dt>
+        <dd><%= @user.profile&.birth_date ? l(@user.profile.birth_date) : "—" %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Регистрация:</dt>
+        <dd><%= l(@user.created_at, format: :long) %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <!-- Баланс и рейтинг -->
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--space-6);">
+    <div class="card" style="padding: var(--space-6);">
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--gray-700);">Кошелек</h3>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--gray-900);">
+        <%= humanized_money_with_symbol(@user.wallet.balance) %>
+      </div>
+    </div>
+
+    <div class="card" style="padding: var(--space-6);">
+      <h3 style="font-size: 1rem; font-weight: 600; margin-bottom: var(--space-4); color: var(--gray-700);">Рейтинг</h3>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--gray-900);">
+        <%= @user.rating.points %> баллов
+      </div>
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: var(--space-2);">
+        Уровень <%= @user.rating.level %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Заказы -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Заказы (<%= @user.orders.count %>)</h2>
+
+    <% if @user.orders.any? %>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--gray-200);">
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Номер</th>
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Сумма</th>
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Статус</th>
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Дата</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @user.orders.order(created_at: :desc).limit(10).each do |order| %>
+            <tr style="border-bottom: 1px solid var(--gray-100);">
+              <td style="padding: var(--space-3); font-weight: 500; color: var(--gray-900);"><%= order.order_number %></td>
+              <td style="padding: var(--space-3);"><%= humanized_money_with_symbol(order.total) %></td>
+              <td style="padding: var(--space-3);">
+                <span style="<%= order_status_style(order.status) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
+                  <%= t("order_status.#{order.status}") %>
+                </span>
+              </td>
+              <td style="padding: var(--space-3); font-size: 0.875rem; color: var(--gray-600);"><%= l(order.created_at, format: :short) %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div style="padding: var(--space-6); text-align: center; color: var(--gray-500);">
+        Заказов пока нет
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Доступы к продуктам -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Доступ к продуктам (<%= @user.product_accesses.active.count %>)</h2>
+
+    <% if @user.product_accesses.active.any? %>
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="border-bottom: 1px solid var(--gray-200);">
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Продукт</th>
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Получен</th>
+            <th style="padding: var(--space-3); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Истекает</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @user.product_accesses.active.includes(:product).order(created_at: :desc).each do |access| %>
+            <tr style="border-bottom: 1px solid var(--gray-100);">
+              <td style="padding: var(--space-3); font-weight: 500; color: var(--gray-900);"><%= access.product.name %></td>
+              <td style="padding: var(--space-3); font-size: 0.875rem; color: var(--gray-600);"><%= l(access.created_at, format: :short) %></td>
+              <td style="padding: var(--space-3); font-size: 0.875rem; color: var(--gray-600);">
+                <%= access.expires_at ? l(access.expires_at, format: :short) : "Бессрочно" %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    <% else %>
+      <div style="padding: var(--space-6); text-align: center; color: var(--gray-500);">
+        Доступов к продуктам пока нет
+      </div>
+    <% end %>
+  </div>
+</div>
+

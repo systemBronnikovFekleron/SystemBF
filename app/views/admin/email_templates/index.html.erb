@@ -1,0 +1,98 @@
+<% content_for :title, "Email Шаблоны" %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+  <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+    Email Шаблоны
+  </h1>
+  <%= link_to new_admin_email_template_path, style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500; transition: all 0.2s;" do %>
+    Создать шаблон
+  <% end %>
+</div>
+
+<!-- Filters -->
+<div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+  <%= form_with url: admin_email_templates_path, method: :get, style: "display: grid; grid-template-columns: 1fr 1fr auto; gap: var(--space-4); align-items: end;" do |f| %>
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Категория</label>
+      <%= f.select :category,
+          options_for_select([['Все', ''], ['Пользователи', 'user'], ['Заказы', 'order'], ['Продукты', 'product'], ['Система', 'system']], params[:category]),
+          {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Статус</label>
+      <%= f.select :active,
+          options_for_select([['Все', ''], ['Активные', 'true'], ['Неактивные', 'false']], params[:active]),
+          {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <%= f.submit 'Фильтровать', style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+  <% end %>
+</div>
+
+<!-- Templates Table -->
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; min-width: 900px;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--gray-200);">
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 40%;">Название</th>
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Категория</th>
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Статус</th>
+          <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 10%;">Отправлено</th>
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Последняя</th>
+          <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 14%;">Действия</th>
+        </tr>
+      </thead>
+    <tbody>
+      <% @email_templates.each do |template| %>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: var(--space-4);">
+            <div style="font-weight: 500; color: var(--gray-900); margin-bottom: var(--space-1);"><%= template.name %></div>
+            <div style="font-size: 0.875rem; color: var(--gray-600);">
+              <code style="padding: 2px 6px; background: var(--gray-100); border-radius: var(--radius-sm); font-size: 0.75rem;"><%= template.template_key %></code>
+              <% if template.system_default? %>
+                <span style="margin-left: var(--space-2); padding: 2px 6px; background: var(--gray-200); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 500;">SYSTEM</span>
+              <% end %>
+            </div>
+            <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: var(--space-1);">
+              <%= truncate(template.subject, length: 60) %>
+            </div>
+          </td>
+          <td style="padding: var(--space-4); color: var(--gray-700);">
+            <%= template.category&.titleize || '—' %>
+          </td>
+          <td style="padding: var(--space-4);">
+            <span style="padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; <%= template.active? ? 'background: rgba(34, 197, 94, 0.1); color: #16a34a;' : 'background: rgba(148, 163, 184, 0.1); color: #64748b;' %>">
+              <%= template.active? ? 'Активен' : 'Неактивен' %>
+            </span>
+          </td>
+          <td style="padding: var(--space-4); text-align: right; font-weight: 500; color: var(--gray-900);">
+            <%= template.sent_count %>
+          </td>
+          <td style="padding: var(--space-4); font-size: 0.875rem; color: var(--gray-600);">
+            <%= template.last_sent_at ? time_ago_in_words(template.last_sent_at) + ' назад' : '—' %>
+          </td>
+          <td style="padding: var(--space-4); text-align: right;">
+            <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
+              <%= link_to "Просмотр", admin_email_template_path(template), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= link_to "Редактировать", edit_admin_email_template_path(template), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <% unless template.system_default? %>
+                <%= button_to "Удалить", admin_email_template_path(template), method: :delete, data: { confirm: "Вы уверены?" }, style: "padding: var(--space-2) var(--space-3); background: none; border: none; color: var(--color-error); cursor: pointer; font-size: 0.875rem;" %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+
+  <% if @email_templates.empty? %>
+    <div style="padding: var(--space-12); text-align: center; color: var(--gray-500);">
+      Шаблоны не найдены
+    </div>
+  <% end %>
+</div>
+
+<%= paginate @email_templates %>

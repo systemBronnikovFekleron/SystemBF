@@ -1,0 +1,22 @@
+<%
+  badge_config = case status
+  when 'pending'
+    { text: 'Ожидает одобрения', icon: '⏳', color: 'var(--color-warning)' }
+  when 'approved'
+    { text: 'Одобрена', icon: '✓', color: 'var(--color-info)' }
+  when 'rejected'
+    { text: 'Отклонена', icon: '✗', color: 'var(--color-danger)' }
+  when 'paid'
+    { text: 'Оплачена', icon: '💰', color: 'var(--color-success)' }
+  when 'completed'
+    { text: 'Завершена', icon: '✓', color: 'var(--color-success)' }
+  when 'cancelled'
+    { text: 'Отменена', icon: '⊘', color: 'var(--color-gray-500)' }
+  else
+    { text: status, icon: '•', color: 'var(--color-gray-500)' }
+  end
+%>
+
+<span class="badge" style="background: <%= badge_config[:color] %>15; color: <%= badge_config[:color] %>; border: 1px solid <%= badge_config[:color] %>40;">
+  <%= badge_config[:icon] %> <%= badge_config[:text] %>
+</span>

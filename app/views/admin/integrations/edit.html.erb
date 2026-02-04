@@ -1,0 +1,80 @@
+<% content_for :title, "Редактировать #{@integration.name}" %>
+
+<div style="max-width: 800px;">
+  <!-- Header -->
+  <div style="margin-bottom: var(--space-8);">
+    <%= link_to admin_integration_path(@integration), style: "display: inline-flex; align-items: center; gap: var(--space-2); color: var(--gray-600); text-decoration: none; font-size: 0.875rem; margin-bottom: var(--space-3);" do %>
+      ← Назад к интеграции
+    <% end %>
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: var(--space-3);">
+      <span style="font-size: 2rem;"><%= integration_icon(@integration.integration_type) %></span>
+      Редактировать <%= @integration.name %>
+    </h1>
+  </div>
+
+  <%= form_with model: @integration, url: admin_integration_path(@integration), method: :patch, data: { controller: 'integration-form' } do |f| %>
+    <!-- Basic Settings -->
+    <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+      <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+        Основные настройки
+      </h2>
+
+      <div style="margin-bottom: var(--space-5);">
+        <%= f.label :name, 'Название', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+        <%= f.text_field :name, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; transition: all 0.2s;", onfocus: "this.style.borderColor='var(--blue-600)';", onblur: "this.style.borderColor='var(--gray-200)';" %>
+      </div>
+
+      <div style="margin-bottom: var(--space-5);">
+        <%= f.label :description, 'Описание', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+        <%= f.text_area :description, rows: 3, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; resize: vertical; transition: all 0.2s;", onfocus: "this.style.borderColor='var(--blue-600)';", onblur: "this.style.borderColor='var(--gray-200)';" %>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-md);">
+        <%= f.check_box :enabled, style: "width: 20px; height: 20px; cursor: pointer;" %>
+        <%= f.label :enabled, 'Интеграция включена', style: "font-weight: 600; color: var(--gray-700); cursor: pointer;" %>
+      </div>
+    </div>
+
+    <!-- API Credentials -->
+    <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+      <div style="display: flex; align-items: center; justify-content: between; margin-bottom: var(--space-6);">
+        <div>
+          <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900);">
+            API Ключи и учетные данные
+          </h2>
+          <p style="color: var(--gray-600); font-size: 0.875rem; margin-top: var(--space-1);">
+            Все данные шифруются перед сохранением в базе данных
+          </p>
+        </div>
+      </div>
+
+      <div style="padding: var(--space-4); background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+        <div style="display: flex; gap: var(--space-3);">
+          <div style="font-size: 1.25rem;">⚠️</div>
+          <div style="font-size: 0.875rem; color: #92400e;">
+            <strong>Важно:</strong> После изменения учетных данных обязательно проверьте подключение с помощью кнопки "Проверить подключение".
+          </div>
+        </div>
+      </div>
+
+      <%= render "admin/integrations/credentials_form_#{@integration.integration_type}", form: f, integration: @integration %>
+    </div>
+
+    <!-- Integration-Specific Settings -->
+    <% if File.exist?(Rails.root.join("app/views/admin/integrations/_settings_form_#{@integration.integration_type}.html.erb")) %>
+      <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+          Дополнительные настройки
+        </h2>
+
+        <%= render "admin/integrations/settings_form_#{@integration.integration_type}", form: f, integration: @integration %>
+      </div>
+    <% end %>
+
+    <!-- Actions -->
+    <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+      <%= link_to 'Отмена', admin_integration_path(@integration), style: "padding: var(--space-3) var(--space-6); background: white; border: 2px solid var(--gray-300); color: var(--gray-700); border-radius: var(--radius-md); text-decoration: none; font-weight: 600; transition: all 0.2s;" %>
+      <%= f.submit 'Сохранить изменения', style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s;" %>
+    </div>
+  <% end %>
+</div>

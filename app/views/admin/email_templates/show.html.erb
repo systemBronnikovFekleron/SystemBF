@@ -1,0 +1,146 @@
+<% content_for :title, @email_template.name %>
+
+<div style="margin-bottom: var(--space-8);">
+  <%= link_to admin_email_templates_path, style: "display: inline-flex; align-items: center; gap: var(--space-2); color: var(--gray-600); text-decoration: none; font-size: 0.875rem; margin-bottom: var(--space-3);" do %>
+    ← Все шаблоны
+  <% end %>
+
+  <div style="display: flex; align-items: start; justify-content: space-between;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); display: flex; align-items: center; gap: var(--space-3);">
+        <span style="font-size: 2.5rem;"><%= @email_template.active? ? '📧' : '📭' %></span>
+        <%= @email_template.name %>
+      </h1>
+      <div style="display: flex; gap: var(--space-3); margin-top: var(--space-3);">
+        <span style="padding: var(--space-2) var(--space-3); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; <%= @email_template.active? ? 'background: rgba(34, 197, 94, 0.1); color: #16a34a;' : 'background: rgba(148, 163, 184, 0.1); color: #64748b;' %>">
+          <%= @email_template.active? ? '✓ Активен' : '✗ Неактивен' %>
+        </span>
+        <% if @email_template.system_default? %>
+          <span style="padding: var(--space-2) var(--space-3); background: var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">
+            🔒 Системный шаблон
+          </span>
+        <% end %>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: var(--space-3);">
+      <%= link_to 'Редактировать', edit_admin_email_template_path(@email_template), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; border-radius: var(--radius-md); text-decoration: none; font-weight: 600;" %>
+      <%= button_to 'Отправить тест', send_test_admin_email_template_path(@email_template), style: "padding: var(--space-3) var(--space-5); background: #16a34a; color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" %>
+      <%= button_to 'Дублировать', duplicate_admin_email_template_path(@email_template), style: "padding: var(--space-3) var(--space-5); background: white; border: 2px solid var(--gray-300); color: var(--gray-700); border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" %>
+    </div>
+  </div>
+</div>
+
+<!-- Statistics -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+  <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em;">
+      Отправлено
+    </div>
+    <div style="font-size: 2.5rem; font-weight: 700; color: var(--gray-900);">
+      <%= number_with_delimiter(@email_template.sent_count) %>
+    </div>
+  </div>
+
+  <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em;">
+      Переменных
+    </div>
+    <div style="font-size: 2.5rem; font-weight: 700; color: var(--blue-600);">
+      <%= @email_template.available_variables.size %>
+    </div>
+  </div>
+
+  <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em;">
+      Категория
+    </div>
+    <div style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); padding-top: var(--space-3);">
+      <%= @email_template.category&.titleize || '—' %>
+    </div>
+  </div>
+
+  <% if @email_template.last_sent_at %>
+    <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.05em;">
+        Последняя отправка
+      </div>
+      <div style="font-size: 1rem; font-weight: 700; color: var(--gray-900); padding-top: var(--space-2);">
+        <%= time_ago_in_words(@email_template.last_sent_at) %> назад
+      </div>
+    </div>
+  <% end %>
+</div>
+
+<!-- Template Details -->
+<div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+  <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+    Детали шаблона
+  </h2>
+
+  <dl style="display: grid; gap: var(--space-5);">
+    <div>
+      <dt style="font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Ключ шаблона</dt>
+      <dd style="margin: 0;">
+        <code style="padding: var(--space-2) var(--space-3); background: var(--gray-100); border-radius: var(--radius-md); font-size: 0.875rem; color: var(--gray-800);">
+          <%= @email_template.template_key %>
+        </code>
+      </dd>
+    </div>
+
+    <div>
+      <dt style="font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);">Тема письма</dt>
+      <dd style="margin: 0; font-size: 1rem; color: var(--gray-900);">
+        <%= @email_template.subject %>
+      </dd>
+    </div>
+
+    <% if @email_template.available_variables.any? %>
+      <div>
+        <dt style="font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-3);">Доступные переменные</dt>
+        <dd style="margin: 0; display: flex; flex-wrap: wrap; gap: var(--space-2);">
+          <% @email_template.available_variables.each do |var| %>
+            <code style="padding: var(--space-2) var(--space-3); background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: var(--radius-md); font-size: 0.875rem; color: var(--blue-700);" onclick="navigator.clipboard.writeText('{{<%= var %>}}'); alert('Скопировано!');" title="Нажмите, чтобы скопировать">
+              {{<%= var %>}}
+            </code>
+          <% end %>
+        </dd>
+      </div>
+    <% end %>
+  </dl>
+</div>
+
+<!-- Preview -->
+<div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+  <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-6);">
+    <h2 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900);">
+      Предпросмотр
+    </h2>
+    <%= link_to 'Открыть в новой вкладке →', preview_admin_email_template_path(@email_template), target: '_blank', style: "color: var(--blue-600); text-decoration: none; font-weight: 600;" %>
+  </div>
+
+  <div style="border: 2px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden;">
+    <div style="padding: var(--space-4); background: var(--gray-50); border-bottom: 2px solid var(--gray-200);">
+      <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Тема:</div>
+      <div style="font-weight: 600; color: var(--gray-900);"><%= @email_template.subject %></div>
+    </div>
+    <div style="padding: var(--space-6); background: white; max-height: 400px; overflow-y: auto;">
+      <%= raw @email_template.body_html %>
+    </div>
+  </div>
+</div>
+
+<!-- Actions -->
+<% unless @email_template.system_default? %>
+  <div style="padding: var(--space-6); background: #fef2f2; border: 2px solid #fecaca; border-radius: var(--radius-xl);">
+    <h3 style="font-size: 1.125rem; font-weight: 700; color: #991b1b; margin-bottom: var(--space-3);">
+      Опасная зона
+    </h3>
+    <p style="color: #7f1d1d; margin-bottom: var(--space-4);">
+      Удаление шаблона нельзя отменить. Все ссылки на этот шаблон будут нерабочими.
+    </p>
+    <%= button_to 'Удалить шаблон', admin_email_template_path(@email_template), method: :delete,
+        data: { confirm: 'Вы уверены? Это действие нельзя отменить.' },
+        style: "padding: var(--space-3) var(--space-5); background: #dc2626; color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" %>
+  </div>
+<% end %>

@@ -1,0 +1,130 @@
+<% content_for :title, "Генератор форм для #{@product.name} - Админ панель" %>
+
+<div style="padding: 2rem;">
+  <div style="margin-bottom: 2rem;">
+    <%= link_to "← Назад к продукту", admin_product_path(@product), class: "btn btn-secondary" %>
+  </div>
+
+  <h1 class="text-gradient" style="margin-bottom: 0.5rem;">
+    🎨 Генератор HTML формы
+  </h1>
+  <p style="color: var(--color-gray-600); margin-bottom: 2rem;">
+    Продукт: <strong><%= @product.name %></strong>
+  </p>
+
+  <div class="grid lg:grid-cols-2 gap-6">
+    <!-- Preview -->
+    <div>
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">👁 Предпросмотр формы</h3>
+        <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 2rem; border-radius: 8px;">
+          <iframe srcdoc="<%= @form_html.gsub('"', '&quot;') %>"
+                  style="width: 100%; height: 600px; border: none; border-radius: 8px; background: white;">
+          </iframe>
+        </div>
+      </div>
+
+      <!-- Info -->
+      <div class="card" style="background: var(--color-info-50);">
+        <h4 style="color: var(--color-info); margin-bottom: 1rem;">ℹ️ Как использовать</h4>
+        <ol style="padding-left: 1.5rem; color: var(--color-gray-700); display: flex; flex-direction: column; gap: 0.75rem;">
+          <li>Скопируйте HTML код справа</li>
+          <li>Вставьте код на ваш сайт (WordPress, другой сервис)</li>
+          <li>Форма будет отправлять заявки в систему автоматически</li>
+          <li>
+            <% if @product.auto_approve %>
+              <strong style="color: var(--color-success);">✓ Автоодобрение включено</strong> - заявки будут обрабатываться автоматически
+            <% else %>
+              <strong style="color: var(--color-warning);">⏳ Требуется одобрение</strong> - заявки будут ожидать одобрения администратора
+            <% end %>
+          </li>
+        </ol>
+      </div>
+    </div>
+
+    <!-- HTML Code -->
+    <div>
+      <div class="card">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
+          <h3>📄 HTML код</h3>
+          <button onclick="copyToClipboard()"
+                  class="btn btn-primary btn-sm"
+                  id="copyButton">
+            📋 Копировать
+          </button>
+        </div>
+
+        <div style="position: relative;">
+          <pre id="htmlCode" style="
+            background: var(--color-gray-900);
+            color: var(--color-gray-100);
+            padding: 1.5rem;
+            border-radius: 8px;
+            overflow-x: auto;
+            font-size: 0.875rem;
+            line-height: 1.6;
+            max-height: 70vh;
+            margin: 0;
+          "><code><%= @form_html %></code></pre>
+        </div>
+      </div>
+
+      <!-- Product Settings -->
+      <div class="card" style="margin-top: 1.5rem;">
+        <h4 style="margin-bottom: 1rem;">⚙️ Настройки продукта</h4>
+        <dl style="display: grid; grid-template-columns: auto 1fr; gap: 0.75rem 1.5rem;">
+          <dt style="font-weight: 600; color: var(--color-gray-700);">Автоодобрение:</dt>
+          <dd>
+            <% if @product.auto_approve %>
+              <span class="badge badge-success">✓ Включено</span>
+            <% else %>
+              <span class="badge badge-warning">⏳ Требуется одобрение</span>
+            <% end %>
+          </dd>
+
+          <dt style="font-weight: 600; color: var(--color-gray-700);">Кастомные поля:</dt>
+          <dd>
+            <% if @product.form_fields.present? && @product.form_fields.any? %>
+              <span class="badge badge-info"><%= @product.form_fields.length %> полей</span>
+            <% else %>
+              <span class="badge badge-secondary">Только стандартные поля</span>
+            <% end %>
+          </dd>
+
+          <dt style="font-weight: 600; color: var(--color-gray-700);">Цена:</dt>
+          <dd style="font-weight: 700; color: var(--color-primary-600);">
+            <%= humanized_money_with_symbol(@product.price) %>
+          </dd>
+        </dl>
+
+        <div style="margin-top: 1.5rem; padding-top: 1.5rem; border-top: 1px solid var(--color-gray-200);">
+          <%= link_to "Редактировать продукт →",
+                      edit_admin_product_path(@product),
+                      class: "btn btn-secondary",
+                      style: "width: 100%;" %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function copyToClipboard() {
+    const code = document.getElementById('htmlCode').textContent;
+    const button = document.getElementById('copyButton');
+
+    navigator.clipboard.writeText(code).then(() => {
+      const originalText = button.textContent;
+      button.textContent = '✓ Скопировано!';
+      button.style.background = 'var(--color-success)';
+
+      setTimeout(() => {
+        button.textContent = originalText;
+        button.style.background = '';
+      }, 2000);
+    }).catch(err => {
+      console.error('Failed to copy:', err);
+      alert('Ошибка копирования. Попробуйте выделить текст вручную.');
+    });
+  }
+</script>

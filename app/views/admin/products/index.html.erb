@@ -1,0 +1,171 @@
+<% content_for :title, "Управление продуктами" %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+  <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+    Продукты
+  </h1>
+  <%= link_to "Создать продукт", new_admin_product_path, style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500; transition: all 0.2s;" %>
+</div>
+
+<!-- Фильтры и поиск -->
+<div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+  <%= form_with url: admin_products_path, method: :get, style: "display: grid; grid-template-columns: 2fr 1fr 1fr 1fr auto; gap: var(--space-4); align-items: end;" do |f| %>
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Поиск</label>
+      <%= f.text_field :search, value: params[:search], placeholder: "Название продукта...", style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Категория</label>
+      <%= f.select :category_id, options_from_collection_for_select(@categories, :id, :name, params[:category_id]), { include_blank: "Все" }, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Статус</label>
+      <%= f.select :status, [['Все', ''], ['Опубликовано', 'published'], ['Черновик', 'draft'], ['Архив', 'archived']], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Тип</label>
+      <%= f.select :product_type, [['Все', ''], ['Видеокурс', 'video_course'], ['Книга', 'book'], ['Курс', 'course'], ['Услуга', 'service'], ['Мероприятие', 'event']], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <%= f.submit "Фильтровать", style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+  <% end %>
+</div>
+
+<!-- Bulk Actions Toolbar -->
+<div id="bulk-toolbar" style="display: none; margin-bottom: var(--space-4);">
+  <div class="card" style="padding: var(--space-4); background: var(--blue-50); border: 1px solid var(--blue-200);">
+    <%= form_with url: bulk_action_admin_products_path, method: :post, data: { controller: "bulk-actions" } do |f| %>
+      <div style="display: flex; align-items: center; gap: var(--space-4);">
+        <span id="selected-count" style="font-weight: 500; color: var(--blue-700);">0 выбрано</span>
+
+        <%= f.select :action_type,
+          [['Опубликовать', 'publish'], ['Архивировать', 'archive'], ['Удалить', 'delete']],
+          {},
+          style: "padding: var(--space-2) var(--space-3); border: 1px solid var(--blue-200); border-radius: var(--radius-md); font-size: 0.875rem; background: white;" %>
+
+        <%= f.submit "Применить",
+          style: "padding: var(--space-2) var(--space-4); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer; font-size: 0.875rem;",
+          data: { confirm: "Вы уверены? Это действие будет применено ко всем выбранным продуктам." } %>
+
+        <button type="button" onclick="clearSelection()" style="padding: var(--space-2) var(--space-4); background: white; color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-weight: 500; cursor: pointer; font-size: 0.875rem;">
+          Отменить выбор
+        </button>
+      </div>
+
+      <div id="selected-products-container"></div>
+    <% end %>
+  </div>
+</div>
+
+<!-- Таблица продуктов -->
+<div class="card" data-controller="bulk-actions">
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--gray-200);">
+        <th style="padding: var(--space-4); text-align: center; width: 40px;">
+          <input type="checkbox" id="select-all" onchange="toggleAllCheckboxes(this)" style="width: 16px; height: 16px; cursor: pointer;">
+        </th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Название</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Категория</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Цена</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Тип</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Статус</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Создан</th>
+        <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @products.each do |product| %>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: var(--space-4); text-align: center;">
+            <input type="checkbox" class="product-checkbox" value="<%= product.id %>" onchange="updateSelection()" style="width: 16px; height: 16px; cursor: pointer;">
+          </td>
+          <td style="padding: var(--space-4);">
+            <div style="font-weight: 500; color: var(--gray-900);"><%= product.name %></div>
+            <div style="font-size: 0.875rem; color: var(--gray-600);"><%= product.slug %></div>
+          </td>
+          <td style="padding: var(--space-4); color: var(--gray-700);"><%= product.category&.name %></td>
+          <td style="padding: var(--space-4); font-weight: 500; color: var(--gray-900);"><%= humanized_money_with_symbol(product.price) %></td>
+          <td style="padding: var(--space-4); color: var(--gray-700);"><%= product_type_label(product.product_type) %></td>
+          <td style="padding: var(--space-4);">
+            <span style="<%= status_badge_style(product.status) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
+              <%= product.status %>
+            </span>
+          </td>
+          <td style="padding: var(--space-4); font-size: 0.875rem; color: var(--gray-600);"><%= l(product.created_at, format: :short) %></td>
+          <td style="padding: var(--space-4); text-align: right;">
+            <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
+              <%= link_to "Просмотр", admin_product_path(product), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= link_to "Редактировать", edit_admin_product_path(product), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= button_to "Удалить", admin_product_path(product), method: :delete, data: { confirm: "Вы уверены?" }, style: "padding: var(--space-2) var(--space-3); background: none; border: none; color: var(--color-error); cursor: pointer; font-size: 0.875rem;" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @products.empty? %>
+    <div style="padding: var(--space-12); text-align: center; color: var(--gray-500);">
+      Продукты не найдены
+    </div>
+  <% end %>
+</div>
+
+<%= paginate @products %>
+
+<script>
+  function toggleAllCheckboxes(selectAllCheckbox) {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = selectAllCheckbox.checked;
+    });
+    updateSelection();
+  }
+
+  function updateSelection() {
+    const checkboxes = document.querySelectorAll('.product-checkbox:checked');
+    const count = checkboxes.length;
+    const toolbar = document.getElementById('bulk-toolbar');
+    const countSpan = document.getElementById('selected-count');
+    const container = document.getElementById('selected-products-container');
+
+    // Show/hide toolbar
+    if (count > 0) {
+      toolbar.style.display = 'block';
+      countSpan.textContent = `${count} выбрано`;
+
+      // Add hidden inputs for selected product IDs
+      container.innerHTML = '';
+      checkboxes.forEach(checkbox => {
+        const input = document.createElement('input');
+        input.type = 'hidden';
+        input.name = 'product_ids[]';
+        input.value = checkbox.value;
+        container.appendChild(input);
+      });
+    } else {
+      toolbar.style.display = 'none';
+    }
+
+    // Update "select all" checkbox state
+    const allCheckboxes = document.querySelectorAll('.product-checkbox');
+    const selectAllCheckbox = document.getElementById('select-all');
+    if (selectAllCheckbox) {
+      selectAllCheckbox.checked = allCheckboxes.length > 0 && count === allCheckboxes.length;
+    }
+  }
+
+  function clearSelection() {
+    const checkboxes = document.querySelectorAll('.product-checkbox');
+    checkboxes.forEach(checkbox => {
+      checkbox.checked = false;
+    });
+    document.getElementById('select-all').checked = false;
+    updateSelection();
+  }
+</script>
+

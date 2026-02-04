@@ -5,17 +5,26 @@ class CategoriesController < ApplicationController
 
   def index
     @categories = Category.ordered
-    render json: @categories
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @categories }
+    end
   end
 
   def show
     @category = Category.friendly.find(params[:id])
     @products = @category.products.published.ordered
 
-    render json: {
-      category: @category,
-      products: @products.map { |p| product_json(p) }
-    }
+    respond_to do |format|
+      format.html
+      format.json do
+        render json: {
+          category: @category,
+          products: @products.map { |p| product_json(p) }
+        }
+      end
+    end
   end
 
   private

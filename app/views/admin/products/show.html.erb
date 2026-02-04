@@ -1,0 +1,66 @@
+<% content_for :title, @product.name %>
+
+<div style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center;">
+  <%= link_to "← Назад к продуктам", admin_products_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+  <%= link_to "Редактировать", edit_admin_product_path(@product), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">
+  <%= @product.name %>
+</h1>
+
+<div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-8);">
+  <span style="<%= status_badge_style(@product.status) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
+    <%= @product.status %>
+  </span>
+  <% if @product.featured? %>
+    <span style="padding: 4px 12px; background: rgba(245, 158, 11, 0.1); color: #D97706; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">
+      Популярный
+    </span>
+  <% end %>
+</div>
+
+<div style="display: grid; gap: var(--space-6);">
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Основная информация</h2>
+
+    <dl style="display: grid; gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Категория:</dt>
+        <dd><%= @product.category&.name %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Цена:</dt>
+        <dd style="font-weight: 600; color: var(--gray-900);"><%= humanized_money_with_symbol(@product.price) %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Тип:</dt>
+        <dd><%= product_type_label(@product.product_type) %></dd>
+      </div>
+
+      <% if @product.description.present? %>
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+          <dt style="font-weight: 500; color: var(--gray-600);">Описание:</dt>
+          <dd style="line-height: 1.6;"><%= @product.description %></dd>
+        </div>
+      <% end %>
+
+      <% if @product.duration_minutes.present? %>
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+          <dt style="font-weight: 500; color: var(--gray-600);">Длительность:</dt>
+          <dd><%= duration_to_human(@product.duration_minutes) %></dd>
+        </div>
+      <% end %>
+
+      <% if @product.access_duration_days.present? %>
+        <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+          <dt style="font-weight: 500; color: var(--gray-600);">Срок доступа:</dt>
+          <dd><%= @product.access_duration_days %> дней</dd>
+        </div>
+      <% end %>
+    </dl>
+  </div>
+</div>
+

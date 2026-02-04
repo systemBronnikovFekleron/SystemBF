@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+    .credentials { background: white; padding: 20px; border-radius: 6px; margin: 20px 0; border: 2px solid #667eea; }
+    .button { display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+    .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+    .warning { background: #fef3c7; padding: 15px; border-radius: 6px; margin: 20px 0; border-left: 4px solid #f59e0b; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>Добро пожаловать!</h1>
+    </div>
+    <div class="content">
+      <p>Здравствуйте!</p>
+
+      <p>Для вас был создан аккаунт в <strong>Системе Бронникова</strong> в связи с отправкой заявки на покупку.</p>
+
+      <div class="credentials">
+        <h3 style="margin-top: 0; color: #667eea;">Данные для входа:</h3>
+        <p><strong>Email:</strong> <%= @user.email %></p>
+        <p><strong>Пароль:</strong> <code style="background: #f3f4f6; padding: 4px 8px; border-radius: 4px; font-size: 16px;"><%= @password %></code></p>
+      </div>
+
+      <div class="warning">
+        <strong>⚠ Важно:</strong> Сохраните этот пароль в надежном месте. После входа рекомендуем изменить пароль в настройках профиля.
+      </div>
+
+      <p>В личном кабинете вы сможете:</p>
+      <ul>
+        <li>Отслеживать статус заявок</li>
+        <li>Управлять кошельком</li>
+        <li>Получать доступ к купленным продуктам</li>
+        <li>Просматривать историю заказов</li>
+      </ul>
+
+      <p style="margin-top: 30px; text-align: center;">
+        <a href="<%= @login_url %>" class="button">Войти в личный кабинет</a>
+      </p>
+    </div>
+    <div class="footer">
+      <p>Система Бронникова © <%= Time.current.year %></p>
+      <p>Если вы не отправляли заявку, просто проигнорируйте это письмо.</p>
+    </div>
+  </div>
+</body>
+</html>

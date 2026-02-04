@@ -1,0 +1,78 @@
+<% content_for :title, "Новый пароль" %>
+
+<div style="min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: var(--space-4); background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));">
+  <div class="card fade-in" style="max-width: 28rem; width: 100%; padding: var(--space-8);">
+    <!-- Header -->
+    <div style="text-align: center; margin-bottom: var(--space-8);">
+      <div style="font-size: 2.5rem; margin-bottom: var(--space-3);">🔒</div>
+      <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        Создайте новый пароль
+      </h1>
+      <p style="color: var(--gray-600); font-size: 0.875rem;">
+        Введите новый пароль для вашего аккаунта
+      </p>
+    </div>
+
+    <!-- Flash Messages -->
+    <% if flash[:alert] %>
+      <div style="padding: var(--space-4); background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.2); border-radius: var(--radius-lg); margin-bottom: var(--space-6); color: rgb(153, 27, 27);">
+        <%= flash[:alert] %>
+      </div>
+    <% end %>
+
+    <!-- Form -->
+    <%= form_with url: password_reset_path(token: params[:token]), method: :patch, local: true do |f| %>
+      <!-- Password Field -->
+      <div style="margin-bottom: var(--space-5);">
+        <%= f.label :password, "Новый пароль", style: "display: block; font-weight: 500; margin-bottom: var(--space-2); color: var(--gray-700);" %>
+        <%= f.password_field :password,
+                             required: true,
+                             autofocus: true,
+                             autocomplete: "new-password",
+                             minlength: 8,
+                             placeholder: "Минимум 8 символов",
+                             style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 1rem; transition: all var(--transition-base);" %>
+        <p style="font-size: 0.75rem; color: var(--gray-500); margin-top: var(--space-2);">
+          Используйте минимум 8 символов, включая буквы и цифры
+        </p>
+      </div>
+
+      <!-- Password Confirmation Field -->
+      <div style="margin-bottom: var(--space-6);">
+        <%= f.label :password_confirmation, "Подтвердите пароль", style: "display: block; font-weight: 500; margin-bottom: var(--space-2); color: var(--gray-700);" %>
+        <%= f.password_field :password_confirmation,
+                             required: true,
+                             autocomplete: "new-password",
+                             minlength: 8,
+                             placeholder: "Повторите новый пароль",
+                             style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-300); border-radius: var(--radius-md); font-size: 1rem; transition: all var(--transition-base);" %>
+      </div>
+
+      <!-- Submit Button -->
+      <div style="margin-bottom: var(--space-6);">
+        <%= f.submit "Изменить пароль",
+                     class: "btn btn-primary",
+                     style: "width: 100%; padding: var(--space-3); font-size: 1rem;" %>
+      </div>
+    <% end %>
+
+    <!-- Security Notice -->
+    <div style="padding: var(--space-4); background: rgba(59, 130, 246, 0.05); border: 1px solid rgba(59, 130, 246, 0.1); border-radius: var(--radius-md); margin-bottom: var(--space-4);">
+      <div style="display: flex; gap: var(--space-3);">
+        <div style="flex-shrink: 0; font-size: 1.25rem;">🔐</div>
+        <div style="font-size: 0.75rem; color: var(--gray-600); line-height: 1.5;">
+          <strong style="color: var(--gray-700);">Совет по безопасности:</strong><br>
+          Используйте уникальный пароль, который вы не используете на других сайтах
+        </div>
+      </div>
+    </div>
+
+    <!-- Divider -->
+    <div style="height: 1px; background: var(--gray-200); margin: var(--space-4) 0;"></div>
+
+    <!-- Link -->
+    <div style="text-align: center; color: var(--gray-600); font-size: 0.875rem;">
+      <%= link_to "← Вернуться на главную", root_path, style: "color: var(--primary); text-decoration: none; font-weight: 500;" %>
+    </div>
+  </div>
+</div>

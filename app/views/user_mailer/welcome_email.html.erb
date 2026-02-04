@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Добро пожаловать в Систему Бронникова</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <!-- Email Container -->
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #4F46E5, #9333EA); padding: 40px 30px; text-align: center;">
+              <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700;">
+                Добро пожаловать! 👋
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="margin: 0 0 20px; color: #1f2937; font-size: 22px; font-weight: 600;">
+                Здравствуйте, <%= @user.first_name %>!
+              </h2>
+
+              <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                Спасибо за регистрацию на платформе <strong>Система Бронникова</strong>. Мы рады приветствовать вас в нашем образовательном сообществе!
+              </p>
+
+              <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                Теперь вам доступны:
+              </p>
+
+              <!-- Features List -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <tr>
+                  <td style="padding: 12px 0;">
+                    <div style="display: flex; align-items: start;">
+                      <span style="font-size: 24px; margin-right: 12px;">🎓</span>
+                      <div>
+                        <strong style="color: #1f2937; display: block; margin-bottom: 4px;">Образовательные курсы</strong>
+                        <span style="color: #6b7280; font-size: 14px;">Доступ к библиотеке курсов и материалов</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0;">
+                    <div style="display: flex; align-items: start;">
+                      <span style="font-size: 24px; margin-right: 12px;">💰</span>
+                      <div>
+                        <strong style="color: #1f2937; display: block; margin-bottom: 4px;">Личный кошелек</strong>
+                        <span style="color: #6b7280; font-size: 14px;">Удобная оплата без комиссий</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+                <tr>
+                  <td style="padding: 12px 0;">
+                    <div style="display: flex; align-items: start;">
+                      <span style="font-size: 24px; margin-right: 12px;">🏆</span>
+                      <div>
+                        <strong style="color: #1f2937; display: block; margin-bottom: 4px;">Рейтинговая система</strong>
+                        <span style="color: #6b7280; font-size: 14px;">Зарабатывайте очки и достижения</span>
+                      </div>
+                    </div>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td align="center">
+                    <a href="<%= dashboard_url(host: ENV.fetch('APP_HOST', 'localhost:3000')) %>" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4F46E5, #9333EA); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                      Перейти в личный кабинет →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <p style="margin: 0; color: #6b7280; font-size: 14px; line-height: 1.6;">
+                Если у вас есть вопросы, наша команда поддержки всегда готова помочь.
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center;">
+              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
+                © <%= Date.today.year %> Система Бронникова. Все права защищены.
+              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                Вы получили это письмо, потому что зарегистрировались на нашей платформе.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

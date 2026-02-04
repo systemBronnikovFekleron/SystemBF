@@ -1,0 +1,130 @@
+<% content_for :title, "Редактировать #{@email_template.name}" %>
+
+<div style="display: flex; gap: var(--space-6);">
+  <!-- Main Form -->
+  <div style="flex: 1; max-width: 900px;">
+    <%= link_to admin_email_template_path(@email_template), style: "display: inline-flex; align-items: center; gap: var(--space-2); color: var(--gray-600); text-decoration: none; font-size: 0.875rem; margin-bottom: var(--space-3);" do %>
+      ← Назад к шаблону
+    <% end %>
+
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8);">
+      Редактировать шаблон
+    </h1>
+
+    <%= form_with model: @email_template, url: admin_email_template_path(@email_template), method: :patch do |f| %>
+      <!-- Basic Info -->
+      <div style="class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+          Основная информация
+        </h2>
+
+        <div style="margin-bottom: var(--space-5);">
+          <%= f.label :template_key, 'Ключ шаблона', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+          <%= f.text_field :template_key, disabled: @email_template.system_default?, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; font-family: monospace; #{@email_template.system_default? ? 'background: var(--gray-100); color: var(--gray-600);' : ''}" %>
+          <% if @email_template.system_default? %>
+            <p style="font-size: 0.75rem; color: var(--gray-600); margin-top: var(--space-2);">
+              Ключ системного шаблона нельзя изменить
+            </p>
+          <% end %>
+        </div>
+
+        <div style="margin-bottom: var(--space-5);">
+          <%= f.label :name, 'Название', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+          <%= f.text_field :name, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+        </div>
+
+        <div style="margin-bottom: var(--space-5);">
+          <%= f.label :category, 'Категория', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+          <%= f.select :category,
+              options_for_select([['Пользователи', 'user'], ['Заказы', 'order'], ['Продукты', 'product'], ['Система', 'system']], @email_template.category),
+              { include_blank: 'Без категории' },
+              style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-md);">
+          <%= f.check_box :active, style: "width: 20px; height: 20px; cursor: pointer;" %>
+          <%= f.label :active, 'Шаблон активен', style: "font-weight: 600; color: var(--gray-700); cursor: pointer;" %>
+        </div>
+      </div>
+
+      <!-- Subject -->
+      <div style="class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+          Тема письма
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Используйте переменные в формате <code style="background: var(--gray-100); padding: 2px 6px; border-radius: 4px;">{{переменная}}</code>
+        </p>
+
+        <%= f.text_field :subject, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+      </div>
+
+      <!-- Body HTML -->
+      <div style="class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+          HTML версия
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Основной контент письма в HTML формате
+        </p>
+
+        <%= f.text_area :body_html, rows: 15, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem; font-family: monospace; resize: vertical;" %>
+      </div>
+
+      <!-- Body Text -->
+      <div style="class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+          Текстовая версия (опционально)
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Альтернативная версия для почтовых клиентов без поддержки HTML
+        </p>
+
+        <%= f.text_area :body_text, rows: 10, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem; font-family: monospace; resize: vertical;" %>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+        <%= link_to 'Отмена', admin_email_template_path(@email_template), style: "padding: var(--space-3) var(--space-6); background: white; border: 2px solid var(--gray-300); color: var(--gray-700); border-radius: var(--radius-md); text-decoration: none; font-weight: 600;" %>
+        <%= link_to 'Предпросмотр', preview_admin_email_template_path(@email_template), target: '_blank', style: "padding: var(--space-3) var(--space-6); background: white; border: 2px solid var(--blue-300); color: var(--blue-700); border-radius: var(--radius-md); text-decoration: none; font-weight: 600;" %>
+        <%= f.submit 'Сохранить изменения', style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Sidebar: Variables -->
+  <div style="width: 300px; flex-shrink: 0;">
+    <div style="position: sticky; top: var(--space-6);">
+      <div style="class="card" style="padding: var(--space-6);">
+        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+          💡 Доступные переменные
+        </h3>
+
+        <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Нажмите, чтобы скопировать:
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+          <% common_variables = ['user_name', 'user_email', 'order_number', 'product_name', 'price', 'date', 'url', 'company_name'] %>
+          <% common_variables.each do |var| %>
+            <button type="button" onclick="navigator.clipboard.writeText('{{<%= var %>}}'); this.textContent='✓ Скопировано!'; setTimeout(() => this.textContent='{{<%= var %>}}', 1500);" style="padding: var(--space-2) var(--space-3); background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: var(--radius-md); text-align: left; cursor: pointer; font-family: monospace; font-size: 0.75rem; color: var(--blue-700); transition: all 0.2s;" onmouseover="this.style.background='var(--blue-100)';" onmouseout="this.style.background='var(--blue-50)';">
+              {{<%= var %>}}
+            </button>
+          <% end %>
+        </div>
+
+        <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-md);">
+          <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-2);">
+            <strong>Как использовать:</strong>
+          </div>
+          <div style="font-size: 0.75rem; color: var(--gray-700); line-height: 1.5;">
+            Вставьте переменную в текст письма, например:<br>
+            <code style="display: block; margin-top: var(--space-2); padding: var(--space-2); background: white; border-radius: 4px;">
+              Привет, {{user_name}}!
+            </code>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

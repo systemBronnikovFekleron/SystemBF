@@ -46,8 +46,9 @@
 <!-- Products Grid -->
 <section class="container" style="padding: 2rem 0 4rem;">
   <% if @products.any? %>
-    <div class="grid md:grid-cols-3 lg:grid-cols-4">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
       <% @products.each_with_index do |product, index| %>
+        <% cache product do %>
         <div class="card card-product fade-in stagger-<%= (index % 4) + 1 %>"
              onclick="window.location.href='<%= product_path(product) %>'">
           <!-- Product Image -->
@@ -96,6 +97,7 @@
             </div>
           </div>
         </div>
+        <% end %>
       <% end %>
     </div>
   <% else %>

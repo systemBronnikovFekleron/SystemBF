@@ -1,0 +1,22 @@
+<% settings = integration.settings %>
+
+<div style="margin-bottom: var(--space-5);">
+  <%= label_tag 'integration_setting[settings][from_email]', 'Email отправителя', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+  <%= text_field_tag 'integration_setting[settings][from_email]', settings['from_email'],
+      placeholder: 'noreply@example.com',
+      style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+</div>
+
+<div style="margin-bottom: var(--space-5);">
+  <%= label_tag 'integration_setting[settings][from_name]', 'Имя отправителя', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+  <%= text_field_tag 'integration_setting[settings][from_name]', settings['from_name'],
+      placeholder: 'Система Бронникова',
+      style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+</div>
+
+<div style="margin-bottom: var(--space-5);">
+  <%= label_tag 'integration_setting[settings][reply_to_email]', 'Email для ответов (опционально)', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+  <%= text_field_tag 'integration_setting[settings][reply_to_email]', settings['reply_to_email'],
+      placeholder: 'support@example.com',
+      style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+</div>

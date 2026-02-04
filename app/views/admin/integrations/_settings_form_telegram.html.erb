@@ -1,0 +1,14 @@
+<% settings = integration.settings %>
+
+<div style="margin-bottom: var(--space-5);">
+  <%= label_tag 'integration_setting[settings][welcome_message]', 'Приветственное сообщение', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+  <%= text_area_tag 'integration_setting[settings][welcome_message]', settings['welcome_message'],
+      placeholder: 'Добро пожаловать! Я бот Системы Бронникова.',
+      rows: 3,
+      style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; resize: vertical;" %>
+</div>
+
+<div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-md);">
+  <%= check_box_tag 'integration_setting[settings][commands_enabled]', 'true', settings['commands_enabled'] != false, style: "width: 18px; height: 18px; cursor: pointer;" %>
+  <%= label_tag 'integration_setting[settings][commands_enabled]', 'Включить команды бота', style: "font-weight: 500; color: var(--gray-700); cursor: pointer;" %>
+</div>

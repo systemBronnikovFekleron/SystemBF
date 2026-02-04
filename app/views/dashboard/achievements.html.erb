@@ -1,0 +1,186 @@
+<% content_for :page_title, "Достижения" %>
+<% content_for :page_subtitle, "Ваши награды и прогресс в обучении" %>
+
+<!-- Stats Overview -->
+<div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-8);">
+  <div class="card" style="padding: var(--space-5); text-align: center;">
+    <div style="font-size: 2.5rem; margin-bottom: var(--space-2);">🏆</div>
+    <div style="font-size: 1.75rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">
+      <%= @achievements.select { |a| a[:unlocked] }.count %>
+    </div>
+    <div style="font-size: 0.8125rem; color: var(--gray-600);">Получено наград</div>
+  </div>
+
+  <div class="card" style="padding: var(--space-5); text-align: center;">
+    <div style="font-size: 2.5rem; margin-bottom: var(--space-2);">⭐</div>
+    <div style="font-size: 1.75rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">
+      <%= @user.rating.points %>
+    </div>
+    <div style="font-size: 0.8125rem; color: var(--gray-600);">Очков рейтинга</div>
+  </div>
+
+  <div class="card" style="padding: var(--space-5); text-align: center;">
+    <div style="font-size: 2.5rem; margin-bottom: var(--space-2);">📈</div>
+    <div style="font-size: 1.75rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">
+      <%= @user.rating.level %>
+    </div>
+    <div style="font-size: 0.8125rem; color: var(--gray-600);">Текущий уровень</div>
+  </div>
+
+  <div class="card" style="padding: var(--space-5); text-align: center;">
+    <div style="font-size: 2.5rem; margin-bottom: var(--space-2);">🎯</div>
+    <div style="font-size: 1.75rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">
+      <%= @achievements.count - @achievements.select { |a| a[:unlocked] }.count %>
+    </div>
+    <div style="font-size: 0.8125rem; color: var(--gray-600);">Осталось открыть</div>
+  </div>
+</div>
+
+<!-- Achievement Categories Tabs -->
+<div style="margin-bottom: var(--space-6);">
+  <div style="display: flex; gap: var(--space-2); border-bottom: 2px solid var(--gray-200); flex-wrap: wrap;">
+    <button class="achievement-tab active" onclick="filterAchievements('all')">
+      Все (<%= @achievements.count %>)
+    </button>
+    <button class="achievement-tab" onclick="filterAchievements('learning')">
+      🎓 Обучение (<%= @achievements.select { |a| a[:category] == 'learning' }.count %>)
+    </button>
+    <button class="achievement-tab" onclick="filterAchievements('purchases')">
+      💰 Покупки (<%= @achievements.select { |a| a[:category] == 'purchases' }.count %>)
+    </button>
+    <button class="achievement-tab" onclick="filterAchievements('social')">
+      👥 Социальные (<%= @achievements.select { |a| a[:category] == 'social' }.count %>)
+    </button>
+  </div>
+</div>
+
+<!-- Achievements Grid - 4 columns -->
+<div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: var(--space-5);">
+  <% @achievements.each do |achievement| %>
+    <div class="card fade-in achievement-card <%= 'locked' unless achievement[:unlocked] %>"
+         data-category="<%= achievement[:category] %>"
+         style="text-align: center; position: relative; <%= 'opacity: 0.6;' unless achievement[:unlocked] %>">
+
+      <!-- Lock Icon for locked achievements -->
+      <% unless achievement[:unlocked] %>
+        <div style="position: absolute; top: 12px; right: 12px; font-size: 1.25rem; opacity: 0.5;">
+          🔒
+        </div>
+      <% end %>
+
+      <!-- Achievement Icon -->
+      <div style="
+        width: 80px;
+        height: 80px;
+        margin: 0 auto var(--space-4);
+        border-radius: 50%;
+        background: <%= achievement[:unlocked] ? 'linear-gradient(135deg, var(--blue-500), var(--blue-600))' : 'var(--gray-200)' %>;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 2.5rem;
+        box-shadow: <%= achievement[:unlocked] ? '0 4px 20px rgba(59, 130, 246, 0.3)' : 'none' %>;
+      ">
+        <%= achievement[:icon] %>
+      </div>
+
+      <!-- Achievement Name -->
+      <h3 style="font-size: 1rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
+        <%= achievement[:name] %>
+      </h3>
+
+      <!-- Achievement Description -->
+      <p style="font-size: 0.8125rem; color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-3);">
+        <%= achievement[:description] %>
+      </p>
+
+      <!-- Reward Points -->
+      <div style="display: inline-flex; align-items: center; gap: var(--space-1); padding: 6px 12px; background: <%= achievement[:unlocked] ? 'var(--blue-50)' : 'var(--gray-100)' %>; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; color: <%= achievement[:unlocked] ? 'var(--blue-700)' : 'var(--gray-600)' %>;">
+        <span>⭐</span>
+        <span>+<%= achievement[:points] %> очков</span>
+      </div>
+
+      <!-- Unlock Date (for unlocked achievements) -->
+      <% if achievement[:unlocked] && achievement[:unlocked_at] %>
+        <div style="margin-top: var(--space-3); font-size: 0.75rem; color: var(--gray-500);">
+          Получено <%= achievement[:unlocked_at].strftime('%d.%m.%Y') %>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+  .achievement-tab {
+    padding: var(--space-3) var(--space-4);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    color: var(--gray-600);
+    font-size: 0.9375rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-base);
+  }
+
+  .achievement-tab:hover {
+    color: var(--blue-600);
+  }
+
+  .achievement-tab.active {
+    color: var(--blue-600);
+    border-bottom-color: var(--blue-600);
+  }
+
+  .achievement-card {
+    transition: all var(--transition-base);
+  }
+
+  .achievement-card:not(.locked):hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  }
+
+  @media (max-width: 1280px) {
+    .grid {
+      grid-template-columns: repeat(3, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr) !important;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr !important;
+    }
+  }
+</style>
+
+<script>
+  function filterAchievements(category) {
+    const cards = document.querySelectorAll('.achievement-card');
+    const tabs = document.querySelectorAll('.achievement-tab');
+
+    // Update tab styles
+    tabs.forEach(tab => {
+      if (tab.getAttribute('onclick').includes(`'${category}'`)) {
+        tab.classList.add('active');
+      } else {
+        tab.classList.remove('active');
+      }
+    });
+
+    // Filter cards
+    cards.forEach(card => {
+      if (category === 'all' || card.dataset.category === category) {
+        card.style.display = 'block';
+      } else {
+        card.style.display = 'none';
+      }
+    });
+  }
+</script>

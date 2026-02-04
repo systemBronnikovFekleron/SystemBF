@@ -1,0 +1,126 @@
+<% content_for :title, "Логи: #{@integration.name}" %>
+
+<div style="margin-bottom: var(--space-8);">
+  <%= link_to admin_integration_path(@integration), style: "display: inline-flex; align-items: center; gap: var(--space-2); color: var(--gray-600); text-decoration: none; font-size: 0.875rem; margin-bottom: var(--space-3);" do %>
+    ← Назад к интеграции
+  <% end %>
+  <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900);">
+    Логи событий: <%= @integration.name %>
+  </h1>
+</div>
+
+<!-- Filters -->
+<div style="background: white; border-radius: var(--radius-lg); padding: var(--space-4); margin-bottom: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+  <%= form_with url: logs_admin_integration_path(@integration), method: :get, style: "display: flex; gap: var(--space-4); align-items: center;" do |f| %>
+    <div style="flex: 1;">
+      <%= f.label :status, 'Статус:', style: "font-weight: 600; color: var(--gray-700); margin-right: var(--space-2);" %>
+      <%= f.select :status,
+          options_for_select([['Все', ''], ['Успешно', 'success'], ['Ошибки', 'failed'], ['В процессе', 'pending']], params[:status]),
+          {}, style: "padding: var(--space-2) var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md);" %>
+    </div>
+
+    <div style="flex: 1;">
+      <%= f.label :event_type, 'Тип события:', style: "font-weight: 600; color: var(--gray-700); margin-right: var(--space-2);" %>
+      <%= f.text_field :event_type, value: params[:event_type], placeholder: 'api_call, webhook, etc.', style: "padding: var(--space-2) var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-family: monospace;" %>
+    </div>
+
+    <%= f.submit 'Применить', style: "padding: var(--space-2) var(--space-4); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" %>
+
+    <% if params[:status].present? || params[:event_type].present? %>
+      <%= link_to 'Сбросить', logs_admin_integration_path(@integration), style: "padding: var(--space-2) var(--space-4); background: white; color: var(--gray-700); border: 2px solid var(--gray-300); border-radius: var(--radius-md); text-decoration: none; font-weight: 600;" %>
+    <% end %>
+  <% end %>
+</div>
+
+<!-- Stats Summary -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+  <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid var(--blue-600);">
+    <div style="font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; margin-bottom: var(--space-1);">Всего</div>
+    <div style="font-size: 2rem; font-weight: 700; color: var(--gray-900);"><%= @logs.total_count %></div>
+  </div>
+
+  <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #16a34a;">
+    <div style="font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; margin-bottom: var(--space-1);">Успешно</div>
+    <div style="font-size: 2rem; font-weight: 700; color: #16a34a;"><%= @integration.integration_logs.successful.count %></div>
+  </div>
+
+  <div style="background: white; border-radius: var(--radius-lg); padding: var(--space-5); box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 4px solid #ef4444;">
+    <div style="font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; margin-bottom: var(--space-1);">Ошибок</div>
+    <div style="font-size: 2rem; font-weight: 700; color: #ef4444;"><%= @integration.integration_logs.failed.count %></div>
+  </div>
+</div>
+
+<!-- Logs Table -->
+<div style="background: white; border-radius: var(--radius-xl); box-shadow: 0 1px 3px rgba(0,0,0,0.1); overflow: hidden;">
+  <% if @logs.any? %>
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: var(--gray-50); border-bottom: 2px solid var(--gray-200);">
+            <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; font-weight: 700;">Время</th>
+            <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; font-weight: 700;">Тип события</th>
+            <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; font-weight: 700;">Статус</th>
+            <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; font-weight: 700;">Сообщение</th>
+            <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; font-weight: 700;">Длительность</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @logs.each do |log| %>
+            <tr style="border-bottom: 1px solid var(--gray-100); transition: background 0.2s;" onmouseover="this.style.background='var(--gray-50)';" onmouseout="this.style.background='white';">
+              <td style="padding: var(--space-4); font-size: 0.875rem; color: var(--gray-700); white-space: nowrap;">
+                <%= l(log.created_at, format: :long) %>
+              </td>
+              <td style="padding: var(--space-4);">
+                <code style="padding: var(--space-1) var(--space-2); background: var(--gray-100); border-radius: var(--radius-sm); font-size: 0.75rem; color: var(--gray-800);">
+                  <%= log.event_type %>
+                </code>
+              </td>
+              <td style="padding: var(--space-4);">
+                <span style="display: inline-flex; align-items: center; gap: var(--space-2); padding: var(--space-2) var(--space-3); border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; <%= case log.status when 'success' then 'background: rgba(34, 197, 94, 0.1); color: #16a34a;' when 'failed' then 'background: rgba(239, 68, 68, 0.1); color: #ef4444;' else 'background: rgba(245, 158, 11, 0.1); color: #f59e0b;' end %>">
+                  <span style="width: 6px; height: 6px; border-radius: 50%; <%= case log.status when 'success' then 'background: #16a34a;' when 'failed' then 'background: #ef4444;' else 'background: #f59e0b;' end %>"></span>
+                  <%= log.status.titleize %>
+                </span>
+              </td>
+              <td style="padding: var(--space-4); font-size: 0.875rem; color: var(--gray-700);">
+                <%= truncate(log.message, length: 100) %>
+                <% if log.error_details.present? %>
+                  <details style="margin-top: var(--space-2);">
+                    <summary style="cursor: pointer; color: var(--blue-600); font-size: 0.75rem;">Детали ошибки</summary>
+                    <pre style="margin-top: var(--space-2); padding: var(--space-2); background: var(--gray-50); border-radius: var(--radius-sm); font-size: 0.75rem; overflow-x: auto;"><%= log.error_details %></pre>
+                  </details>
+                <% end %>
+              </td>
+              <td style="padding: var(--space-4); text-align: right; font-size: 0.875rem;">
+                <% if log.duration_ms %>
+                  <span style="<%= log.duration_ms > 3000 ? 'color: #ef4444; font-weight: 600;' : 'color: var(--gray-600);' %>">
+                    <%= log.duration_ms %>ms
+                  </span>
+                <% else %>
+                  <span style="color: var(--gray-400);">—</span>
+                <% end %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div style="padding: var(--space-6); border-top: 1px solid var(--gray-200); display: flex; justify-content: center;">
+      <%= paginate @logs %>
+    </div>
+  <% else %>
+    <div style="text-align: center; padding: var(--space-16);">
+      <h3 style="font-size: 1.5rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+        Логи не найдены
+      </h3>
+      <p style="color: var(--gray-600);">
+        <% if params[:status].present? || params[:event_type].present? %>
+          Попробуйте изменить фильтры
+        <% else %>
+          События будут отображаться здесь после первого использования интеграции
+        <% end %>
+      </p>
+    </div>
+  <% end %>
+</div>

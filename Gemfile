@@ -77,6 +77,10 @@ end
 group :development do
   # Use console on exceptions pages [https://github.com/rails/web-console]
   gem "web-console"
+
+  # Performance optimization tools
+  gem "bullet"              # N+1 query detection
+  gem "rack-mini-profiler"  # Performance profiling
 end
 
 group :test do

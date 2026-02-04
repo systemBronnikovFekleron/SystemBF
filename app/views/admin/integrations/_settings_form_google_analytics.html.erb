@@ -1,0 +1,13 @@
+<% settings = integration.settings %>
+
+<div style="margin-bottom: var(--space-4);">
+  <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-md); margin-bottom: var(--space-3);">
+    <%= check_box_tag 'integration_setting[settings][track_page_views]', 'true', settings['track_page_views'] != false, style: "width: 18px; height: 18px; cursor: pointer;" %>
+    <%= label_tag 'integration_setting[settings][track_page_views]', 'Отслеживать просмотры страниц', style: "font-weight: 500; color: var(--gray-700); cursor: pointer;" %>
+  </div>
+
+  <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3); background: var(--gray-50); border-radius: var(--radius-md);">
+    <%= check_box_tag 'integration_setting[settings][track_events]', 'true', settings['track_events'] != false, style: "width: 18px; height: 18px; cursor: pointer;" %>
+    <%= label_tag 'integration_setting[settings][track_events]', 'Отслеживать события (клики, конверсии)', style: "font-weight: 500; color: var(--gray-700); cursor: pointer;" %>
+  </div>
+</div>

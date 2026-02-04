@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Оплата получена</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #22C55E, #16A34A); padding: 40px 30px; text-align: center;">
+              <div style="font-size: 64px; margin-bottom: 10px;">✅</div>
+              <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700;">
+                Оплата получена!
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="margin: 0 0 10px; color: #1f2937; font-size: 22px; font-weight: 600;">
+                Спасибо, <%= @user.first_name %>!
+              </h2>
+
+              <p style="margin: 0 0 30px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                Ваш платеж по заказу <strong>#<%= @order.order_number %></strong> успешно обработан. Доступ к материалам открыт!
+              </p>
+
+              <!-- Payment Success Badge -->
+              <div style="background: linear-gradient(135deg, rgba(34, 197, 94, 0.1), rgba(22, 163, 74, 0.1)); border: 2px solid #22C55E; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 30px;">
+                <div style="font-size: 18px; font-weight: 600; color: #16A34A; margin-bottom: 8px;">
+                  Оплачено
+                </div>
+                <div style="font-size: 32px; font-weight: 700; color: #22C55E;">
+                  <%= @order.total.format %>
+                </div>
+              </div>
+
+              <!-- Order Items -->
+              <div style="background: #f9fafb; border-radius: 8px; padding: 20px; margin-bottom: 30px;">
+                <h3 style="margin: 0 0 15px; color: #1f2937; font-size: 16px; font-weight: 600;">
+                  Ваши материалы:
+                </h3>
+
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <% @items.each do |item| %>
+                    <tr>
+                      <td style="padding: 12px 0; border-bottom: 1px solid #e5e7eb;">
+                        <div style="display: flex; align-items: center; gap: 12px;">
+                          <span style="font-size: 24px;"><%= product_icon(item.product.product_type) %></span>
+                          <div>
+                            <div style="font-weight: 600; color: #1f2937; margin-bottom: 4px;"><%= item.product.name %></div>
+                            <div style="color: #6b7280; font-size: 14px;"><%= product_type_label(item.product.product_type) %></div>
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  <% end %>
+                </table>
+              </div>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 30px;">
+                <tr>
+                  <td align="center">
+                    <a href="<%= dashboard_my_courses_url(host: ENV.fetch('APP_HOST', 'localhost:3000')) %>" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #4F46E5, #9333EA); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                      Начать обучение →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Receipt Info -->
+              <div style="border-top: 1px solid #e5e7eb; padding-top: 20px;">
+                <p style="margin: 0 0 12px; color: #6b7280; font-size: 14px; font-weight: 600;">
+                  Детали платежа:
+                </p>
+                <table width="100%" cellpadding="0" cellspacing="0">
+                  <tr>
+                    <td style="padding: 6px 0; color: #6b7280; font-size: 14px;">Номер заказа:</td>
+                    <td style="padding: 6px 0; text-align: right; font-weight: 500; color: #1f2937; font-size: 14px;"><%= @order.order_number %></td>
+                  </tr>
+                  <tr>
+                    <td style="padding: 6px 0; color: #6b7280; font-size: 14px;">Дата оплаты:</td>
+                    <td style="padding: 6px 0; text-align: right; font-weight: 500; color: #1f2937; font-size: 14px;"><%= @order.paid_at&.strftime('%d.%m.%Y %H:%M') || Time.current.strftime('%d.%m.%Y %H:%M') %></td>
+                  </tr>
+                  <% if @order.payment_id %>
+                    <tr>
+                      <td style="padding: 6px 0; color: #6b7280; font-size: 14px;">ID транзакции:</td>
+                      <td style="padding: 6px 0; text-align: right; font-weight: 500; color: #1f2937; font-size: 14px;"><%= @order.payment_id %></td>
+                    </tr>
+                  <% end %>
+                </table>
+              </div>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center;">
+              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
+                © <%= Date.today.year %> Система Бронникова
+              </p>
+              <p style="margin: 0; color: #9ca3af; font-size: 12px;">
+                Чек отправлен на email согласно 54-ФЗ
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

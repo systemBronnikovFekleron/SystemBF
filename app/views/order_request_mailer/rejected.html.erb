@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+    .header { background: #dc2626; color: white; padding: 30px; text-align: center; border-radius: 10px 10px 0 0; }
+    .content { background: #f9fafb; padding: 30px; border-radius: 0 0 10px 10px; }
+    .reason { background: white; padding: 15px; border-left: 4px solid #dc2626; margin: 20px 0; }
+    .button { display: inline-block; padding: 12px 24px; background: #667eea; color: white; text-decoration: none; border-radius: 6px; margin-top: 20px; }
+    .footer { text-align: center; margin-top: 30px; color: #6b7280; font-size: 14px; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="header">
+      <h1>✗ Заявка отклонена</h1>
+    </div>
+    <div class="content">
+      <p>Здравствуйте, <%= @user.full_name %>!</p>
+
+      <p>К сожалению, ваша заявка <strong><%= @order_request.request_number %></strong> на покупку <strong><%= @product.name %></strong> была отклонена.</p>
+
+      <div class="reason">
+        <strong>Причина отклонения:</strong><br>
+        <%= @order_request.rejection_reason %>
+      </div>
+
+      <p>Если у вас есть вопросы, пожалуйста, свяжитесь с нашей службой поддержки.</p>
+
+      <p style="margin-top: 30px;">
+        <a href="<%= products_url %>" class="button">Посмотреть другие продукты</a>
+      </p>
+    </div>
+    <div class="footer">
+      <p>Система Бронникова © <%= Time.current.year %></p>
+    </div>
+  </div>
+</body>
+</html>

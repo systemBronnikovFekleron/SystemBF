@@ -29,6 +29,11 @@ module Sbf
     config.i18n.default_locale = :ru
     config.i18n.available_locales = [:ru, :en]
 
+    # ActiveRecord Encryption configuration
+    config.active_record.encryption.primary_key = Rails.application.credentials.dig(:active_record_encryption, :primary_key)
+    config.active_record.encryption.deterministic_key = Rails.application.credentials.dig(:active_record_encryption, :deterministic_key)
+    config.active_record.encryption.key_derivation_salt = Rails.application.credentials.dig(:active_record_encryption, :key_derivation_salt)
+
     # config.eager_load_paths << Rails.root.join("extras")
   end
 end

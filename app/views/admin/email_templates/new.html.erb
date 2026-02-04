@@ -1,0 +1,121 @@
+<% content_for :title, "Создать Email Шаблон" %>
+
+<div style="display: flex; gap: var(--space-6);">
+  <!-- Main Form -->
+  <div style="flex: 1; max-width: 900px;">
+    <%= link_to admin_email_templates_path, style: "display: inline-flex; align-items: center; gap: var(--space-2); color: var(--gray-600); text-decoration: none; font-size: 0.875rem; margin-bottom: var(--space-3);" do %>
+      ← Все шаблоны
+    <% end %>
+
+    <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-8);">
+      Создать новый шаблон
+    </h1>
+
+    <%= form_with model: @email_template, url: admin_email_templates_path do |f| %>
+      <!-- Basic Info -->
+      <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-6);">
+          Основная информация
+        </h2>
+
+        <div style="margin-bottom: var(--space-5);">
+          <%= f.label :template_key, 'Ключ шаблона', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+          <%= f.text_field :template_key, placeholder: 'welcome_email', style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; font-family: monospace;" %>
+          <p style="font-size: 0.75rem; color: var(--gray-600); margin-top: var(--space-2);">
+            Уникальный идентификатор (только латиница, цифры и подчеркивания)
+          </p>
+        </div>
+
+        <div style="margin-bottom: var(--space-5);">
+          <%= f.label :name, 'Название', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+          <%= f.text_field :name, placeholder: 'Приветственное письмо', style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+        </div>
+
+        <div style="margin-bottom: var(--space-5);">
+          <%= f.label :category, 'Категория', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
+          <%= f.select :category,
+              options_for_select([['Пользователи', 'user'], ['Заказы', 'order'], ['Продукты', 'product'], ['Система', 'system']]),
+              { include_blank: 'Без категории' },
+              style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+        </div>
+
+        <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); background: var(--blue-50); border-radius: var(--radius-md);">
+          <%= f.check_box :active, checked: true, style: "width: 20px; height: 20px; cursor: pointer;" %>
+          <%= f.label :active, 'Шаблон активен (включить сразу после создания)', style: "font-weight: 600; color: var(--blue-900); cursor: pointer;" %>
+        </div>
+      </div>
+
+      <!-- Subject -->
+      <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+          Тема письма
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Используйте переменные в формате <code style="background: var(--gray-100); padding: 2px 6px; border-radius: 4px;">{{переменная}}</code>
+        </p>
+
+        <%= f.text_field :subject, placeholder: 'Добро пожаловать, {{user_name}}!', style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem;" %>
+      </div>
+
+      <!-- Body HTML -->
+      <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+          HTML версия
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Основной контент письма в HTML формате
+        </p>
+
+        <%= f.text_area :body_html, rows: 15, placeholder: '<h1>Привет, {{user_name}}!</h1><p>Рады приветствовать вас в Системе Бронникова.</p>', style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem; font-family: monospace; resize: vertical;" %>
+      </div>
+
+      <!-- Body Text -->
+      <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: var(--space-6);">
+        <h2 style="font-size: 1.25rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-2);">
+          Текстовая версия (опционально)
+        </h2>
+        <p style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Альтернативная версия для почтовых клиентов без поддержки HTML
+        </p>
+
+        <%= f.text_area :body_text, rows: 10, placeholder: 'Привет, {{user_name}}!\n\nРады приветствовать вас в Системе Бронникова.', style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem; font-family: monospace; resize: vertical;" %>
+      </div>
+
+      <!-- Actions -->
+      <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
+        <%= link_to 'Отмена', admin_email_templates_path, style: "padding: var(--space-3) var(--space-6); background: white; border: 2px solid var(--gray-300); color: var(--gray-700); border-radius: var(--radius-md); text-decoration: none; font-weight: 600;" %>
+        <%= f.submit 'Создать шаблон', style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer;" %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Sidebar: Variables -->
+  <div style="width: 300px; flex-shrink: 0;">
+    <div style="position: sticky; top: var(--space-6);">
+      <div style="background: white; border-radius: var(--radius-xl); padding: var(--space-6); box-shadow: 0 1px 3px rgba(0,0,0,0.1);">
+        <h3 style="font-size: 1.125rem; font-weight: 700; color: var(--gray-900); margin-bottom: var(--space-4);">
+          💡 Популярные переменные
+        </h3>
+
+        <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-4);">
+          Нажмите, чтобы скопировать:
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: var(--space-2);">
+          <% common_variables = ['user_name', 'user_email', 'order_number', 'product_name', 'price', 'date', 'url', 'company_name'] %>
+          <% common_variables.each do |var| %>
+            <button type="button" onclick="navigator.clipboard.writeText('{{<%= var %>}}'); this.textContent='✓ Скопировано!'; setTimeout(() => this.textContent='{{<%= var %>}}', 1500);" style="padding: var(--space-2) var(--space-3); background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: var(--radius-md); text-align: left; cursor: pointer; font-family: monospace; font-size: 0.75rem; color: var(--blue-700); transition: all 0.2s;" onmouseover="this.style.background='var(--blue-100)';" onmouseout="this.style.background='var(--blue-50)';">
+              {{<%= var %>}}
+            </button>
+          <% end %>
+        </div>
+
+        <div style="margin-top: var(--space-6); padding: var(--space-4); background: #fef3c7; border-left: 4px solid #f59e0b; border-radius: var(--radius-md);">
+          <div style="font-size: 0.75rem; color: #92400e; line-height: 1.5;">
+            <strong>Совет:</strong> Используйте понятные названия переменных. Например, <code>user_first_name</code> вместо <code>fname</code>.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

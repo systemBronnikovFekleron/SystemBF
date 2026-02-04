@@ -1,0 +1,11 @@
+<% content_for :title, "Создание записи о взаимодействии" %>
+
+<div style="margin-bottom: var(--space-6);">
+  <%= link_to "← Назад к списку", admin_interaction_histories_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-8); color: var(--gray-900);">
+  Создание записи о взаимодействии
+</h1>
+
+<%= render 'form', interaction_history: @interaction_history %>

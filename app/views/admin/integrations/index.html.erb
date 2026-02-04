@@ -1,0 +1,157 @@
+<% content_for :title, "Интеграции" %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+  <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+    Интеграции
+  </h1>
+</div>
+
+<!-- Statistics Overview -->
+<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
+  <div class="card" style="padding: var(--space-6);">
+    <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+      <div style="width: 48px; height: 48px; background: var(--blue-50); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="2" y1="12" x2="22" y2="12"></line>
+          <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-1);">
+          Всего интеграций
+        </div>
+        <div style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+          <%= @statistics_summary[:total_integrations] %>
+        </div>
+      </div>
+    </div>
+    <div style="font-size: 0.875rem; color: var(--color-success);">
+      <%= @statistics_summary[:enabled_integrations] %> активных
+    </div>
+  </div>
+
+  <div class="card" style="padding: var(--space-6);">
+    <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+      <div style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.1); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#22C55E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-1);">
+          Запросов сегодня
+        </div>
+        <div style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+          <%= @statistics_summary[:total_logs_today] %>
+        </div>
+      </div>
+    </div>
+    <div style="font-size: 0.875rem; color: var(--color-success);">
+      <%= ((IntegrationLog.where('created_at > ?', Date.today).where(status: 'success').count.to_f / [@statistics_summary[:total_logs_today], 1].max) * 100).round(1) %>% успешных
+    </div>
+  </div>
+
+  <div class="card" style="padding: var(--space-6);">
+    <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
+      <div style="width: 48px; height: 48px; background: rgba(239, 68, 68, 0.1); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="10"></circle>
+          <line x1="12" y1="8" x2="12" y2="12"></line>
+          <line x1="12" y1="16" x2="12.01" y2="16"></line>
+        </svg>
+      </div>
+      <div>
+        <div style="font-size: 0.75rem; color: var(--gray-600); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: var(--space-1);">
+          Ошибок сегодня
+        </div>
+        <div style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+          <%= IntegrationLog.where('created_at > ?', Date.today).where(status: 'failed').count %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Integrations Table -->
+<div class="card">
+  <div style="overflow-x: auto;">
+    <table style="width: 100%; border-collapse: collapse; min-width: 800px;">
+      <thead>
+        <tr style="border-bottom: 1px solid var(--gray-200);">
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 40%;">Интеграция</th>
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Статус</th>
+          <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Здоровье</th>
+          <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Использование</th>
+          <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Последнее</th>
+          <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase; width: 12%;">Действия</th>
+        </tr>
+      </thead>
+    <tbody>
+      <% @integrations.each do |integration| %>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: var(--space-4);">
+            <div style="display: flex; align-items: center; gap: var(--space-3);">
+              <% bg_color = case integration.integration_type.to_s when 'email' then 'var(--blue-50)' when 'telegram' then 'rgba(0, 136, 204, 0.1)' when 'google_analytics' then 'rgba(234, 67, 53, 0.1)' when 'cloudpayments' then 'rgba(168, 85, 247, 0.1)' end %>
+              <div style="width: 40px; height: 40px; background: <%= bg_color %>; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+                <% if integration.integration_type.to_s == 'email' %>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                    <polyline points="22,6 12,13 2,6"></polyline>
+                  </svg>
+                <% elsif integration.integration_type.to_s == 'telegram' %>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0088cc" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                  </svg>
+                <% elsif integration.integration_type.to_s == 'google_analytics' %>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#ea4335" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="20" x2="18" y2="10"></line>
+                    <line x1="12" y1="20" x2="12" y2="4"></line>
+                    <line x1="6" y1="20" x2="6" y2="14"></line>
+                  </svg>
+                <% elsif integration.integration_type.to_s == 'cloudpayments' %>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#A855F7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
+                    <line x1="1" y1="10" x2="23" y2="10"></line>
+                  </svg>
+                <% end %>
+              </div>
+              <div>
+                <div style="font-weight: 500; color: var(--gray-900);"><%= integration.name %></div>
+                <div style="font-size: 0.875rem; color: var(--gray-600);"><%= integration.description %></div>
+              </div>
+            </div>
+          </td>
+          <td style="padding: var(--space-4);">
+            <span style="padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500; <%= integration.enabled? ? 'background: rgba(34, 197, 94, 0.1); color: #16a34a;' : 'background: rgba(239, 68, 68, 0.1); color: #dc2626;' %>">
+              <%= integration.enabled? ? 'Активно' : 'Отключено' %>
+            </span>
+          </td>
+          <td style="padding: var(--space-4);">
+            <div style="display: flex; align-items: center; gap: var(--space-2);">
+              <div style="width: 8px; height: 8px; border-radius: 50%; background: <%= integration.healthy? ? '#22c55e' : '#ef4444' %>;"></div>
+              <span style="font-size: 0.875rem; color: <%= integration.healthy? ? '#16a34a' : '#dc2626' %>;">
+                <%= integration.healthy? ? 'OK' : 'Ошибка' %>
+              </span>
+            </div>
+          </td>
+          <td style="padding: var(--space-4); text-align: right; font-weight: 500; color: var(--gray-900);">
+            <%= integration.usage_count %> раз
+          </td>
+          <td style="padding: var(--space-4); text-align: right; font-size: 0.875rem; color: var(--gray-600);">
+            <%= integration.last_used_at ? time_ago_in_words(integration.last_used_at) + ' назад' : '—' %>
+          </td>
+          <td style="padding: var(--space-4); text-align: right;">
+            <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
+              <%= link_to "Настроить", admin_integration_path(integration), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= button_to toggle_status_admin_integration_path(integration), method: :post, style: "padding: var(--space-2) var(--space-3); background: none; border: none; color: var(--gray-600); cursor: pointer; font-size: 0.875rem;" do %>
+                <%= integration.enabled? ? 'Выключить' : 'Включить' %>
+              <% end %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+  </div>
+</div>

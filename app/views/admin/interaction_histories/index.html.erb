@@ -1,0 +1,110 @@
+<% content_for :title, "CRM - История взаимодействий" %>
+
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
+  <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+    История взаимодействий
+  </h1>
+  <%= link_to "Создать запись", new_admin_interaction_history_path, style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+</div>
+
+<!-- Фильтры и поиск -->
+<div class="card" style="padding: var(--space-6); margin-bottom: var(--space-6);">
+  <%= form_with url: admin_interaction_histories_path, method: :get, style: "display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: var(--space-4); align-items: end;" do |f| %>
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Поиск</label>
+      <%= f.text_field :search, value: params[:search], placeholder: "Email, имя клиента или тема...", style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Тип</label>
+      <%= f.select :interaction_type, [
+        ['Все', ''],
+        ['Звонок', 'call'],
+        ['Встреча', 'meeting'],
+        ['Email', 'email'],
+        ['Чат', 'chat'],
+        ['Заметка', 'note']
+      ], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <div>
+      <label style="display: block; margin-bottom: var(--space-2); font-size: 0.875rem; color: var(--gray-700);">Статус</label>
+      <%= f.select :status, [
+        ['Все', ''],
+        ['Запланировано', 'planned'],
+        ['Завершено', 'completed'],
+        ['Отменено', 'cancelled']
+      ], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
+    </div>
+
+    <%= f.submit "Фильтровать", style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+  <% end %>
+</div>
+
+<!-- Таблица взаимодействий -->
+<div class="card">
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr style="border-bottom: 1px solid var(--gray-200);">
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Дата</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Клиент</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Тип</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Тема</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Статус</th>
+        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Создал</th>
+        <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Действия</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @interaction_histories.each do |interaction| %>
+        <tr style="border-bottom: 1px solid var(--gray-100);">
+          <td style="padding: var(--space-4);">
+            <div style="font-weight: 500; color: var(--gray-900);"><%= l(interaction.interaction_date, format: :short) %></div>
+            <% if interaction.follow_up_date.present? %>
+              <div style="font-size: 0.75rem; color: var(--gray-600);">
+                След. шаг: <%= l(interaction.follow_up_date, format: :short) %>
+              </div>
+            <% end %>
+          </td>
+          <td style="padding: var(--space-4);">
+            <div style="font-weight: 500; color: var(--gray-900);"><%= interaction.user.email %></div>
+            <% if interaction.user.first_name.present? || interaction.user.last_name.present? %>
+              <div style="font-size: 0.875rem; color: var(--gray-600);"><%= interaction.user.full_name %></div>
+            <% end %>
+          </td>
+          <td style="padding: var(--space-4);">
+            <span style="<%= interaction_type_badge_style(interaction.interaction_type) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
+              <%= interaction_type_label(interaction.interaction_type) %>
+            </span>
+          </td>
+          <td style="padding: var(--space-4); color: var(--gray-900);">
+            <%= truncate(interaction.subject, length: 50) %>
+          </td>
+          <td style="padding: var(--space-4);">
+            <span style="<%= interaction_status_badge_style(interaction.status) %> padding: 4px 12px; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">
+              <%= interaction_status_label(interaction.status) %>
+            </span>
+          </td>
+          <td style="padding: var(--space-4); font-size: 0.875rem; color: var(--gray-600);">
+            <%= interaction.admin_user.email %>
+          </td>
+          <td style="padding: var(--space-4); text-align: right;">
+            <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
+              <%= link_to "Просмотр", admin_interaction_history_path(interaction), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= link_to "Редактировать", edit_admin_interaction_history_path(interaction), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+            </div>
+          </td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+
+  <% if @interaction_histories.empty? %>
+    <div style="padding: var(--space-12); text-align: center; color: var(--gray-500);">
+      Записи о взаимодействиях не найдены
+    </div>
+  <% end %>
+</div>
+
+<%= paginate @interaction_histories %>
+

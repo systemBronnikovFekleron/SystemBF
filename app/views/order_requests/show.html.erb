@@ -1,0 +1,179 @@
+<% content_for :title, "Заявка #{@order_request.request_number} - Система Бронникова" %>
+
+<section class="container" style="padding: 3rem 0;">
+  <!-- Breadcrumbs -->
+  <nav style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center; color: var(--color-gray-500); font-size: 0.875rem;">
+    <%= link_to "Главная", root_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
+    <span>→</span>
+    <%= link_to "Мои заявки", order_requests_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
+    <span>→</span>
+    <span style="color: var(--color-gray-900); font-weight: 500;"><%= @order_request.request_number %></span>
+  </nav>
+
+  <div class="grid lg:grid-cols-3 gap-6">
+    <!-- Main Content -->
+    <div class="lg:col-span-2">
+      <!-- Header Card -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 1rem;">
+          <div>
+            <h1 style="font-size: 2rem; margin-bottom: 0.5rem;">
+              <%= @order_request.request_number %>
+            </h1>
+            <p style="color: var(--color-gray-600);">
+              Создана <%= l(@order_request.created_at, format: :long) %>
+            </p>
+          </div>
+          <%= render partial: 'shared/order_request_status_badge', locals: { status: @order_request.status } %>
+        </div>
+      </div>
+
+      <!-- Timeline -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1.5rem;">📅 История заявки</h3>
+
+        <div style="position: relative; padding-left: 2rem;">
+          <!-- Timeline line -->
+          <div style="position: absolute; left: 0.625rem; top: 0; bottom: 0; width: 2px; background: var(--color-gray-200);"></div>
+
+          <!-- Created -->
+          <div style="position: relative; padding-bottom: 1.5rem;">
+            <div style="position: absolute; left: -1.375rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--color-success); border: 3px solid white;"></div>
+            <div style="font-weight: 600; margin-bottom: 0.25rem;">Заявка создана</div>
+            <div style="color: var(--color-gray-600); font-size: 0.875rem;">
+              <%= l(@order_request.created_at, format: :long) %>
+            </div>
+          </div>
+
+          <!-- Approved/Rejected -->
+          <% if @order_request.approved_at || @order_request.rejected_at %>
+            <div style="position: relative; padding-bottom: 1.5rem;">
+              <div style="position: absolute; left: -1.375rem; width: 1rem; height: 1rem; border-radius: 50%; background: <%= @order_request.approved_at ? 'var(--color-success)' : 'var(--color-danger)' %>; border: 3px solid white;"></div>
+              <div style="font-weight: 600; margin-bottom: 0.25rem;">
+                <%= @order_request.approved_at ? 'Заявка одобрена' : 'Заявка отклонена' %>
+              </div>
+              <div style="color: var(--color-gray-600); font-size: 0.875rem;">
+                <%= l(@order_request.approved_at || @order_request.rejected_at, format: :long) %>
+              </div>
+              <% if @order_request.approved_by %>
+                <div style="color: var(--color-gray-600); font-size: 0.875rem;">
+                  Одобрил: <%= @order_request.approved_by.full_name %>
+                </div>
+              <% end %>
+              <% if @order_request.rejection_reason %>
+                <div style="margin-top: 0.5rem; padding: 0.75rem; background: var(--color-danger-50); border-left: 3px solid var(--color-danger); border-radius: 4px;">
+                  <strong>Причина:</strong> <%= @order_request.rejection_reason %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+          <!-- Paid -->
+          <% if @order_request.paid_at %>
+            <div style="position: relative; padding-bottom: 1.5rem;">
+              <div style="position: absolute; left: -1.375rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--color-success); border: 3px solid white;"></div>
+              <div style="font-weight: 600; margin-bottom: 0.25rem;">Заявка оплачена</div>
+              <div style="color: var(--color-gray-600); font-size: 0.875rem;">
+                <%= l(@order_request.paid_at, format: :long) %>
+              </div>
+              <% if @order_request.order %>
+                <div style="margin-top: 0.5rem;">
+                  <%= link_to "Перейти к заказу →", order_path(@order_request.order), class: "btn btn-sm btn-primary" %>
+                </div>
+              <% end %>
+            </div>
+          <% end %>
+
+          <!-- Completed -->
+          <% if @order_request.status_completed? %>
+            <div style="position: relative;">
+              <div style="position: absolute; left: -1.375rem; width: 1rem; height: 1rem; border-radius: 50%; background: var(--color-success); border: 3px solid white;"></div>
+              <div style="font-weight: 600; margin-bottom: 0.25rem;">Заявка завершена</div>
+              <div style="color: var(--color-gray-600); font-size: 0.875rem;">
+                Доступ к продукту предоставлен
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <!-- Form Data (if any) -->
+      <% if @order_request.form_data.present? && @order_request.form_data.any? %>
+        <div class="card">
+          <h3 style="margin-bottom: 1rem;">📝 Данные формы</h3>
+          <dl style="display: grid; grid-template-columns: auto 1fr; gap: 0.75rem 1.5rem;">
+            <% @order_request.form_data.each do |key, value| %>
+              <dt style="font-weight: 600; color: var(--color-gray-700);"><%= key.humanize %>:</dt>
+              <dd style="color: var(--color-gray-600);"><%= value %></dd>
+            <% end %>
+          </dl>
+        </div>
+      <% end %>
+    </div>
+
+    <!-- Sidebar -->
+    <div>
+      <!-- Product Card -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">Продукт</h3>
+        <div style="text-align: center; padding: 2rem; background: linear-gradient(135deg, var(--color-primary-50), var(--color-secondary-50)); border-radius: 8px; margin-bottom: 1rem;">
+          <div style="font-size: 4rem; margin-bottom: 0.5rem;">
+            <%= product_icon(@order_request.product.product_type) %>
+          </div>
+        </div>
+        <h4 style="margin-bottom: 0.5rem;"><%= @order_request.product.name %></h4>
+        <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem;">
+          <%= product_type_label(@order_request.product.product_type) %>
+        </p>
+        <%= link_to "Подробнее →", product_path(@order_request.product), class: "btn btn-secondary btn-sm", style: "width: 100%;" %>
+      </div>
+
+      <!-- Payment Info -->
+      <div class="card" style="margin-bottom: 1.5rem;">
+        <h3 style="margin-bottom: 1rem;">💰 Информация об оплате</h3>
+        <div style="display: flex; justify-content: space-between; margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--color-gray-200);">
+          <span style="color: var(--color-gray-600);">Стоимость:</span>
+          <span style="font-weight: 700; font-size: 1.25rem; color: var(--color-primary-600);">
+            <%= humanized_money_with_symbol(@order_request.total) %>
+          </span>
+        </div>
+
+        <% if @order_request.status_approved? && !@order_request.order %>
+          <div style="background: var(--color-info-50); padding: 1rem; border-radius: 6px; margin-bottom: 1rem;">
+            <p style="font-weight: 600; color: var(--color-info); margin-bottom: 0.5rem;">
+              ✓ Заявка одобрена
+            </p>
+            <p style="font-size: 0.875rem; color: var(--color-gray-700);">
+              Баланс кошелька: <%= humanized_money_with_symbol(current_user.wallet.balance) %>
+            </p>
+          </div>
+
+          <% if current_user.wallet.sufficient_balance?(@order_request.total_kopecks) %>
+            <%= button_to "Оплатить с кошелька",
+                          pay_order_request_path(@order_request),
+                          method: :post,
+                          class: "btn btn-success",
+                          style: "width: 100%;" %>
+          <% else %>
+            <%= link_to "Пополнить кошелек",
+                        payment_options_order_request_path(@order_request),
+                        class: "btn btn-primary",
+                        style: "width: 100%;" %>
+          <% end %>
+        <% end %>
+      </div>
+
+      <!-- Actions -->
+      <% if @order_request.status_pending? %>
+        <div class="card" style="background: var(--color-warning-50);">
+          <p style="color: var(--color-warning); font-weight: 600; margin-bottom: 0.5rem;">
+            ⏳ Ожидает одобрения
+          </p>
+          <p style="color: var(--color-gray-700); font-size: 0.875rem;">
+            Администратор рассмотрит вашу заявку в ближайшее время.
+          </p>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</section>

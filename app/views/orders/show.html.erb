@@ -1,0 +1,171 @@
+<div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;"
+     <% if @order.status_paid? || @order.status_completed? %>
+       data-controller="analytics"
+       data-analytics-event-value="purchase"
+       data-analytics-order-id-value="<%= @order.order_number %>"
+       data-analytics-total-value="<%= @order.total_kopecks / 100.0 %>"
+       data-analytics-items-value="<%= @order.order_items.map { |item| {
+         item_id: item.product.id,
+         item_name: item.product.name,
+         item_category: item.product.category&.name || 'Uncategorized',
+         price: item.price_kopecks / 100.0,
+         quantity: item.quantity
+       } }.to_json %>"
+     <% end %>>
+  <%= link_to "← Назад к заказам", orders_path, style: "display: inline-block; margin-bottom: 2rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;" %>
+
+  <h1 class="page-title" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+    Заказ № <%= @order.order_number %>
+  </h1>
+
+  <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 2rem;">
+    <span class="badge badge-<%= @order.status %>" style="padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; <%= order_status_style(@order.status) %>">
+      <%= t("order_status.#{@order.status}") %>
+    </span>
+    <span style="color: var(--text-secondary); font-size: 0.875rem;">
+      <%= l(@order.created_at, format: :long) %>
+    </span>
+  </div>
+
+  <div style="display: grid; gap: 2rem;">
+    <!-- Информация о заказе -->
+    <div class="glass-card" style="padding: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+        Информация о заказе
+      </h2>
+
+      <div style="display: grid; gap: 1rem;">
+        <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <span style="color: var(--text-secondary);">Дата создания:</span>
+          <span style="font-weight: 500;"><%= l(@order.created_at, format: :long) %></span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <span style="color: var(--text-secondary);">Статус:</span>
+          <span style="font-weight: 500;"><%= t("order_status.#{@order.status}") %></span>
+        </div>
+
+        <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
+          <span style="color: var(--text-secondary);">Способ оплаты:</span>
+          <span style="font-weight: 500;">
+            <% if @order.payment_method == 'wallet' %>
+              Кошелек
+            <% elsif @order.payment_method == 'cloudpayments' %>
+              Банковская карта
+            <% else %>
+              Не указан
+            <% end %>
+          </span>
+        </div>
+
+        <% if @order.paid_at %>
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--text-secondary);">Дата оплаты:</span>
+            <span style="font-weight: 500;"><%= l(@order.paid_at, format: :long) %></span>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Товары в заказе -->
+    <div class="glass-card" style="padding: 2rem;">
+      <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+        Товары в заказе
+      </h2>
+
+      <div style="display: grid; gap: 1rem;">
+        <% @order.order_items.each do |item| %>
+          <div style="display: flex; gap: 1rem; padding: 1rem; background: var(--surface); border-radius: 0.75rem;">
+            <!-- Иконка продукта -->
+            <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+              </svg>
+            </div>
+
+            <!-- Информация о товаре -->
+            <div style="flex: 1;">
+              <h3 style="font-weight: 600; margin-bottom: 0.25rem;">
+                <%= item.product.name %>
+              </h3>
+              <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                <%= item.quantity %> шт. × <%= humanized_money_with_symbol(item.price) %>
+              </p>
+            </div>
+
+            <!-- Цена -->
+            <div style="text-align: right;">
+              <p style="font-size: 1.125rem; font-weight: 600;">
+                <%= humanized_money_with_symbol(item.price * item.quantity) %>
+              </p>
+            </div>
+          </div>
+        <% end %>
+
+        <!-- Итого -->
+        <div style="display: flex; justify-content: space-between; padding-top: 1.5rem; margin-top: 1rem; border-top: 2px solid rgba(255,255,255,0.1);">
+          <span style="font-size: 1.25rem; font-weight: 600;">Итого:</span>
+          <span style="font-size: 1.5rem; font-weight: 700; color: var(--accent);">
+            <%= humanized_money_with_symbol(@order.total) %>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Доступ к продуктам (для оплаченных заказов с цифровыми продуктами) -->
+    <% if @order.paid? || @order.completed? %>
+      <% digital_products = @order.order_items.select { |item| %w[video_course book course].include?(item.product.product_type) } %>
+      <% if digital_products.any? %>
+        <div class="glass-card" style="padding: 2rem;">
+          <h2 style="font-size: 1.5rem; font-weight: 700; margin-bottom: 1.5rem;">
+            Доступ к продуктам
+          </h2>
+
+          <div style="display: grid; gap: 1rem;">
+            <% digital_products.each do |item| %>
+              <div style="display: flex; justify-content: space-between; align-items: center; padding: 1rem; background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.3); border-radius: 0.75rem;">
+                <div>
+                  <h3 style="font-weight: 600; margin-bottom: 0.25rem;">
+                    <%= item.product.name %>
+                  </h3>
+                  <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                    Доступ предоставлен
+                  </p>
+                </div>
+                <%= link_to "Перейти к продукту", product_path(item.product), style: "padding: 0.5rem 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; font-size: 0.875rem; transition: all 0.3s ease;" %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% elsif @order.pending? %>
+      <!-- Кнопка оплаты для неоплаченных заказов -->
+      <div class="glass-card" style="padding: 2rem; text-align: center;">
+        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+          Заказ ожидает оплаты
+        </p>
+        <%= link_to "Оплатить заказ", new_order_payment_path(@order), style: "display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 0.75rem; font-weight: 600; font-size: 1.125rem; transition: all 0.3s ease;" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<% content_for :helpers do %>
+  <%
+    def order_status_style(status)
+      case status
+      when 'pending'
+        'background: rgba(245, 158, 11, 0.2); color: #F59E0B;'
+      when 'paid', 'completed'
+        'background: rgba(34, 197, 94, 0.2); color: #22C55E;'
+      when 'cancelled'
+        'background: rgba(239, 68, 68, 0.2); color: #EF4444;'
+      when 'refunded'
+        'background: rgba(168, 85, 247, 0.2); color: #A855F7;'
+      else
+        'background: rgba(148, 163, 184, 0.2); color: #94A3B8;'
+      end
+    end
+  %>
+<% end %>
