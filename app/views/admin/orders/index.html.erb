@@ -15,12 +15,12 @@
 
   <div class="card" style="padding: var(--space-5);">
     <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Ожидают оплаты</div>
-    <div style="font-size: 1.875rem; font-weight: 700; color: var(--yellow-600);"><%= @stats[:pending_orders] %></div>
+    <div style="font-size: 1.875rem; font-weight: 700; color: var(--color-warning);"><%= @stats[:pending_orders] %></div>
   </div>
 
   <div class="card" style="padding: var(--space-5);">
     <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Оплачено</div>
-    <div style="font-size: 1.875rem; font-weight: 700; color: var(--green-600);"><%= @stats[:paid_orders] %></div>
+    <div style="font-size: 1.875rem; font-weight: 700; color: var(--color-success);"><%= @stats[:paid_orders] %></div>
   </div>
 
   <div class="card" style="padding: var(--space-5);">
