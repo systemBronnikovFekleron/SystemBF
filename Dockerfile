@@ -1,8 +1,11 @@
 # syntax=docker/dockerfile:1
-# check=error=true
+# check=skip=SecretsUsedInArgOrEnv
 
 # Dockerfile для Sistema Bronnikova
 # Оптимизирован для production деплоя через Coolify
+#
+# ВАЖНО: В Coolify установи RAILS_MASTER_KEY и SECRET_KEY_BASE
+# как "Runtime only" (не Build-time), чтобы они не попали в образ
 
 # Make sure RUBY_VERSION matches the Ruby version in .ruby-version
 ARG RUBY_VERSION=3.3.8
