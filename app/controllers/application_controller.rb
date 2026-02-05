@@ -14,6 +14,9 @@ class ApplicationController < ActionController::Base
   # Pundit: rescue from unauthorized access
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
 
+  # Автоматически использовать dashboard layout для авторизованных пользователей
+  layout :layout_by_authentication
+
   private
 
   def current_user
@@ -57,5 +60,13 @@ class ApplicationController < ActionController::Base
       end
       format.json { render json: { error: 'Forbidden' }, status: :forbidden }
     end
+  end
+
+  def layout_by_authentication
+    # Исключения: страницы входа/регистрации всегда используют application layout
+    return 'application' if controller_name == 'sessions' || controller_name == 'registrations' || controller_name == 'password_resets'
+
+    # Для авторизованных пользователей - dashboard layout
+    logged_in? ? 'dashboard' : 'application'
   end
 end
