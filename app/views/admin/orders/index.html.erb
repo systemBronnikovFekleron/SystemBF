@@ -7,25 +7,25 @@
 </div>
 
 <!-- Statistics Cards -->
-<div class="grid" style="grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-8);">
-  <div class="card" style="padding: var(--space-5);">
+<div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-4); margin-bottom: var(--space-8);">
+  <div class="admin-stat-card">
     <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Всего заказов</div>
-    <div style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);"><%= @stats[:total_orders] %></div>
+    <div style="font-size: 2rem; font-weight: 700; color: var(--gray-900);"><%= @stats[:total_orders] %></div>
   </div>
 
-  <div class="card" style="padding: var(--space-5);">
+  <div class="admin-stat-card">
     <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Ожидают оплаты</div>
-    <div style="font-size: 1.875rem; font-weight: 700; color: var(--yellow-600);"><%= @stats[:pending_orders] %></div>
+    <div style="font-size: 2rem; font-weight: 700; color: var(--color-warning);"><%= @stats[:pending_orders] %></div>
   </div>
 
-  <div class="card" style="padding: var(--space-5);">
+  <div class="admin-stat-card">
     <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Оплачено</div>
-    <div style="font-size: 1.875rem; font-weight: 700; color: var(--green-600);"><%= @stats[:paid_orders] %></div>
+    <div style="font-size: 2rem; font-weight: 700; color: var(--color-success);"><%= @stats[:paid_orders] %></div>
   </div>
 
-  <div class="card" style="padding: var(--space-5);">
+  <div class="admin-stat-card">
     <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Выручка</div>
-    <div style="font-size: 1.875rem; font-weight: 700; color: var(--primary);"><%= format_currency(@stats[:total_revenue]) %></div>
+    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= format_currency(@stats[:total_revenue]) %></div>
   </div>
 </div>
 
@@ -61,57 +61,56 @@
 
 <!-- Orders Table -->
 <div class="card">
-  <table style="width: 100%; border-collapse: collapse;">
+  <table class="admin-table">
     <thead>
-      <tr style="border-bottom: 1px solid var(--gray-200);">
-        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Номер заказа</th>
-        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Пользователь</th>
-        <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Сумма</th>
-        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Товары</th>
-        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Статус</th>
-        <th style="padding: var(--space-4); text-align: left; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Дата</th>
-        <th style="padding: var(--space-4); text-align: right; font-size: 0.75rem; font-weight: 600; color: var(--gray-600); text-transform: uppercase;">Действия</th>
+      <tr>
+        <th>Номер заказа</th>
+        <th>Пользователь</th>
+        <th style="text-align: right;">Сумма</th>
+        <th>Товары</th>
+        <th>Статус</th>
+        <th>Дата</th>
+        <th style="text-align: right;">Действия</th>
       </tr>
     </thead>
     <tbody>
       <% @orders.each do |order| %>
-        <tr style="border-bottom: 1px solid var(--gray-100);">
-          <td style="padding: var(--space-4);">
-            <div style="font-weight: 600; color: var(--gray-900); font-family: monospace;"><%= order.order_number %></div>
+        <tr>
+          <td>
+            <div style="font-weight: 600; color: var(--gray-900); font-family: var(--font-mono);"><%= order.order_number %></div>
             <% if order.payment_id.present? %>
               <div style="font-size: 0.75rem; color: var(--gray-500);">ID: <%= order.payment_id %></div>
             <% end %>
           </td>
-          <td style="padding: var(--space-4);">
+          <td>
             <div style="font-weight: 500; color: var(--gray-900);"><%= order.user.full_name %></div>
             <div style="font-size: 0.875rem; color: var(--gray-600);"><%= order.user.email %></div>
           </td>
-          <td style="padding: var(--space-4); text-align: right;">
-            <div style="font-weight: 600; color: var(--gray-900); font-size: 1rem;"><%= format_currency(order.total_kopecks) %></div>
+          <td style="text-align: right;">
+            <div style="font-weight: 600; color: var(--gray-900);"><%= format_currency(order.total_kopecks) %></div>
           </td>
-          <td style="padding: var(--space-4); color: var(--gray-700);">
+          <td style="color: var(--gray-700);">
             <%= pluralize(order.order_items.count, 'товар', 'товара', 'товаров') %>
           </td>
-          <td style="padding: var(--space-4);">
+          <td>
             <% case order.status %>
             <% when 'pending' %>
-              <span style="padding: 4px 12px; background: rgba(245, 158, 11, 0.1); color: #D97706; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Ожидание</span>
+              <span class="badge badge-warning">Ожидание</span>
             <% when 'paid' %>
-              <span style="padding: 4px 12px; background: rgba(34, 197, 94, 0.1); color: #16A34A; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Оплачен</span>
+              <span class="badge badge-success">Оплачен</span>
             <% when 'completed' %>
-              <span style="padding: 4px 12px; background: rgba(59, 130, 246, 0.1); color: #2563EB; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Завершен</span>
+              <span class="badge badge-primary">Завершен</span>
             <% when 'cancelled' %>
-              <span style="padding: 4px 12px; background: rgba(239, 68, 68, 0.1); color: #DC2626; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Отменен</span>
+              <span class="badge badge-error">Отменен</span>
             <% when 'refunded' %>
-              <span style="padding: 4px 12px; background: rgba(168, 85, 247, 0.1); color: #9333EA; border-radius: 9999px; font-size: 0.75rem; font-weight: 500;">Возврат</span>
+              <span class="badge badge-secondary">Возврат</span>
             <% end %>
           </td>
-          <td style="padding: var(--space-4);">
-            <div style="font-size: 0.875rem; color: var(--gray-700);"><%= order.created_at.strftime('%d.%m.%Y') %></div>
-            <div style="font-size: 0.75rem; color: var(--gray-500);"><%= order.created_at.strftime('%H:%M') %></div>
+          <td>
+            <div style="font-size: 0.875rem; color: var(--gray-700);"><%= l(order.created_at, format: :short) %></div>
           </td>
-          <td style="padding: var(--space-4); text-align: right;">
-            <%= link_to "Детали", admin_order_path(order), style: "padding: var(--space-2) var(--space-3); color: var(--primary); text-decoration: none; font-size: 0.875rem; font-weight: 500;" %>
+          <td style="text-align: right;">
+            <%= link_to "Детали", admin_order_path(order), class: "btn btn-sm btn-outline" %>
           </td>
         </tr>
       <% end %>
