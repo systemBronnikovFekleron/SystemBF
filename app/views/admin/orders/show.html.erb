@@ -31,9 +31,9 @@
   <div style="display: flex; gap: var(--space-3);">
     <% if @order.status_paid? %>
       <%= button_to "Завершить заказ", admin_order_path(@order), method: :patch, params: { order_action: 'complete' }, class: "btn", style: "background: var(--primary); color: white;", data: { confirm: "Завершить заказ?" } %>
-      <%= button_to "Возврат", admin_order_path(@order), method: :patch, params: { order_action: 'refund' }, class: "btn btn-outline", style: "color: var(--color-error); border-color: var(--color-error);", data: { confirm: "Вернуть средства клиенту? Это действие нельзя отменить." } %>
+      <%= button_to "Возврат", admin_order_path(@order), method: :patch, params: { order_action: 'refund' }, class: "btn btn-outline", style: "color: var(--red-600); border-color: var(--red-600);", data: { confirm: "Вернуть средства клиенту? Это действие нельзя отменить." } %>
     <% elsif @order.status_pending? %>
-      <%= button_to "Отменить", admin_order_path(@order), method: :patch, params: { order_action: 'cancel' }, class: "btn btn-outline", style: "color: var(--color-error); border-color: var(--color-error);", data: { confirm: "Отменить заказ?" } %>
+      <%= button_to "Отменить", admin_order_path(@order), method: :patch, params: { order_action: 'cancel' }, class: "btn btn-outline", style: "color: var(--red-600); border-color: var(--red-600);", data: { confirm: "Отменить заказ?" } %>
     <% end %>
   </div>
 </div>
@@ -122,7 +122,7 @@
 
         <div>
           <div style="font-size: 0.75rem; color: var(--gray-600); margin-bottom: var(--space-1);">Баланс кошелька:</div>
-          <div style="font-weight: 600; color: var(--color-success);"><%= format_currency(@order.user.wallet.balance_kopecks) %></div>
+          <div style="font-weight: 600; color: var(--green-600);"><%= format_currency(@order.user.wallet.balance_kopecks) %></div>
         </div>
       </div>
 
