@@ -9,15 +9,15 @@
         <h1 class="text-gradient" style="margin-bottom: 1rem;">
           Добро пожаловать
         </h1>
-        <p style="color: var(--color-gray-600); font-size: 1.125rem; line-height: 1.8;">
+        <p style="color: var(--gray-600); font-size: 1.125rem; line-height: 1.8;">
           Войдите в свой аккаунт, чтобы продолжить обучение и развитие
         </p>
 
         <div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05)); border-radius: 1rem; border: 1px solid rgba(99, 102, 241, 0.1);">
-          <div style="font-weight: 600; margin-bottom: 1rem; color: var(--color-gray-900);">
+          <div style="font-weight: 600; margin-bottom: 1rem; color: var(--gray-900);">
             🎓 Демо-доступ для тестирования:
           </div>
-          <div style="font-family: monospace; font-size: 0.875rem; color: var(--color-gray-700); text-align: left;">
+          <div style="font-family: monospace; font-size: 0.875rem; color: var(--gray-700); text-align: left;">
             <div style="margin-bottom: 0.5rem;">
               <strong>Email:</strong> client@example.com
             </div>
@@ -31,7 +31,7 @@
       <!-- Right Side - Login Form -->
       <div class="card fade-in stagger-1">
         <h2 style="margin-bottom: 0.5rem; font-size: 1.75rem;">Вход в систему</h2>
-        <p style="color: var(--color-gray-600); margin-bottom: 2rem;">
+        <p style="color: var(--gray-600); margin-bottom: 2rem;">
           Введите ваши учетные данные
         </p>
 
@@ -49,7 +49,7 @@
           <div class="form-group">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
               <%= f.label :password, "Пароль", class: "form-label", style: "margin-bottom: 0;" %>
-              <a href="/forgot-password" style="font-size: 0.875rem; color: var(--color-primary-600); text-decoration: none;">
+              <a href="/forgot-password" style="font-size: 0.875rem; color: var(--primary); text-decoration: none;">
                 Забыли пароль?
               </a>
             </div>
@@ -63,7 +63,7 @@
           <div style="margin-bottom: 1.5rem;">
             <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
               <input type="checkbox" name="remember_me" style="width: 1rem; height: 1rem; border-radius: 0.25rem;">
-              <span style="font-size: 0.875rem; color: var(--color-gray-700);">
+              <span style="font-size: 0.875rem; color: var(--gray-700);">
                 Запомнить меня
               </span>
             </label>
@@ -72,8 +72,8 @@
           <%= f.submit "Войти", class: "btn btn-primary w-full btn-lg" %>
         <% end %>
 
-        <div style="margin-top: 1.5rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--color-gray-200);">
-          <p style="color: var(--color-gray-600); margin-bottom: 1rem;">
+        <div style="margin-top: 1.5rem; text-align: center; padding-top: 1.5rem; border-top: 1px solid var(--gray-200);">
+          <p style="color: var(--gray-600); margin-bottom: 1rem;">
             Еще нет аккаунта?
           </p>
           <a href="/register" class="btn btn-outline w-full">

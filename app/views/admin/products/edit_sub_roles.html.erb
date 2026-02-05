@@ -1,0 +1,162 @@
+<div class="admin-header">
+  <h1>Настройка доступа: <%= @product.name %></h1>
+  <%= link_to 'Назад к продукту', admin_product_path(@product), class: 'btn btn-secondary' %>
+</div>
+
+<div class="alert alert-info">
+  <h4>Как работают подроли для продуктов:</h4>
+  <ul>
+    <li><strong>Публичный доступ:</strong> Если не выбрано ни одной роли, продукт доступен всем пользователям</li>
+    <li><strong>Приватный доступ:</strong> Если выбраны роли, продукт доступен только пользователям с этими ролями (OR логика)</li>
+    <li><strong>Авто-выдача:</strong> Роли, выбранные в "Авто-выдача", будут автоматически назначены покупателю</li>
+  </ul>
+</div>
+
+<div class="row">
+  <!-- Требуемые роли для доступа -->
+  <div class="col-md-6">
+    <div class="detail-card">
+      <h2>Требуемые роли для доступа</h2>
+      <p class="text-muted">Выберите роли, у пользователей с которыми будет доступ к продукту</p>
+
+      <%= form_with url: update_sub_roles_admin_product_path(@product), method: :patch, local: true do |f| %>
+        <div class="form-group">
+          <% @available_roles.group_by { |r| r.system_role? ? 'Системные роли' : 'Кастомные роли' }.each do |group_name, roles| %>
+            <h4><%= group_name %></h4>
+            <% roles.each do |role| %>
+              <div class="form-check">
+                <%= check_box_tag 'sub_role_ids[]', role.id,
+                    @current_roles.include?(role),
+                    id: "role_#{role.id}",
+                    class: 'form-check-input' %>
+                <%= label_tag "role_#{role.id}", class: 'form-check-label' do %>
+                  <strong><%= role.display_name %></strong>
+                  <span class="badge badge-info"><%= role.level %></span>
+                  <br>
+                  <small class="text-muted"><code><%= role.name %></code></small>
+                  <% if role.description.present? %>
+                    <br>
+                    <small class="text-muted"><%= role.description %></small>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+
+        <hr>
+
+        <h2>Авто-выдача ролей при покупке</h2>
+        <p class="text-muted">Выберите роли, которые будут автоматически назначены пользователю после покупки</p>
+
+        <div class="form-group">
+          <% @available_roles.group_by { |r| r.system_role? ? 'Системные роли' : 'Кастомные роли' }.each do |group_name, roles| %>
+            <h4><%= group_name %></h4>
+            <% roles.each do |role| %>
+              <div class="form-check">
+                <%= check_box_tag 'auto_grant_sub_role_ids[]', role.id,
+                    @product.auto_grant_sub_roles.include?(role.id),
+                    id: "auto_grant_role_#{role.id}",
+                    class: 'form-check-input' %>
+                <%= label_tag "auto_grant_role_#{role.id}", class: 'form-check-label' do %>
+                  <strong><%= role.display_name %></strong>
+                  <span class="badge badge-success">Авто</span>
+                  <br>
+                  <small class="text-muted"><code><%= role.name %></code></small>
+                <% end %>
+              </div>
+            <% end %>
+          <% end %>
+        </div>
+
+        <div class="alert alert-warning">
+          <strong>Внимание:</strong> Авто-выдача ролей происходит автоматически после успешной оплаты.
+          Отозвать их можно только вручную через управление пользователями.
+        </div>
+
+        <div class="form-actions">
+          <%= f.submit 'Сохранить настройки доступа', class: 'btn btn-primary' %>
+          <%= link_to 'Отмена', admin_product_path(@product), class: 'btn btn-secondary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Текущее состояние -->
+  <div class="col-md-6">
+    <div class="detail-card">
+      <h2>Текущее состояние</h2>
+
+      <div class="detail-row">
+        <label>Продукт:</label>
+        <span><strong><%= @product.name %></strong></span>
+      </div>
+
+      <div class="detail-row">
+        <label>Статус:</label>
+        <span>
+          <% if @product.is_public? %>
+            <span class="badge badge-success">Публичный</span>
+            <p class="text-muted">Доступен всем пользователям</p>
+          <% else %>
+            <span class="badge badge-warning">Приватный</span>
+            <p class="text-muted">Доступен только пользователям с ролями:</p>
+            <ul>
+              <% @current_roles.each do |role| %>
+                <li><%= role.display_name %></li>
+              <% end %>
+            </ul>
+          <% end %>
+        </span>
+      </div>
+
+      <div class="detail-row">
+        <label>Авто-выдача:</label>
+        <span>
+          <% if @product.auto_grant_sub_roles.present? %>
+            <p class="text-success">Активна</p>
+            <ul>
+              <% SubRole.where(id: @product.auto_grant_sub_roles).each do |role| %>
+                <li><%= role.display_name %></li>
+              <% end %>
+            </ul>
+          <% else %>
+            <p class="text-muted">Не настроена</p>
+          <% end %>
+        </span>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <h3>Примеры использования</h3>
+
+      <h4>Пример 1: Бесплатный вводный курс</h4>
+      <p class="text-muted">
+        <strong>Требуемые роли:</strong> не выбрано<br>
+        <strong>Авто-выдача:</strong> не выбрано<br>
+        Результат: доступен всем, роли не выдаются
+      </p>
+
+      <h4>Пример 2: Платный курс для клиентов</h4>
+      <p class="text-muted">
+        <strong>Требуемые роли:</strong> не выбрано<br>
+        <strong>Авто-выдача:</strong> client<br>
+        Результат: доступен всем, после покупки выдается роль "Клиент"
+      </p>
+
+      <h4>Пример 3: Продвинутый курс</h4>
+      <p class="text-muted">
+        <strong>Требуемые роли:</strong> instructor_1, specialist<br>
+        <strong>Авто-выдача:</strong> не выбрано<br>
+        Результат: доступен только инструкторам и специалистам
+      </p>
+
+      <h4>Пример 4: VIP контент</h4>
+      <p class="text-muted">
+        <strong>Требуемые роли:</strong> premium_member<br>
+        <strong>Авто-выдача:</strong> premium_member<br>
+        Результат: после покупки пользователь получает доступ к VIP контенту
+      </p>
+    </div>
+  </div>
+</div>

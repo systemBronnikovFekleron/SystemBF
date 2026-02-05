@@ -112,9 +112,19 @@
     </div>
   </nav>
 
+  <!-- Admin Panel Link (for admin users) -->
+  <% if current_user&.admin_role? %>
+    <div style="padding: var(--space-4) var(--space-4) var(--space-2);">
+      <a href="/admin" class="sidebar-nav-item" style="background: linear-gradient(135deg, var(--primary), var(--purple-600)); color: white; margin: 0; font-weight: 600;">
+        <span class="sidebar-nav-icon">⚙️</span>
+        <span>Админка</span>
+      </a>
+    </div>
+  <% end %>
+
   <!-- Logout Button -->
   <div class="sidebar-footer">
-    <%= button_to "🚪 Выйти", "/api/v1/logout", method: :delete, class: "btn btn-ghost", style: "width: 100%; justify-content: flex-start; gap: 0.75rem;" %>
+    <%= button_to "🚪 Выйти", logout_path, method: :delete, class: "btn btn-ghost", style: "width: 100%; justify-content: flex-start; gap: 0.75rem;" %>
   </div>
 </aside>
 
@@ -136,8 +146,11 @@
   }
 
   .sidebar-header {
-    padding: var(--space-6) var(--space-4) var(--space-4);
+    height: 89px;
+    padding: var(--space-4);
     border-bottom: 1px solid var(--gray-200);
+    display: flex;
+    align-items: center;
   }
 
   .sidebar-nav {
@@ -179,8 +192,8 @@
   }
 
   .sidebar-nav-item.active {
-    background: var(--blue-50);
-    color: var(--blue-700);
+    background: rgba(79, 70, 229, 0.05);
+    color: var(--primary-dark);
     font-weight: 500;
   }
 

@@ -1,0 +1,42 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад', admin_wiki_pages_path, style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div>
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">
+        <% @wiki_page.breadcrumbs.each_with_index do |crumb, idx| %>
+          <%= idx > 0 ? ' / ' : '' %><%= link_to crumb.title, admin_wiki_page_path(crumb), style: 'color: var(--primary);' %>
+        <% end %>
+      </div>
+      <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 1rem;"><%= @wiki_page.title %></h1>
+      <div style="display: flex; gap: 0.5rem;">
+        <span class="badge <%= @wiki_page.status_published? ? 'badge-success' : 'badge-warning' %>"><%= @wiki_page.status.humanize %></span>
+        <% if @wiki_page.parent %><span class="badge badge-secondary">📂 <%= @wiki_page.parent.title %></span><% end %>
+        <% if @wiki_page.has_children? %><span class="badge badge-secondary"><%= @wiki_page.children.count %> подстраниц</span><% end %>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <%= link_to 'Изменить', edit_admin_wiki_page_path(@wiki_page), class: 'btn btn-primary' %>
+      <%= link_to '+ Подстраница', new_admin_wiki_page_path(parent_id: @wiki_page.id), class: 'btn btn-outline' %>
+      <%= button_to 'Удалить', admin_wiki_page_path(@wiki_page), method: :delete, data: { confirm: @wiki_page.has_children? ? "У страницы есть #{@wiki_page.children.count} подстраниц. Удаление невозможно." : 'Удалить?' }, class: 'btn btn-outline', style: 'color: var(--color-error);', disabled: @wiki_page.has_children? %>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;"><div style="line-height: 1.7; color: var(--gray-800);"><%= simple_format(@wiki_page.content) %></div></div>
+
+  <% if @children.any? %>
+    <div class="card">
+      <div style="padding: 1rem; border-bottom: 1px solid var(--gray-200);"><h3 style="font-weight: 600;">Подстраницы</h3></div>
+      <% @children.each do |child| %>
+        <div style="padding: 1rem; border-bottom: 1px solid var(--gray-100); display: flex; justify-content: space-between;">
+          <div><strong><%= child.title %></strong><span class="badge <%= child.status_published? ? 'badge-success' : 'badge-warning' %>" style="margin-left: 0.5rem;"><%= child.status.humanize %></span></div>
+          <div style="display: flex; gap: 0.5rem;"><%= link_to 'Просмотр', admin_wiki_page_path(child), class: 'btn btn-sm btn-outline' %><%= link_to 'Изменить', edit_admin_wiki_page_path(child), class: 'btn btn-sm btn-outline' %></div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-md); font-size: 0.875rem; color: var(--gray-600);">
+    Создал: <%= @wiki_page.created_by&.full_name || 'Не указан' %> • Обновил: <%= @wiki_page.updated_by&.full_name || 'Не указан' %> • <%= l(@wiki_page.updated_at, format: :long) %>
+  </div>
+</div>

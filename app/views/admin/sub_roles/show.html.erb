@@ -1,0 +1,89 @@
+<% content_for :title, @sub_role.display_name %>
+
+<div style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center;">
+  <%= link_to "← Назад к подролям", admin_sub_roles_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
+  <div style="display: flex; gap: var(--space-3);">
+    <% unless @sub_role.system_role? %>
+      <%= link_to "Изменить", edit_admin_sub_role_path(@sub_role), style: "padding: var(--space-3) var(--space-5); background: var(--primary); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+      <%= button_to "Удалить", admin_sub_role_path(@sub_role), method: :delete,
+          data: { confirm: 'Вы уверены?' },
+          style: "padding: var(--space-3) var(--space-5); background: var(--color-error); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+    <% end %>
+  </div>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">
+  <%= @sub_role.display_name %>
+</h1>
+
+<div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-8);">
+  <% if @sub_role.system_role? %>
+    <span style="padding: 4px 12px; background: rgba(245, 158, 11, 0.1); color: #D97706; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">Системная роль</span>
+  <% else %>
+    <span style="padding: 4px 12px; background: rgba(147, 51, 234, 0.1); color: var(--secondary); border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">Кастомная роль</span>
+  <% end %>
+  <span style="padding: 4px 12px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">Уровень <%= @sub_role.level %></span>
+</div>
+
+<!-- Статистика -->
+<div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: var(--space-4); margin-bottom: var(--space-6);">
+  <div class="card" style="padding: var(--space-5);">
+    <div style="font-size: 2.5rem; font-weight: 700; color: var(--primary); margin-bottom: var(--space-2);"><%= @users_count %></div>
+    <div style="font-size: 0.875rem; color: var(--gray-600);">Пользователей с этой ролью</div>
+  </div>
+  <div class="card" style="padding: var(--space-5);">
+    <div style="font-size: 2.5rem; font-weight: 700; color: var(--secondary); margin-bottom: var(--space-2);"><%= @content_count %></div>
+    <div style="font-size: 0.875rem; color: var(--gray-600);">Элементов контента</div>
+  </div>
+</div>
+
+<div style="display: grid; gap: var(--space-6);">
+  <!-- Основная информация -->
+  <div class="card" style="padding: var(--space-6);">
+    <h2 style="font-size: 1.125rem; font-weight: 600; margin-bottom: var(--space-4);">Основная информация</h2>
+
+    <dl style="display: grid; gap: var(--space-4);">
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">ID:</dt>
+        <dd><%= @sub_role.id %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Название (name):</dt>
+        <dd><code style="padding: 2px 6px; background: var(--gray-100); border-radius: var(--radius-sm); font-size: 0.875rem;"><%= @sub_role.name %></code></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Отображаемое имя:</dt>
+        <dd style="font-weight: 500;"><%= @sub_role.display_name %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Описание:</dt>
+        <dd><%= @sub_role.description.presence || '—' %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Уровень:</dt>
+        <dd><span style="padding: 4px 12px; background: rgba(79, 70, 229, 0.1); color: var(--primary); border-radius: var(--radius-md); font-size: 0.875rem; font-weight: 600;"><%= @sub_role.level %></span></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Создана:</dt>
+        <dd><%= l(@sub_role.created_at, format: :long) %></dd>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Обновлена:</dt>
+        <dd><%= l(@sub_role.updated_at, format: :long) %></dd>
+      </div>
+    </dl>
+  </div>
+
+  <% if @sub_role.system_role? %>
+    <div style="padding: var(--space-4); background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3B82F6; border-radius: var(--radius-md);">
+      <strong style="color: #1E40AF;">Системная роль</strong> — эту роль нельзя редактировать или удалять.
+      Системные роли создаются автоматически и используются для базового управления доступом.
+    </div>
+  <% end %>
+</div>

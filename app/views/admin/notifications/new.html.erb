@@ -1,0 +1,98 @@
+<div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+  <div style="margin-bottom: 2rem;">
+    <%= link_to '← Назад к списку', admin_notifications_path, style: 'color: var(--primary); font-weight: 500;' %>
+  </div>
+
+  <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 2rem;">
+    Создать уведомление
+  </h1>
+
+  <div class="card">
+    <%= form_with model: @notification, url: admin_notifications_path, local: true do |f| %>
+      <!-- Broadcast toggle -->
+      <div class="form-group" style="margin-bottom: 2rem; padding: 1.5rem; background: rgba(79, 70, 229, 0.05); border-radius: var(--radius-lg);">
+        <label style="display: flex; align-items: center; gap: 0.75rem; cursor: pointer;">
+          <%= check_box_tag :broadcast, 'true', false, id: 'broadcast_checkbox', onchange: 'toggleUserSelect()' %>
+          <div>
+            <div style="font-weight: 600; color: var(--gray-900);">Отправить всем пользователям</div>
+            <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem;">
+              Системное уведомление будет отправлено всем зарегистрированным пользователям
+            </div>
+          </div>
+        </label>
+      </div>
+
+      <!-- User select (hidden when broadcast) -->
+      <div class="form-group" id="user_select_group">
+        <%= f.label :user_id, 'Пользователь' %>
+        <%= f.collection_select :user_id, @users, :id, :email,
+          { prompt: 'Выберите пользователя' },
+          { class: 'form-select', required: true }
+        %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :notification_type, 'Тип уведомления' %>
+        <%= f.select :notification_type,
+          options_for_select([
+            ['Системное', 'system'],
+            ['Заказ оплачен', 'order_paid'],
+            ['Доступ открыт', 'product_access_granted'],
+            ['Достижение разблокировано', 'achievement_unlocked'],
+            ['Пополнение кошелька', 'wallet_deposit'],
+            ['Списание с кошелька', 'wallet_withdrawal']
+          ]),
+          {},
+          { class: 'form-select', required: true }
+        %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :title, 'Заголовок' %>
+        <%= f.text_field :title, class: 'form-input', required: true, placeholder: 'Краткий заголовок уведомления' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :message, 'Сообщение' %>
+        <%= f.text_area :message, class: 'form-textarea', rows: 5, placeholder: 'Подробное описание уведомления' %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :action_url, 'URL действия (опционально)' %>
+        <%= f.text_field :action_url, class: 'form-input', placeholder: '/dashboard/orders' %>
+        <small style="color: var(--gray-600); font-size: 0.875rem;">Относительный путь внутри приложения</small>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :action_text, 'Текст кнопки (опционально)' %>
+        <%= f.text_field :action_text, class: 'form-input', placeholder: 'Смотреть заказ' %>
+      </div>
+
+      <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+        <%= f.submit 'Создать уведомление', class: 'btn btn-primary' %>
+        <%= link_to 'Отмена', admin_notifications_path, class: 'btn btn-secondary' %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  function toggleUserSelect() {
+    const broadcast = document.getElementById('broadcast_checkbox').checked;
+    const userSelectGroup = document.getElementById('user_select_group');
+    const userSelect = userSelectGroup.querySelector('select');
+
+    if (broadcast) {
+      userSelectGroup.style.display = 'none';
+      userSelect.removeAttribute('required');
+    } else {
+      userSelectGroup.style.display = 'block';
+      userSelect.setAttribute('required', 'required');
+    }
+  }
+
+  // Initialize on page load
+  document.addEventListener('DOMContentLoaded', function() {
+    toggleUserSelect();
+  });
+</script>

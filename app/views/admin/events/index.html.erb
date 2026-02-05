@@ -1,0 +1,54 @@
+<div style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700;">Управление событиями</h1>
+    <%= link_to 'Создать событие', new_admin_event_path, class: 'btn btn-primary' %>
+  </div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card"><div style="font-size: 0.875rem; color: var(--gray-600);">Всего</div><div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @total_count %></div></div>
+    <div class="admin-stat-card"><div style="font-size: 0.875rem; color: var(--gray-600);">Предстоящие</div><div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @upcoming_count %></div></div>
+    <div class="admin-stat-card"><div style="font-size: 0.875rem; color: var(--gray-600);">Прошедшие</div><div style="font-size: 2rem; font-weight: 700; color: var(--gray-500);"><%= @past_count %></div></div>
+  </div>
+
+  <%= form_with url: admin_events_path, method: :get do |f| %>
+    <div class="admin-filters">
+      <div><%= f.label :status %><%= f.select :status, [['Все', ''], ['Черновик', 'draft'], ['Опубликовано', 'published'], ['Отменено', 'cancelled'], ['Завершено', 'completed']], {}, class: 'form-select' %></div>
+      <div><%= f.label :time, 'Время' %><%= f.select :time, [['Все', ''], ['Предстоящие', 'upcoming'], ['Прошедшие', 'past']], {}, class: 'form-select' %></div>
+      <div style="display: flex; align-items: flex-end;"><%= f.submit 'Фильтровать', class: 'btn btn-secondary' %></div>
+    </div>
+  <% end %>
+
+  <%= form_with url: bulk_action_admin_events_path, method: :post do %>
+    <div style="display: flex; gap: 0.75rem; margin-bottom: 1.5rem;">
+      <select name="bulk_action" class="form-select" style="max-width: 200px;"><option value="">Действия</option><option value="publish">Опубликовать</option><option value="cancel">Отменить</option><option value="complete">Завершить</option><option value="delete">Удалить</option></select>
+      <button type="submit" class="btn btn-outline">Применить</button>
+    </div>
+
+    <div class="card">
+      <table class="admin-table">
+        <thead><tr><th style="width: 40px;"><input type="checkbox" id="select-all"></th><th>Название</th><th>Дата</th><th>Регистраций</th><th>Статус</th><th>Действия</th></tr></thead>
+        <tbody>
+          <% @events.each do |event| %>
+            <tr>
+              <td><input type="checkbox" name="event_ids[]" value="<%= event.id %>" class="event-checkbox"></td>
+              <td><strong><%= event.title %></strong><br><small style="color: var(--gray-600);"><%= event.format_location %> • <%= event.free? ? 'Бесплатно' : humanized_money_with_symbol(event.price) %></small></td>
+              <td><%= l(event.starts_at, format: :short) %></td>
+              <td><%= link_to event.event_registrations.count, registrations_admin_event_path(event), class: 'badge badge-primary' %></td>
+              <td><span class="badge <%= event.status_published? ? 'badge-success' : 'badge-warning' %>"><%= event.status.humanize %></span></td>
+              <td><div style="display: flex; gap: 0.5rem;"><%= link_to 'Просмотр', admin_event_path(event), class: 'btn btn-sm btn-outline' %><%= link_to 'Изменить', edit_admin_event_path(event), class: 'btn btn-sm btn-outline' %></div></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem;"><%= paginate @events %></div>
+</div>
+
+<script>
+  document.getElementById('select-all')?.addEventListener('change', function() {
+    document.querySelectorAll('.event-checkbox').forEach(cb => cb.checked = this.checked);
+  });
+</script>

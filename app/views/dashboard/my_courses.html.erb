@@ -4,7 +4,7 @@
 <!-- Filters -->
 <div style="margin-bottom: var(--space-6);">
   <div style="display: flex; gap: var(--space-2); flex-wrap: wrap;">
-    <button class="btn btn-sm" style="background: var(--blue-600); color: white;" onclick="filterCourses('all')">
+    <button class="btn btn-sm" style="background: var(--primary); color: white;" onclick="filterCourses('all')">
       Все (<%= @product_accesses.count %>)
     </button>
     <button class="btn btn-sm btn-outline" onclick="filterCourses('video_course')">
@@ -32,7 +32,7 @@
           width: 60px;
           height: 60px;
           border-radius: var(--radius-lg);
-          background: var(--blue-50);
+          background: rgba(79, 70, 229, 0.05);
           display: flex;
           align-items: center;
           justify-content: center;
@@ -46,7 +46,7 @@
         <h3 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-2);">
           <%= access.product.name %>
         </h3>
-        <div style="display: inline-block; padding: 4px 8px; background: var(--blue-100); color: var(--blue-700); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 500; margin-bottom: var(--space-4);">
+        <div style="display: inline-block; padding: 4px 8px; background: rgba(79, 70, 229, 0.1); color: var(--primary-dark); border-radius: var(--radius-sm); font-size: 0.75rem; font-weight: 500; margin-bottom: var(--space-4);">
           <%= product_type_label(access.product.product_type) %>
         </div>
 
@@ -61,12 +61,12 @@
         <div style="margin-bottom: var(--space-4);">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-2);">
             <span style="font-size: 0.8125rem; color: var(--gray-600); font-weight: 500;">Прогресс</span>
-            <span style="font-size: 0.8125rem; font-weight: 600; color: var(--blue-600);">
+            <span style="font-size: 0.8125rem; font-weight: 600; color: var(--primary);">
               <%= rand(15..95) %>%
             </span>
           </div>
           <div style="width: 100%; height: 8px; background: var(--gray-200); border-radius: 4px; overflow: hidden;">
-            <div style="width: <%= rand(15..95) %>%; height: 100%; background: linear-gradient(90deg, var(--blue-500), var(--blue-600)); transition: width 0.5s;"></div>
+            <div style="width: <%= rand(15..95) %>%; height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary)); transition: width 0.5s;"></div>
           </div>
         </div>
 
@@ -110,7 +110,7 @@
     buttons.forEach(btn => {
       if (btn.getAttribute('onclick').includes(`'${type}'`)) {
         btn.className = 'btn btn-sm';
-        btn.style.background = 'var(--blue-600)';
+        btn.style.background = 'var(--primary)';
         btn.style.color = 'white';
       } else {
         btn.className = 'btn btn-sm btn-outline';

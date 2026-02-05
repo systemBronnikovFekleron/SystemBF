@@ -1,0 +1,46 @@
+<%= form_with model: [:admin, category], local: true do |f| %>
+  <% if category.errors.any? %>
+    <div style="background: rgba(220, 76, 62, 0.1); border: 1px solid var(--color-error); border-radius: var(--radius-md); padding: 1rem; margin-bottom: 1.5rem;">
+      <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--color-error); margin-bottom: 0.5rem;">
+        <%= pluralize(category.errors.count, "ошибка", "ошибки", "ошибок") %>:
+      </h3>
+      <ul style="list-style: disc; margin-left: 1.5rem; color: var(--color-error); font-size: 0.875rem;">
+        <% category.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :name, 'Название категории *' %>
+    <%= f.text_field :name, class: 'form-input', required: true, placeholder: 'Видеокурсы' %>
+    <small style="color: var(--gray-600); font-size: 0.875rem;">Уникальное название категории</small>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :slug, 'URL-slug (опционально)' %>
+    <%= f.text_field :slug, class: 'form-input', placeholder: 'videokursy' %>
+    <small style="color: var(--gray-600); font-size: 0.875rem;">
+      Будет сгенерирован автоматически из названия, если не указан
+    </small>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :description, 'Описание' %>
+    <%= f.text_area :description, class: 'form-textarea', rows: 4, placeholder: 'Краткое описание категории для пользователей' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :position, 'Позиция (порядок отображения)' %>
+    <%= f.number_field :position, class: 'form-input', min: 0, placeholder: '0' %>
+    <small style="color: var(--gray-600); font-size: 0.875rem;">
+      Меньшее число = выше в списке. Можно также менять через drag-and-drop в списке категорий.
+    </small>
+  </div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+    <%= f.submit category.new_record? ? 'Создать категорию' : 'Сохранить изменения', class: 'btn btn-primary' %>
+    <%= link_to 'Отмена', admin_categories_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

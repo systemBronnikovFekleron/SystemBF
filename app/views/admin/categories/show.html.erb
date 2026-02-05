@@ -1,0 +1,128 @@
+<div style="padding: 2rem;">
+  <div style="margin-bottom: 2rem;">
+    <%= link_to '← Назад к категориям', admin_categories_path, style: 'color: var(--primary); font-weight: 500;' %>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900); margin-bottom: 0.5rem;">
+        <%= @category.name %>
+      </h1>
+      <% if @category.description.present? %>
+        <p style="color: var(--gray-600); margin-bottom: 1rem;"><%= @category.description %></p>
+      <% end %>
+      <div style="display: flex; gap: 1rem; align-items: center;">
+        <code style="font-size: 0.875rem; color: var(--secondary); background: rgba(147, 51, 234, 0.05); padding: 0.25rem 0.5rem; border-radius: 4px;">
+          <%= @category.slug %>
+        </code>
+        <span class="badge badge-secondary">Позиция: <%= @category.position || 0 %></span>
+      </div>
+    </div>
+
+    <div style="display: flex; gap: 0.75rem; align-items: center;">
+      <%= link_to 'Изменить', edit_admin_category_path(@category), class: 'btn btn-primary' %>
+      <% if @category.products.any? %>
+        <button type="button" disabled class="btn btn-outline" style="background: var(--gray-100); color: var(--gray-500); cursor: not-allowed; border-color: var(--gray-300);" title="Нельзя удалить категорию с продуктами">
+          Удалить (есть <%= @category.products.count %> <%= Russian::p(@category.products.count, 'продукт', 'продукта', 'продуктов') %>)
+        </button>
+      <% else %>
+        <%= button_to 'Удалить категорию',
+          admin_category_path(@category),
+          method: :delete,
+          data: { confirm: 'Удалить категорию? Это действие нельзя отменить.' },
+          class: 'btn btn-outline',
+          style: 'color: #DC2626; border-color: #DC2626;',
+          form: { style: 'display: inline;' }
+        %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Всего продуктов</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @category.products.count %></div>
+    </div>
+
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Опубликовано</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @category.products.published.count %></div>
+    </div>
+
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Черновиков</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--accent);"><%= @category.products.draft.count %></div>
+    </div>
+  </div>
+
+  <!-- Products Table -->
+  <div class="card">
+    <div style="padding: 1.5rem; border-bottom: 1px solid var(--gray-200);">
+      <h2 style="font-size: 1.25rem; font-weight: 600; color: var(--gray-900);">Продукты в категории</h2>
+    </div>
+
+    <% if @products.any? %>
+      <div style="overflow-x: auto;">
+        <table class="admin-table" style="width: 100%; min-width: 800px;">
+        <thead>
+          <tr>
+            <th>Название</th>
+            <th>Тип</th>
+            <th>Цена</th>
+            <th>Статус</th>
+            <th>Дата создания</th>
+            <th>Действия</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @products.each do |product| %>
+            <tr>
+              <td>
+                <div style="font-weight: 600; color: var(--gray-900);"><%= product.name %></div>
+                <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem;">
+                  <%= truncate(product.description, length: 60) %>
+                </div>
+              </td>
+              <td>
+                <span class="badge badge-secondary">
+                  <%= product.product_type.humanize %>
+                </span>
+              </td>
+              <td style="font-weight: 600; color: var(--gray-900);">
+                <%= humanized_money_with_symbol(product.price) %>
+              </td>
+              <td>
+                <% if product.published? %>
+                  <span class="badge badge-success">Опубликован</span>
+                <% elsif product.draft? %>
+                  <span class="badge badge-warning">Черновик</span>
+                <% else %>
+                  <span class="badge badge-secondary">Архив</span>
+                <% end %>
+              </td>
+              <td style="color: var(--gray-600); font-size: 0.875rem;">
+                <%= l(product.created_at, format: :short) %>
+              </td>
+              <td>
+                <%= link_to 'Подробнее', admin_product_path(product), class: 'btn btn-sm btn-outline' %>
+              </td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+      </div>
+
+      <!-- Pagination -->
+      <div style="padding: 1.5rem; border-top: 1px solid var(--gray-200); display: flex; justify-content: center;">
+        <%= paginate @products %>
+      </div>
+    <% else %>
+      <div style="padding: 3rem; text-align: center; color: var(--gray-600);">
+        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">📦</div>
+        <div style="font-weight: 600; margin-bottom: 0.5rem;">Нет продуктов</div>
+        <div style="font-size: 0.875rem;">В этой категории пока нет продуктов</div>
+      </div>
+    <% end %>
+  </div>
+</div>

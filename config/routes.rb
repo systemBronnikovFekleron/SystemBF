@@ -70,12 +70,25 @@ Rails.application.routes.draw do
   # Admin routes
   namespace :admin do
     root to: 'dashboard#index'
+
+    # Impersonation management
+    resources :impersonations, only: [:index, :show, :create, :destroy]
+
+    # SubRoles management
+    resources :sub_roles
+
     resources :products do
       post :bulk_action, on: :collection
       resource :form_generator, only: [:show]
+      member do
+        get :edit_sub_roles
+        patch :update_sub_roles
+      end
     end
     resources :orders, only: [:index, :show, :update]
-    resources :users, only: [:index, :show, :edit, :update]
+    resources :users, only: [:index, :show, :edit, :update] do
+      resources :sub_roles, controller: 'user_sub_roles', only: [:index, :create, :destroy]
+    end
     resources :interaction_histories
     resources :order_requests, only: [:index, :show] do
       member do
@@ -102,6 +115,44 @@ Rails.application.routes.draw do
         post :duplicate
       end
     end
+
+    # Notifications management
+    resources :notifications, only: [:index, :new, :create, :destroy] do
+      collection do
+        post :bulk_destroy
+      end
+    end
+
+    # Categories management
+    resources :categories do
+      collection do
+        post :reorder
+      end
+    end
+
+    # Articles management
+    resources :articles do
+      collection do
+        post :bulk_action
+      end
+    end
+
+    # Events management
+    resources :events do
+      member do
+        get :registrations
+      end
+      collection do
+        post :bulk_action
+      end
+    end
+
+    # Wiki Pages management
+    resources :wiki_pages do
+      collection do
+        post :reorder
+      end
+    end
   end
 
   # Events routes
@@ -124,6 +175,7 @@ Rails.application.routes.draw do
   get 'dashboard/my-courses', to: 'dashboard#my_courses', as: :dashboard_my_courses
   get 'dashboard/achievements', to: 'dashboard#achievements', as: :dashboard_achievements
   get 'dashboard/notifications', to: 'dashboard#notifications', as: :dashboard_notifications
+  post 'dashboard/notifications/:id/read', to: 'dashboard#mark_notification_read', as: :mark_notification_read
   get 'dashboard/settings', to: 'dashboard#settings', as: :dashboard_settings
 
   # New dashboard routes for content

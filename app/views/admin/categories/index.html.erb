@@ -1,0 +1,135 @@
+<div style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+      Управление категориями
+    </h1>
+    <%= link_to 'Создать категорию', new_admin_category_path, class: 'btn btn-primary' %>
+  </div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Всего категорий</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @categories_count %></div>
+    </div>
+
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Всего продуктов</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @products_count %></div>
+    </div>
+  </div>
+
+  <!-- Help text -->
+  <div style="background: rgba(79, 70, 229, 0.05); padding: 1rem; border-radius: var(--radius-lg); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+    <div style="font-weight: 600; color: var(--gray-900); margin-bottom: 0.25rem;">💡 Drag & Drop</div>
+    <div style="font-size: 0.875rem; color: var(--gray-700);">
+      Вы можете изменить порядок категорий, перетаскивая строки. Изменения сохраняются автоматически.
+    </div>
+  </div>
+
+  <!-- Categories Table -->
+  <div class="card" style="overflow-x: auto;">
+    <table class="admin-table" id="categories-table" style="width: 100%; min-width: 900px;">
+      <thead>
+        <tr>
+          <th style="width: 50px;">Порядок</th>
+          <th>Название</th>
+          <th>Slug</th>
+          <th>Описание</th>
+          <th style="text-align: center;">Продуктов</th>
+          <th>Дата создания</th>
+          <th style="width: 150px;">Действия</th>
+        </tr>
+      </thead>
+      <tbody id="sortable-categories">
+        <% @categories.each do |category| %>
+          <tr data-category-id="<%= category.id %>" class="sortable-row" style="cursor: move;">
+            <td style="text-align: center; color: var(--gray-500);">
+              <span style="font-size: 1.25rem;">⋮⋮</span>
+            </td>
+            <td>
+              <div style="font-weight: 600; color: var(--gray-900);"><%= category.name %></div>
+            </td>
+            <td>
+              <code style="font-size: 0.875rem; color: var(--secondary); background: rgba(147, 51, 234, 0.05); padding: 0.25rem 0.5rem; border-radius: 4px;">
+                <%= category.slug %>
+              </code>
+            </td>
+            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <%= category.description || '-' %>
+            </td>
+            <td style="text-align: center;">
+              <% if category.products.any? %>
+                <%= link_to category.products.count, admin_category_path(category), class: 'badge badge-primary', style: 'text-decoration: none;' %>
+              <% else %>
+                <span style="color: var(--gray-400);">0</span>
+              <% end %>
+            </td>
+            <td style="color: var(--gray-600); font-size: 0.875rem;">
+              <%= l(category.created_at, format: :short) %>
+            </td>
+            <td>
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
+                <%= link_to 'Просмотр', admin_category_path(category), class: 'btn btn-sm btn-outline' %>
+                <%= link_to 'Изменить', edit_admin_category_path(category), class: 'btn btn-sm btn-outline' %>
+                <% if category.products.any? %>
+                  <button type="button" disabled class="btn btn-sm" style="background: var(--gray-200); color: var(--gray-500); cursor: not-allowed; border: 1px solid var(--gray-300);" title="У категории есть <%= category.products.count %> продуктов">
+                    Удалить
+                  </button>
+                <% else %>
+                  <%= button_to 'Удалить',
+                    admin_category_path(category),
+                    method: :delete,
+                    data: { confirm: 'Удалить категорию? Это действие нельзя отменить.' },
+                    class: 'btn btn-sm',
+                    style: 'background: white; color: #DC2626; border: 1px solid #DC2626;',
+                    form: { style: 'display: inline;' }
+                  %>
+                <% end %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @categories.empty? %>
+      <div style="padding: 3rem; text-align: center; color: var(--gray-600);">
+        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">📂</div>
+        <div style="font-weight: 600; margin-bottom: 0.5rem;">Нет категорий</div>
+        <div style="font-size: 0.875rem;">Создайте первую категорию для организации продуктов</div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const tbody = document.getElementById('sortable-categories');
+    if (tbody) {
+      const sortable = Sortable.create(tbody, {
+        animation: 150,
+        handle: '.sortable-row',
+        onEnd: function() {
+          const categoryIds = Array.from(tbody.querySelectorAll('[data-category-id]'))
+            .map(row => row.dataset.categoryId);
+
+          fetch('<%= reorder_admin_categories_path %>', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+              'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content
+            },
+            body: JSON.stringify({ categories: categoryIds })
+          }).then(response => {
+            if (response.ok) {
+              // Show success message (optional)
+              console.log('Order updated successfully');
+            }
+          });
+        }
+      });
+    }
+  });
+</script>

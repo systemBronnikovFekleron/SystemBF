@@ -12,7 +12,7 @@
          quantity: item.quantity
        } }.to_json %>"
      <% end %>>
-  <%= link_to "← Назад к заказам", orders_path, style: "display: inline-block; margin-bottom: 2rem; color: var(--text-secondary); text-decoration: none; transition: color 0.2s;" %>
+  <%= link_to "← Назад к заказам", orders_path, style: "display: inline-block; margin-bottom: 2rem; color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
 
   <h1 class="page-title" style="font-size: 2.5rem; font-weight: 700; margin-bottom: 0.5rem; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
     Заказ № <%= @order.order_number %>
@@ -22,7 +22,7 @@
     <span class="badge badge-<%= @order.status %>" style="padding: 0.5rem 1rem; border-radius: 9999px; font-size: 0.875rem; font-weight: 600; <%= order_status_style(@order.status) %>">
       <%= t("order_status.#{@order.status}") %>
     </span>
-    <span style="color: var(--text-secondary); font-size: 0.875rem;">
+    <span style="color: var(--gray-600); font-size: 0.875rem;">
       <%= l(@order.created_at, format: :long) %>
     </span>
   </div>
@@ -36,17 +36,17 @@
 
       <div style="display: grid; gap: 1rem;">
         <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-secondary);">Дата создания:</span>
+          <span style="color: var(--gray-600);">Дата создания:</span>
           <span style="font-weight: 500;"><%= l(@order.created_at, format: :long) %></span>
         </div>
 
         <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-secondary);">Статус:</span>
+          <span style="color: var(--gray-600);">Статус:</span>
           <span style="font-weight: 500;"><%= t("order_status.#{@order.status}") %></span>
         </div>
 
         <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-secondary);">Способ оплаты:</span>
+          <span style="color: var(--gray-600);">Способ оплаты:</span>
           <span style="font-weight: 500;">
             <% if @order.payment_method == 'wallet' %>
               Кошелек
@@ -60,7 +60,7 @@
 
         <% if @order.paid_at %>
           <div style="display: flex; justify-content: space-between;">
-            <span style="color: var(--text-secondary);">Дата оплаты:</span>
+            <span style="color: var(--gray-600);">Дата оплаты:</span>
             <span style="font-weight: 500;"><%= l(@order.paid_at, format: :long) %></span>
           </div>
         <% end %>
@@ -75,7 +75,7 @@
 
       <div style="display: grid; gap: 1rem;">
         <% @order.order_items.each do |item| %>
-          <div style="display: flex; gap: 1rem; padding: 1rem; background: var(--surface); border-radius: 0.75rem;">
+          <div style="display: flex; gap: 1rem; padding: 1rem; background: white; border-radius: 0.75rem;">
             <!-- Иконка продукта -->
             <div style="width: 60px; height: 60px; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
               <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -89,7 +89,7 @@
               <h3 style="font-weight: 600; margin-bottom: 0.25rem;">
                 <%= item.product.name %>
               </h3>
-              <p style="color: var(--text-secondary); font-size: 0.875rem;">
+              <p style="color: var(--gray-600); font-size: 0.875rem;">
                 <%= item.quantity %> шт. × <%= humanized_money_with_symbol(item.price) %>
               </p>
             </div>
@@ -129,7 +129,7 @@
                   <h3 style="font-weight: 600; margin-bottom: 0.25rem;">
                     <%= item.product.name %>
                   </h3>
-                  <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                  <p style="color: var(--gray-600); font-size: 0.875rem;">
                     Доступ предоставлен
                   </p>
                 </div>
@@ -142,7 +142,7 @@
     <% elsif @order.pending? %>
       <!-- Кнопка оплаты для неоплаченных заказов -->
       <div class="glass-card" style="padding: 2rem; text-align: center;">
-        <p style="color: var(--text-secondary); margin-bottom: 1.5rem;">
+        <p style="color: var(--gray-600); margin-bottom: 1.5rem;">
           Заказ ожидает оплаты
         </p>
         <%= link_to "Оплатить заказ", new_order_payment_path(@order), style: "display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 0.75rem; font-weight: 600; font-size: 1.125rem; transition: all 0.3s ease;" %>

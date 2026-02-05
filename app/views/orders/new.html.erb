@@ -15,18 +15,18 @@
 
           <div style="display: grid; gap: 1rem;">
             <div>
-              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">Email</label>
-              <input type="email" value="<%= current_user.email %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text);">
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem;">Email</label>
+              <input type="email" value="<%= current_user.email %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900);">
             </div>
 
             <div>
-              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">Имя</label>
-              <input type="text" value="<%= current_user.profile&.first_name || current_user.first_name %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text);">
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem;">Имя</label>
+              <input type="text" value="<%= current_user.profile&.first_name || current_user.first_name %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900);">
             </div>
 
             <div>
-              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">Телефон</label>
-              <input type="tel" value="<%= current_user.profile&.phone %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text);">
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem;">Телефон</label>
+              <input type="tel" value="<%= current_user.profile&.phone %>" readonly style="width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900);">
             </div>
           </div>
         </div>
@@ -39,14 +39,14 @@
 
           <div style="display: grid; gap: 1rem;">
             <!-- Оплата кошельком -->
-            <label class="payment-method" data-action="click->checkout#selectPaymentMethod" style="display: flex; align-items: center; padding: 1.5rem; background: var(--surface); border: 2px solid rgba(255,255,255,0.1); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;">
+            <label class="payment-method" data-action="click->checkout#selectPaymentMethod" style="display: flex; align-items: center; padding: 1.5rem; background: white; border: 2px solid rgba(255,255,255,0.1); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;">
               <%= form.radio_button :payment_method, "wallet",
                   checked: true,
                   data: { checkout_target: "paymentMethod" },
                   style: "margin-right: 1rem; width: 1.25rem; height: 1.25rem;" %>
               <div style="flex: 1;">
                 <div style="font-weight: 600; margin-bottom: 0.25rem;">Оплата из кошелька</div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                <div style="color: var(--gray-600); font-size: 0.875rem;">
                   Доступно: <%= humanized_money_with_symbol(current_user.wallet.balance) %>
                 </div>
               </div>
@@ -58,13 +58,13 @@
             </label>
 
             <!-- Оплата картой -->
-            <label class="payment-method" data-action="click->checkout#selectPaymentMethod" style="display: flex; align-items: center; padding: 1.5rem; background: var(--surface); border: 2px solid rgba(255,255,255,0.1); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;">
+            <label class="payment-method" data-action="click->checkout#selectPaymentMethod" style="display: flex; align-items: center; padding: 1.5rem; background: white; border: 2px solid rgba(255,255,255,0.1); border-radius: 0.75rem; cursor: pointer; transition: all 0.2s;">
               <%= form.radio_button :payment_method, "cloudpayments",
                   data: { checkout_target: "paymentMethod" },
                   style: "margin-right: 1rem; width: 1.25rem; height: 1.25rem;" %>
               <div style="flex: 1;">
                 <div style="font-weight: 600; margin-bottom: 0.25rem;">Оплата картой</div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                <div style="color: var(--gray-600); font-size: 0.875rem;">
                   Visa, MasterCard, МИР
                 </div>
               </div>
@@ -104,7 +104,7 @@
                 <div style="font-weight: 500; margin-bottom: 0.25rem;">
                   <%= item[:product].name %>
                 </div>
-                <div style="color: var(--text-secondary); font-size: 0.875rem;">
+                <div style="color: var(--gray-600); font-size: 0.875rem;">
                   <%= item[:quantity] %> шт. × <%= humanized_money_with_symbol(item[:product].price) %>
                 </div>
               </div>
@@ -124,7 +124,7 @@
         </div>
 
         <!-- Информация о цифровых продуктах -->
-        <div style="padding: 1rem; background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.3); border-radius: 0.5rem; font-size: 0.875rem; color: var(--text-secondary);">
+        <div style="padding: 1rem; background: rgba(79, 70, 229, 0.1); border: 1px solid rgba(79, 70, 229, 0.3); border-radius: 0.5rem; font-size: 0.875rem; color: var(--gray-600);">
           После оплаты вы получите доступ ко всем цифровым продуктам в вашем личном кабинете.
         </div>
       </div>

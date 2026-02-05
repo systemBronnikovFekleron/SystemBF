@@ -31,7 +31,7 @@
 
       <p class="fade-in stagger-2" style="
         font-size: 1.25rem;
-        color: var(--color-gray-600);
+        color: var(--gray-600);
         max-width: 700px;
         margin: 0 auto 2rem;
         line-height: 1.8;
@@ -58,7 +58,7 @@
 <section class="container" style="padding: 4rem 0;">
   <div style="text-align: center; margin-bottom: 3rem;">
     <h2 class="text-gradient" style="margin-bottom: 0.5rem;">Избранные курсы</h2>
-    <p style="color: var(--color-gray-600);">Популярные программы для вашего развития</p>
+    <p style="color: var(--gray-600);">Популярные программы для вашего развития</p>
   </div>
 
   <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -76,17 +76,17 @@
             <%= product_type_label(product.product_type) %>
           </span>
 
-          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-gray-900);">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--gray-900);">
             <%= product.name %>
           </h3>
 
-          <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
+          <p style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
             <%= truncate(product.description, length: 100) %>
           </p>
 
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <div style="font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+              <div style="font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                 <%= product.price.format %>
               </div>
             </div>
@@ -112,7 +112,7 @@
       <div class="card fade-in stagger-1" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">👤</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Личный кабинет</h3>
-        <p style="color: var(--color-gray-600); line-height: 1.6;">
+        <p style="color: var(--gray-600); line-height: 1.6;">
           Управление профилем, внутренним кошельком и рейтинговой системой
         </p>
       </div>
@@ -120,7 +120,7 @@
       <div class="card fade-in stagger-2" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">🛍️</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Магазин курсов</h3>
-        <p style="color: var(--color-gray-600); line-height: 1.6;">
+        <p style="color: var(--gray-600); line-height: 1.6;">
           Покупка курсов, книг, видеоматериалов и услуг с мгновенным доступом
         </p>
       </div>
@@ -128,7 +128,7 @@
       <div class="card fade-in stagger-3" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">⭐</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Рейтинг и достижения</h3>
-        <p style="color: var(--color-gray-600); line-height: 1.6;">
+        <p style="color: var(--gray-600); line-height: 1.6;">
           Отслеживайте свой прогресс и получайте бонусы за активность
         </p>
       </div>
@@ -136,7 +136,7 @@
       <div class="card fade-in stagger-4" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">🏪</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Маркетплейс</h3>
-        <p style="color: var(--color-gray-600); line-height: 1.6;">
+        <p style="color: var(--gray-600); line-height: 1.6;">
           Найдите центры и представителей системы в вашем регионе
         </p>
       </div>
@@ -144,7 +144,7 @@
       <div class="card fade-in stagger-5" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">📅</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Календарь событий</h3>
-        <p style="color: var(--color-gray-600); line-height: 1.6;">
+        <p style="color: var(--gray-600); line-height: 1.6;">
           Афиша мероприятий, запись на курсы и семинары онлайн
         </p>
       </div>
@@ -152,7 +152,7 @@
       <div class="card fade-in stagger-6" style="text-align: center;">
         <div style="font-size: 3rem; margin-bottom: 1rem;">🔐</div>
         <h3 style="font-size: 1.25rem; margin-bottom: 0.75rem;">Единый вход</h3>
-        <p style="color: var(--color-gray-600); line-height: 1.6;">
+        <p style="color: var(--gray-600); line-height: 1.6;">
           Одна авторизация для доступа ко всем сервисам системы
         </p>
       </div>
@@ -179,17 +179,17 @@
             <%= product_type_label(product.product_type) %>
           </span>
 
-          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-gray-900);">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--gray-900);">
             <%= product.name %>
           </h3>
 
-          <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
+          <p style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
             <%= truncate(product.description, length: 100) %>
           </p>
 
           <div style="display: flex; justify-content: space-between; align-items: center;">
             <div>
-              <div style="font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+              <div style="font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                 <%= product.price.format %>
               </div>
             </div>
@@ -212,7 +212,7 @@
 
 <!-- CTA Section -->
 <section style="
-  background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600));
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
   padding: 4rem 0;
   position: relative;
   overflow: hidden;

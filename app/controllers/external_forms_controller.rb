@@ -7,7 +7,7 @@ class ExternalFormsController < ApplicationController
   def submit
     @product = Product.find(params[:product_id])
 
-    unless @product.status_published?
+    unless @product.status == 'published'
       render json: { success: false, error: 'Продукт недоступен' }, status: :unprocessable_entity and return
     end
 

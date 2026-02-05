@@ -1,0 +1,20 @@
+<%= form_with model: [:admin, wiki_page] do |f| %>
+  <% if wiki_page.errors.any? %><div style="background: rgba(220,76,62,0.1); padding: 1rem; margin-bottom: 1rem; border-radius: 4px;"><strong><%= wiki_page.errors.count %> ошибок:</strong> <%= wiki_page.errors.full_messages.join(', ') %></div><% end %>
+
+  <div class="form-group"><%= f.label :title, 'Заголовок *' %><%= f.text_field :title, class: 'form-input', required: true %></div>
+  <div class="form-group"><%= f.label :slug %><%= f.text_field :slug, class: 'form-input' %></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group"><%= f.label :parent_id, 'Родительская страница' %><%= f.collection_select :parent_id, parent_pages, :id, :title, {include_blank: 'Корневая страница'}, class: 'form-select' %></div>
+    <div class="form-group"><%= f.label :status, 'Статус' %><%= f.select :status, [['Черновик', 'draft'], ['Опубликовано', 'published']], {}, class: 'form-select' %></div>
+  </div>
+
+  <div class="form-group"><%= f.label :position, 'Позиция' %><%= f.number_field :position, class: 'form-input', min: 0, placeholder: '0' %><small style="font-size: 0.875rem; color: var(--gray-600);">Порядок отображения в списке</small></div>
+
+  <div class="form-group"><%= f.label :content, 'Содержание *' %><%= f.text_area :content, class: 'form-textarea', rows: 15, required: true %></div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+    <%= f.submit wiki_page.new_record? ? 'Создать страницу' : 'Сохранить изменения', class: 'btn btn-primary' %>
+    <%= link_to 'Отмена', admin_wiki_pages_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

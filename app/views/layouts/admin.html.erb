@@ -18,7 +18,7 @@
       <div style="display: flex; align-items: center; gap: var(--space-6);">
         <%= link_to admin_root_path, style: "display: flex; align-items: center; gap: var(--space-3); text-decoration: none;" do %>
           <%= image_tag "logo-veis.png", alt: "Проект Веис", style: "height: 34px; width: auto;" %>
-          <span style="font-weight: 600; color: var(--gray-800); font-size: 0.875rem; padding: var(--space-2) var(--space-3); background: var(--blue-50); border-radius: var(--radius-md); color: var(--blue-700);">
+          <span style="font-weight: 600; font-size: 0.875rem; padding: var(--space-2) var(--space-3); background: rgba(79, 70, 229, 0.1); border-radius: var(--radius-md); color: var(--primary);">
             ADMIN
           </span>
         <% end %>
@@ -30,7 +30,7 @@
           <%= current_user.email %>
         </span>
 
-        <%= link_to "Вернуться на сайт", root_path, style: "color: var(--blue-600); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" %>
+        <%= link_to "Вернуться на сайт", root_path, style: "color: var(--primary); text-decoration: none; font-size: 0.875rem; transition: color 0.2s;" %>
 
         <%= button_to logout_path, method: :delete, style: "background: none; border: none; color: var(--gray-600); cursor: pointer; font-size: 0.875rem; transition: color 0.2s;" do %>
           Выйти
@@ -41,9 +41,9 @@
 
   <div style="display: flex; min-height: calc(100vh - 64px);">
     <!-- Sidebar -->
-    <aside style="width: 240px; background: white; border-right: 1px solid var(--gray-200); flex-shrink: 0;">
-      <nav style="padding: var(--space-6) 0;">
-        <%= link_to admin_root_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if current_page?(admin_root_path)}" do %>
+    <aside style="width: 260px; background: white; border-right: 1px solid var(--gray-200); flex-shrink: 0; overflow-y: auto; max-height: calc(100vh - 64px);">
+      <nav style="padding: var(--space-4) 0;">
+        <%= link_to admin_root_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--primary); color: white; font-weight: 500;' if current_page?(admin_root_path)}" do %>
           <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="3" y="3" width="7" height="7"></rect>
             <rect x="14" y="3" width="7" height="7"></rect>
@@ -53,16 +53,60 @@
           Dashboard
         <% end %>
 
-        <%= link_to admin_products_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'products' && action_name != 'index'}" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <!-- КОНТЕНТ -->
+        <div style="padding: var(--space-4) var(--space-6) var(--space-2); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500);">Контент</div>
+
+        <%= link_to admin_categories_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'categories'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path>
+          </svg>
+          Категории
+        <% end %>
+
+        <%= link_to admin_products_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'products'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
             <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
           </svg>
           Продукты
         <% end %>
 
-        <%= link_to admin_users_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'users' && action_name != 'index'}" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <%= link_to admin_articles_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'articles'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="16" y1="13" x2="8" y2="13"></line>
+            <line x1="16" y1="17" x2="8" y2="17"></line>
+            <polyline points="10 9 9 9 8 9"></polyline>
+          </svg>
+          Статьи
+        <% end %>
+
+        <%= link_to admin_events_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'events'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
+            <line x1="16" y1="2" x2="16" y2="6"></line>
+            <line x1="8" y1="2" x2="8" y2="6"></line>
+            <line x1="3" y1="10" x2="21" y2="10"></line>
+          </svg>
+          События
+        <% end %>
+
+        <%= link_to admin_wiki_pages_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'wiki_pages'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+          </svg>
+          База знаний
+        <% end %>
+
+        <div style="margin: var(--space-3) var(--space-6); border-top: 1px solid var(--gray-200);"></div>
+
+        <!-- ПОЛЬЗОВАТЕЛИ -->
+        <div style="padding: var(--space-4) var(--space-6) var(--space-2); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500);">Пользователи</div>
+
+        <%= link_to admin_users_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'users'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
             <circle cx="9" cy="7" r="4"></circle>
             <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
@@ -71,17 +115,62 @@
           Клиенты
         <% end %>
 
-        <%= link_to admin_interaction_histories_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'interaction_histories'}" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <%= link_to admin_interaction_histories_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'interaction_histories'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
           </svg>
           Взаимодействия
         <% end %>
 
-        <div style="margin: var(--space-4) var(--space-6); border-top: 1px solid var(--gray-200);"></div>
+        <%= link_to admin_sub_roles_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'sub_roles' || controller_name == 'user_sub_roles'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+            <circle cx="9" cy="7" r="4"></circle>
+            <path d="M22 11l-2-2-2 2"></path>
+            <path d="M20 9v6"></path>
+          </svg>
+          Подроли
+        <% end %>
 
-        <%= link_to admin_integrations_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'integrations'}" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <div style="margin: var(--space-3) var(--space-6); border-top: 1px solid var(--gray-200);"></div>
+
+        <!-- ЗАКАЗЫ -->
+        <div style="padding: var(--space-4) var(--space-6) var(--space-2); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500);">Заказы</div>
+
+        <%= link_to admin_orders_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'orders'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="9" cy="21" r="1"></circle>
+            <circle cx="20" cy="21" r="1"></circle>
+            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+          </svg>
+          Заказы
+        <% end %>
+
+        <%= link_to admin_order_requests_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'order_requests'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+            <polyline points="14 2 14 8 20 8"></polyline>
+            <line x1="12" y1="18" x2="12" y2="12"></line>
+            <line x1="9" y1="15" x2="15" y2="15"></line>
+          </svg>
+          Заявки
+        <% end %>
+
+        <div style="margin: var(--space-3) var(--space-6); border-top: 1px solid var(--gray-200);"></div>
+
+        <!-- СИСТЕМА -->
+        <div style="padding: var(--space-4) var(--space-6) var(--space-2); font-size: 0.75rem; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; color: var(--gray-500);">Система</div>
+
+        <%= link_to admin_notifications_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'notifications'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+            <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+          </svg>
+          Уведомления
+        <% end %>
+
+        <%= link_to admin_integrations_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'integrations'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <circle cx="12" cy="12" r="3"></circle>
             <path d="M12 1v6m0 6v6"></path>
             <path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24"></path>
@@ -90,8 +179,8 @@
           Интеграции
         <% end %>
 
-        <%= link_to admin_email_templates_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-3) var(--space-6); text-decoration: none; color: var(--gray-800); transition: all 0.2s; #{'background: var(--blue-50); color: var(--blue-700); font-weight: 500;' if controller_name == 'email_templates'}" do %>
-          <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <%= link_to admin_email_templates_path, style: "display: flex; align-items: center; gap: var(--space-3); padding: var(--space-2) var(--space-6); text-decoration: none; color: var(--gray-700); transition: all 0.2s; font-size: 0.875rem; #{'background: var(--primary); color: white; font-weight: 500;' if controller_name == 'email_templates'}" do %>
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
             <rect x="2" y="4" width="20" height="16" rx="2"></rect>
             <path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"></path>
           </svg>

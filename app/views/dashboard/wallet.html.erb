@@ -2,7 +2,7 @@
 <% content_for :page_subtitle, "Управление вашим балансом" %>
 
 <!-- Balance Card -->
-<div class="card fade-in" style="margin-bottom: var(--space-8); background: linear-gradient(135deg, var(--blue-600), var(--blue-700)); color: white; border: none; text-align: center; padding: var(--space-10) var(--space-6);">
+<div class="card fade-in" style="margin-bottom: var(--space-8); background: linear-gradient(135deg, var(--primary), var(--primary-dark)); color: white; border: none; text-align: center; padding: var(--space-10) var(--space-6);">
   <div style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; opacity: 0.9; margin-bottom: var(--space-3);">
     Доступный баланс
   </div>
@@ -16,7 +16,7 @@
       data-controller="wallet"
       data-action="click->wallet#openModal"
       class="btn"
-      style="background: white; color: var(--blue-600); padding: var(--space-3) var(--space-6); font-weight: 600;">
+      style="background: white; color: var(--primary); padding: var(--space-3) var(--space-6); font-weight: 600;">
       💳 Пополнить кошелек
     </button>
 
@@ -33,7 +33,7 @@
       width: 56px;
       height: 56px;
       border-radius: var(--radius-lg);
-      background: var(--blue-50);
+      background: rgba(79, 70, 229, 0.05);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -122,7 +122,7 @@
           border: 1px solid var(--gray-200);
           border-radius: var(--radius-md);
           transition: all var(--transition-base);
-        " onmouseover="this.style.borderColor='var(--blue-300)'; this.style.background='var(--gray-50)'" onmouseout="this.style.borderColor='var(--gray-200)'; this.style.background='transparent'">
+        " onmouseover="this.style.borderColor='rgba(79, 70, 229, 0.3)'; this.style.background='var(--gray-50)'" onmouseout="this.style.borderColor='var(--gray-200)'; this.style.background='transparent'">
           <div style="display: flex; gap: var(--space-4); align-items: center;">
             <div style="
               width: 48px;
@@ -239,7 +239,7 @@
                   cursor: pointer;
                   transition: all var(--transition-base);
                 "
-                onmouseover="this.style.borderColor='var(--blue-300)'"
+                onmouseover="this.style.borderColor='rgba(79, 70, 229, 0.3)'"
                 onmouseout="if(!this.classList.contains('selected')) this.style.borderColor='var(--gray-200)'">
                 <%= amount %> ₽
               </button>
@@ -266,7 +266,7 @@
         </div>
 
         <!-- Info -->
-        <div style="padding: var(--space-4); background: var(--blue-50); border-radius: var(--radius-md); margin-bottom: var(--space-6);">
+        <div style="padding: var(--space-4); background: rgba(79, 70, 229, 0.05); border-radius: var(--radius-md); margin-bottom: var(--space-6);">
           <div style="display: flex; gap: var(--space-3); align-items: start;">
             <div style="font-size: 1.25rem;">ℹ️</div>
             <div style="font-size: 0.875rem; color: var(--gray-700); line-height: 1.6;">
@@ -292,9 +292,9 @@
   }
 
   .amount-option.selected {
-    border-color: var(--blue-500) !important;
-    background: var(--blue-50) !important;
-    color: var(--blue-700);
+    border-color: var(--primary) !important;
+    background: rgba(79, 70, 229, 0.05) !important;
+    color: var(--primary-dark);
   }
 
   #deposit-modal[style*="display: flex"] {

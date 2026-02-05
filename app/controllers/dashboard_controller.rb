@@ -33,8 +33,14 @@ class DashboardController < ApplicationController
   end
 
   def notifications
-    # Mock notifications data (будет заменено на реальную модель Notification)
-    @notifications = generate_mock_notifications
+    @notifications = current_user.notifications.recent.page(params[:page]).per(20)
+    @unread_count = current_user.notifications.unread.count
+  end
+
+  def mark_notification_read
+    notification = current_user.notifications.find(params[:id])
+    notification.mark_as_read!
+    head :ok
   end
 
   def settings
@@ -59,20 +65,24 @@ class DashboardController < ApplicationController
   end
 
   def news
-    @news = Article.published.article_type_news.ordered.page(params[:page]).per(10)
+    @news = Article.published.accessible_by(current_user).article_type_news.ordered.page(params[:page]).per(10)
   end
 
   def materials
-    @materials = Article.published.article_type_useful_material.ordered.page(params[:page]).per(10)
+    @materials = Article.published.accessible_by(current_user).article_type_useful_material.ordered.page(params[:page]).per(10)
   end
 
   def wiki
-    @root_pages = WikiPage.published.root_pages.ordered
+    @root_pages = WikiPage.published.accessible_by(current_user).root_pages.ordered
   end
 
   def wiki_show
     @page = WikiPage.friendly.find(params[:slug])
-    @children = @page.children.published.ordered
+    unless @page.accessible_by?(current_user)
+      redirect_to dashboard_wiki_path, alert: 'У вас нет доступа к этой странице'
+      return
+    end
+    @children = @page.children.published.accessible_by(current_user).ordered
   end
 
   def recommendations
@@ -96,10 +106,12 @@ class DashboardController < ApplicationController
   end
 
   def update_profile
-    if @user.profile.update(profile_params)
-      redirect_to dashboard_profile_path, notice: 'Профиль успешно обновлен'
-    else
-      render :profile, status: :unprocessable_entity
+    ActiveRecord::Base.transaction do
+      if @user.update(user_params) && @user.profile.update(profile_params)
+        redirect_to dashboard_profile_path, notice: 'Профиль успешно обновлен'
+      else
+        render :profile, status: :unprocessable_entity
+      end
     end
   end
 
@@ -139,8 +151,12 @@ class DashboardController < ApplicationController
     }
   end
 
+  def user_params
+    params.permit(:first_name, :last_name)
+  end
+
   def profile_params
-    params.require(:profile).permit(:first_name, :last_name, :phone, :city, :country, :birth_date, :bio)
+    params.require(:profile).permit(:phone, :city, :country, :birth_date, :bio)
   end
 
   def generate_order_number
@@ -170,24 +186,6 @@ class DashboardController < ApplicationController
       { id: 10, name: 'Постоянный ученик', description: 'Войдите 30 дней подряд', icon: '🔥', category: 'social', points: 200, unlocked: false, unlocked_at: nil },
       { id: 11, name: 'Комментатор', description: 'Оставьте 10 комментариев', icon: '💬', category: 'social', points: 50, unlocked: false, unlocked_at: nil },
       { id: 12, name: 'Эксперт', description: 'Получите 100 лайков на комментариях', icon: '⭐', category: 'social', points: 150, unlocked: false, unlocked_at: nil }
-    ]
-  end
-
-  def generate_mock_notifications
-    [
-      # Today
-      { id: 1, type: 'order_paid', title: 'Заказ оплачен', message: 'Ваш заказ #BR-2026-0001 успешно оплачен. Доступ к материалам открыт.', created_at: 2.hours.ago, read: false, action_url: '/dashboard/orders', action_text: 'Смотреть заказ' },
-      { id: 2, type: 'product_access_granted', title: 'Доступ открыт', message: 'Вам открыт доступ к курсу "Основы видения". Начните обучение прямо сейчас!', created_at: 3.hours.ago, read: false, action_url: '/dashboard/my-courses', action_text: 'Начать обучение' },
-
-      # Yesterday
-      { id: 3, type: 'achievement_unlocked', title: 'Новое достижение!', message: 'Поздравляем! Вы получили достижение "Первая покупка" (+25 очков рейтинга)', created_at: 1.day.ago, read: true, action_url: '/dashboard/achievements', action_text: 'Смотреть достижения' },
-      { id: 4, type: 'wallet_deposit', title: 'Кошелек пополнен', message: 'Ваш кошелек пополнен на 1000 ₽', created_at: 1.day.ago, read: true, action_url: '/dashboard/wallet' },
-
-      # 2 days ago
-      { id: 5, type: 'system', title: 'Обновление платформы', message: 'Мы добавили новые функции в личный кабинет. Ознакомьтесь с изменениями.', created_at: 2.days.ago, read: true, action_url: '#' },
-
-      # 5 days ago
-      { id: 6, type: 'profile_updated', title: 'Профиль обновлен', message: 'Данные вашего профиля успешно сохранены', created_at: 5.days.ago, read: true, action_url: '/dashboard/profile' }
     ]
   end
 
@@ -230,7 +228,7 @@ class DashboardController < ApplicationController
   def recommend_products_for(user)
     # Simple algorithm: products from same categories user purchased
     categories = user.product_accesses.joins(:product).pluck('products.category_id').uniq
-    Product.status_published
+    Product.published
            .where(category_id: categories)
            .where.not(id: user.product_accesses.pluck(:product_id))
            .limit(6)

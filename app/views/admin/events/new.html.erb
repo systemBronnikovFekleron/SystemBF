@@ -1,0 +1,5 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад', admin_events_path, style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+  <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 2rem;">Создать событие</h1>
+  <div class="card"><%= render 'form', event: @event, categories: @categories %></div>
+</div>

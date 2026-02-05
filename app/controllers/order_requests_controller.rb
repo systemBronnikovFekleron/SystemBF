@@ -15,7 +15,7 @@ class OrderRequestsController < ApplicationController
   def create
     @product = Product.friendly.find(params[:product_id])
 
-    unless @product.status_published?
+    unless @product.status == 'published'
       redirect_to products_path, alert: 'Продукт недоступен для покупки' and return
     end
 

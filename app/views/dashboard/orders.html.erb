@@ -1,16 +1,16 @@
 <div class="container" style="max-width: 1200px; margin: 0 auto; padding: 2rem 1rem;">
-  <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text);">
+  <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--gray-900);">
     Мои заказы
   </h1>
 
   <% if @orders.empty? %>
     <div class="glass-card" style="padding: 3rem; text-align: center;">
-      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1.5rem; color: var(--text-secondary);">
+      <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto 1.5rem; color: var(--gray-600);">
         <circle cx="9" cy="21" r="1"></circle>
         <circle cx="20" cy="21" r="1"></circle>
         <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
       </svg>
-      <p style="font-size: 1.25rem; color: var(--text-secondary); margin-bottom: 2rem;">
+      <p style="font-size: 1.25rem; color: var(--gray-600); margin-bottom: 2rem;">
         У вас пока нет заказов
       </p>
       <%= link_to "Перейти к каталогу", products_path, class: "btn-primary", style: "display: inline-block; padding: 1rem 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 0.75rem; font-weight: 600; transition: all 0.3s ease;" %>
@@ -39,15 +39,15 @@
                 </span>
               </div>
 
-              <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.75rem;">
+              <div style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 0.75rem;">
                 <%= l(order.created_at, format: :long) %>
               </div>
 
-              <div style="color: var(--text-secondary); font-size: 0.875rem; margin-bottom: 0.5rem;">
+              <div style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 0.5rem;">
                 <%= pluralize(order.order_items.count, 'товар', 'товара', 'товаров') %>
               </div>
 
-              <div style="font-size: 1.125rem; font-weight: 600; color: var(--text);">
+              <div style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900);">
                 <%= humanized_money_with_symbol(order.total) %>
               </div>
             </div>
@@ -57,7 +57,7 @@
               <%= link_to "Подробнее", order_path(order), style: "padding: 0.5rem 1.5rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; text-decoration: none; border-radius: 0.5rem; font-weight: 500; font-size: 0.875rem; transition: all 0.3s ease;" %>
 
               <% if order.paid? || order.completed? %>
-                <span style="color: var(--text-secondary); font-size: 0.75rem;">
+                <span style="color: var(--gray-600); font-size: 0.75rem;">
                   Оплачен <%= l(order.paid_at, format: :short) if order.paid_at %>
                 </span>
               <% elsif order.pending? %>

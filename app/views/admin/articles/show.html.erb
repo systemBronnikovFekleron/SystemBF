@@ -1,0 +1,34 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад', admin_articles_path, style: 'color: var(--primary); font-weight: 500; margin-bottom: 2rem; display: inline-block;' %>
+
+  <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 700; color: var(--gray-900); margin-bottom: 1rem;"><%= @article.title %></h1>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+        <span class="badge <%= @article.status_published? ? 'badge-success' : 'badge-warning' %>"><%= @article.status.humanize %></span>
+        <span class="badge badge-secondary"><%= @article.type_label %></span>
+        <% if @article.featured? %><span class="badge badge-warning">⭐ Избранное</span><% end %>
+        <% if @article.published_at %><span style="color: var(--gray-600); font-size: 0.875rem;">📅 <%= l(@article.published_at, format: :long) %></span><% end %>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <%= link_to 'Изменить', edit_admin_article_path(@article), class: 'btn btn-primary' %>
+      <%= button_to 'Удалить', admin_article_path(@article), method: :delete, data: { confirm: 'Удалить статью?' }, class: 'btn btn-outline', style: 'color: var(--color-error);' %>
+    </div>
+  </div>
+
+  <div class="card" style="padding: 2rem;">
+    <% if @article.excerpt.present? %>
+      <div style="font-size: 1.125rem; color: var(--gray-700); margin-bottom: 2rem; padding-bottom: 2rem; border-bottom: 1px solid var(--gray-200);"><%= @article.excerpt %></div>
+    <% end %>
+    <div style="line-height: 1.7; color: var(--gray-800);"><%= simple_format(@article.content) %></div>
+  </div>
+
+  <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius-md);">
+    <div style="font-size: 0.875rem; color: var(--gray-600);">
+      Автор: <%= @article.author&.full_name || 'Не указан' %> •
+      Создано: <%= l(@article.created_at, format: :long) %> •
+      Обновлено: <%= l(@article.updated_at, format: :long) %>
+    </div>
+  </div>
+</div>

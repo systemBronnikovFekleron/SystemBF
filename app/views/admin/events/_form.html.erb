@@ -1,0 +1,37 @@
+<%= form_with model: [:admin, event] do |f| %>
+  <% if event.errors.any? %><div style="background: rgba(220,76,62,0.1); padding: 1rem; margin-bottom: 1rem; border-radius: 4px;"><strong><%= event.errors.count %> ошибок:</strong> <%= event.errors.full_messages.join(', ') %></div><% end %>
+
+  <div class="form-group"><%= f.label :title, 'Название *' %><%= f.text_field :title, class: 'form-input', required: true %></div>
+  <div class="form-group"><%= f.label :slug %><%= f.text_field :slug, class: 'form-input' %></div>
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group"><%= f.label :category_id, 'Категория' %><%= f.collection_select :category_id, categories, :id, :name, {include_blank: 'Без категории'}, class: 'form-select' %></div>
+    <div class="form-group"><%= f.label :status, 'Статус' %><%= f.select :status, [['Черновик', 'draft'], ['Опубликовано', 'published'], ['Отменено', 'cancelled'], ['Завершено', 'completed']], {}, class: 'form-select' %></div>
+  </div>
+
+  <div class="form-group"><%= f.label :description, 'Описание *' %><%= f.text_area :description, class: 'form-textarea', rows: 5, required: true %></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group"><%= f.label :starts_at, 'Начало *' %><%= f.datetime_field :starts_at, class: 'form-input', required: true %></div>
+    <div class="form-group"><%= f.label :ends_at, 'Окончание' %><%= f.datetime_field :ends_at, class: 'form-input' %></div>
+  </div>
+
+  <div class="form-group"><label><%= f.check_box :is_online %> Онлайн-событие</label></div>
+  <div class="form-group" id="location-field"><%= f.label :location, 'Место проведения' %><%= f.text_field :location, class: 'form-input' %></div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group"><%= f.label :max_participants, 'Макс. участников' %><%= f.number_field :max_participants, class: 'form-input', min: 0 %></div>
+    <div class="form-group"><%= f.label :price_kopecks, 'Цена (копейки)' %><%= f.number_field :price_kopecks, class: 'form-input', value: event.price_kopecks || 0, min: 0 %></div>
+  </div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+    <%= f.submit event.new_record? ? 'Создать' : 'Сохранить', class: 'btn btn-primary' %>
+    <%= link_to 'Отмена', admin_events_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>
+
+<script>
+  const isOnline = document.querySelector('#event_is_online');
+  const locationField = document.getElementById('location-field');
+  isOnline?.addEventListener('change', () => locationField.style.display = isOnline.checked ? 'none' : 'block');
+  if (isOnline?.checked) locationField.style.display = 'none';
+</script>

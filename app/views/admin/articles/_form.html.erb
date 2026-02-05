@@ -1,0 +1,52 @@
+<%= form_with model: [:admin, article], local: true do |f| %>
+  <% if article.errors.any? %>
+    <div style="background: rgba(220, 76, 62, 0.1); border: 1px solid var(--color-error); padding: 1rem; margin-bottom: 1.5rem; border-radius: var(--radius-md);">
+      <strong><%= pluralize(article.errors.count, "ошибка") %>:</strong>
+      <ul style="margin-top: 0.5rem;"><% article.errors.full_messages.each do |msg| %><li><%= msg %></li><% end %></ul>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :title, 'Заголовок *' %>
+    <%= f.text_field :title, class: 'form-input', required: true %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :slug, 'URL-slug' %>
+    <%= f.text_field :slug, class: 'form-input', placeholder: 'Авто-генерация из заголовка' %>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group">
+      <%= f.label :article_type, 'Тип статьи *' %>
+      <%= f.select :article_type, options_for_select([['Новость', 'news'], ['Полезный материал', 'useful_material'], ['Объявление', 'announcement']], article.article_type), {}, class: 'form-select', required: true %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :status, 'Статус *' %>
+      <%= f.select :status, options_for_select([['Черновик', 'draft'], ['Опубликовано', 'published'], ['Архив', 'archived']], article.status), {}, class: 'form-select', required: true %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+      <%= f.check_box :featured %>
+      <span>Отметить как избранное</span>
+    </label>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :excerpt, 'Краткое описание' %>
+    <%= f.text_area :excerpt, class: 'form-textarea', rows: 3, placeholder: 'Краткое описание для превью' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :content, 'Содержание *' %>
+    <%= f.text_area :content, class: 'form-textarea', rows: 15, required: true, placeholder: 'Основной текст статьи' %>
+  </div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+    <%= f.submit article.new_record? ? 'Создать статью' : 'Сохранить изменения', class: 'btn btn-primary' %>
+    <%= link_to 'Отмена', admin_articles_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

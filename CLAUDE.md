@@ -8,7 +8,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 Это образовательная экосистема для клиентов, учеников, специалистов и руководителей центров и клубов системы "Бронников-Феклерон".
 
-**Статус:** MVP завершен (35/35 tasks), Enhanced (15/17 tasks, 88%). Production-ready. 155+ тестов (100% pass rate).
+**Статус:** MVP завершен (35/35 tasks), Enhanced (17/17 tasks, 100%). Production-ready. 155+ тестов (100% pass rate).
 
 ## Technology Stack
 
@@ -102,6 +102,39 @@ bundle exec bundler-audit    # Уязвимости зависимостей
 - `ProductAccess` - Автоматический доступ к цифровым продуктам после оплаты
 - `InteractionHistory` - История взаимодействий пользователя с системой
 
+**Development & Content System** (Новые модели для личного кабинета):
+- `Initiation` - Инициации пользователей (first, second, third, advanced):
+  - Enums: initiation_type, level (1, 2, 3)
+  - Статусы: pending, completed, passed, failed
+  - Связи: user, conducted_by (instructor), results (JSONB)
+- `Diagnostic` - Диагностики пользователей (vision, bioenergy, psychobiocomputer):
+  - Enums: diagnostic_type
+  - Статусы: scheduled, completed, cancelled
+  - Поля: results (JSONB), recommendations (text), score (integer)
+  - Связи: user, conducted_by (specialist)
+- `Event` - События и мероприятия:
+  - FriendlyId slug, AASM статусы: draft → published → cancelled/completed
+  - Поля: starts_at, ends_at, location, is_online, max_participants, price_kopecks
+  - Связи: category, organizer (User), event_registrations
+  - Методы: upcoming, past, confirmed_registrations_count
+- `EventRegistration` - Регистрации на события:
+  - Enums: status (pending, confirmed, attended, cancelled)
+  - Связи: user, event, order
+- `Article` - Статьи, новости, полезные материалы:
+  - FriendlyId slug
+  - Enums: article_type (news, useful_material, announcement), status (draft, published, archived)
+  - Поля: title, excerpt, content, featured (boolean), published_at
+  - Связи: author (User)
+- `WikiPage` - База знаний (WIKI):
+  - FriendlyId slug
+  - Иерархическая структура: parent → children
+  - Enums: status (draft, published)
+  - Поля: title, content, position
+  - Связи: parent (self), created_by, updated_by (Users)
+- `Favorite` - Избранное (полиморфная связь):
+  - Полиморфные связи: favoritable (Product, Article, WikiPage)
+  - Уникальный индекс: user_id + favoritable_type + favoritable_id
+
 **Order Request System** (Система заявок на покупку):
 - `OrderRequest` - Заявки на покупку продуктов с модерацией:
   - AASM статусы: `pending` → `approved` → `paid` → `completed` / `cancelled` / `rejected`
@@ -143,7 +176,10 @@ app/controllers/
 ├── sessions_controller.rb          # Вход/выход (web)
 ├── registrations_controller.rb     # Регистрация
 ├── password_resets_controller.rb   # Восстановление пароля (24h tokens)
-├── dashboard_controller.rb         # Личный кабинет (8 экшенов)
+├── dashboard_controller.rb         # Личный кабинет (16 экшенов)
+├── categories_controller.rb        # Категории продуктов (index, show)
+├── events_controller.rb            # События (index, show, calendar)
+├── event_registrations_controller.rb # Регистрация на события
 ├── products_controller.rb          # Каталог и детали
 ├── orders_controller.rb            # Заказы и оплата
 ├── order_payments_controller.rb    # Обработка платежей
@@ -155,7 +191,12 @@ app/controllers/
 │   ├── products_controller.rb      # CRUD + bulk actions
 │   ├── orders_controller.rb        # Order management + AASM actions
 │   ├── users_controller.rb
-│   └── interaction_histories_controller.rb
+│   ├── interaction_histories_controller.rb
+│   ├── initiations_controller.rb   # Управление инициациями
+│   ├── diagnostics_controller.rb   # Управление диагностиками
+│   ├── events_controller.rb        # Управление событиями
+│   ├── articles_controller.rb      # Управление статьями/новостями
+│   └── wiki_pages_controller.rb    # Управление WIKI
 ├── webhooks/
 │   ├── cloud_payments_controller.rb # HMAC-verified webhooks
 │   └── telegram_controller.rb
@@ -171,7 +212,12 @@ app/controllers/
 - Root: `/` → `home#index`
 - Auth: `/login`, `/register`, `/forgot-password`, `/password-resets/:token/edit`
 - Shop: `/categories`, `/products`, `/cart`, `/orders`
-- Dashboard: `/dashboard/*` (8 разделов: index, profile, wallet, my-courses, achievements, notifications, settings, rating)
+- Events: `/events` (index, show), `/events/calendar` (calendar view), `/events/:id/register` (registration)
+- Dashboard: `/dashboard/*` (16 разделов):
+  - Основные: index, profile, wallet, rating, orders, notifications, settings
+  - Обучение: my-courses, development-map, achievements
+  - Материалы: recommendations, news, materials, wiki, wiki/:slug, favorites
+  - События: events (мои регистрации)
 
 **API Routes** (все под `/api/v1/`):
 - POST `/api/v1/login` - JWT аутентификация
@@ -184,6 +230,11 @@ app/controllers/
 - CRUD `/admin/products` + POST `/admin/products/bulk_action` (publish/archive/delete)
 - CRUD `/admin/orders` + PATCH `/admin/orders/:id` (complete/refund/cancel)
 - GET/PATCH `/admin/users`
+- CRUD `/admin/initiations` - Управление инициациями
+- CRUD `/admin/diagnostics` - Управление диагностиками
+- CRUD `/admin/events` + GET `/admin/events/:id/registrations` - Управление событиями
+- CRUD `/admin/articles` - Управление статьями/новостями
+- CRUD `/admin/wiki_pages` - Управление WIKI
 
 **Webhooks** (HMAC signature verification):
 - POST `/webhooks/cloudpayments/pay` - Успешная оплата
@@ -351,19 +402,25 @@ Comprehensive Rails 8 documentation in Russian: `AIDocs/Rails/` (20 files)
 - ✅ Phase 0: Rails 8 инфраструктура
 - ✅ Phase 1: JWT Authentication + User система (14 типов classification)
 - ✅ Phase 3: Витрина магазина (Product, Category, Order)
-- ✅ Phase A: Dashboard (8 sections) + Password Reset
+- ✅ Phase A: Dashboard (16 sections) + Password Reset
 - ✅ Phase B: Admin Panel Enhancement (bulk actions, analytics, revenue charts)
 - ✅ Phase C: Critical Integrations (CloudPayments HMAC, Email, GA4)
 - ✅ Phase D1-D2: Система заявок (OrderRequest с AASM, auto-approval flow)
 - ✅ Phase E: Testing (155+ tests) + Performance (N+1 elimination, caching)
 - ✅ Phase E2: Внутренний кошелек (Wallet, WalletTransaction с audit trail)
-- ✅ Frontend: 8 dashboard views + Glassmorphism Design System
+- ✅ Phase F: Enhanced Dashboard System:
+  - 7 новых моделей (Initiation, Diagnostic, Event, EventRegistration, Article, WikiPage, Favorite)
+  - Карта развития (development-map) с инициациями и диагностиками
+  - Календарь событий (events/calendar) с регистрацией
+  - Контент-система (news, materials, wiki, favorites, recommendations)
+  - 5 новых admin контроллеров для управления
+  - Автоматический layout switching для авторизованных пользователей
+- ✅ Frontend: 16 dashboard views + Glassmorphism Design System
 - ✅ Telegram бот: базовая интеграция (webhook, команды)
 - ✅ External Forms: WordPress интеграция для создания заявок
 
 **В планах (Optional):**
 - Phase 2: Бизнес-аккаунт (маркетплейс центров с геолокацией)
-- Phase 4: Календарь/Афиша событий (бронирование + оплата)
 - Phase 7: WordPress SSO плагин (validate_token endpoint готов)
 
 **См. `PROJECT_STATUS.md` и `AIDocs/Roadmap.md` для подробностей**
@@ -374,10 +431,15 @@ Comprehensive Rails 8 documentation in Russian: `AIDocs/Rails/` (20 files)
 - **User classification**: используйте `classification_` префикс
   - ✅ `user.classification_admin?`
   - ❌ `user.admin?` (не существует)
-- **Product status**: используйте `status_` префикс
-  - ✅ `product.status_published?`
+- **Product status**: БЕЗ префикса (scope)
+  - ✅ `Product.published` (scope)
+  - ❌ `Product.status_published` (не существует)
 - **Order status**: используйте `status_` префикс
   - ✅ `order.status_paid?`
+- **Event status**: используйте `status_` префикс
+  - ✅ `event.status_published?`
+- **Article status**: используйте `status_` префикс
+  - ✅ `article.status_published?`
 
 ### Auto-created Associations
 - При создании `User` автоматически создаются:
@@ -419,6 +481,58 @@ end
 **Примеры в кодовой базе:**
 - `OrderRequest#process_auto_payment` - вызывается через `after_commit`, не через AASM after
 - `OrderRequest#auto_complete` - вызывается через `after_save` с флагом `@should_auto_complete`
+
+### Layout Architecture (КРИТИЧНО!)
+
+**Автоматическое переключение layouts:**
+- `ApplicationController#layout_by_authentication` определяет layout на основе аутентификации
+- **Dashboard layout** используется для всех авторизованных пользователей (включая home, products, categories, events)
+- **Application layout** используется только для:
+  - Страниц входа/регистрации (SessionsController, RegistrationsController)
+  - Восстановления пароля (PasswordResetsController)
+  - Неавторизованных пользователей
+
+**Dashboard Layout компоненты:**
+- `app/views/layouts/dashboard.html.erb` - основной layout с sidebar
+- `app/views/shared/_sidebar.html.erb` - левый сайдбар с навигацией (высота header = 89px)
+- Кнопка "Админка" отображается только для `current_user.admin_role?` (admin, manager, curator)
+- Кнопка "Выйти" использует `logout_path` (НЕ `/api/v1/logout`)
+
+### Profile vs User Model Fields (КРИТИЧНО!)
+
+**User model поля:**
+- `first_name`, `last_name`, `email`, `password_digest`, `classification`
+- Методы: `full_name`, `admin_role?`, `classification_<type>?`
+
+**Profile model поля:**
+- `phone`, `birth_date`, `bio`, `city`, `country`
+- НЕ содержит: first_name, last_name
+
+**В формах:**
+```erb
+<!-- ✅ ПРАВИЛЬНО -->
+<%= form.text_field "first_name", value: @user.first_name %>
+<%= form.text_field "profile[phone]", value: @user.profile.phone %>
+
+<!-- ❌ НЕПРАВИЛЬНО -->
+<%= form.text_field "profile[first_name]" %> <!-- не существует! -->
+```
+
+**В контроллерах:**
+```ruby
+# ✅ ПРАВИЛЬНО
+def update_profile
+  @user.update(user_params) && @user.profile.update(profile_params)
+end
+
+def user_params
+  params.permit(:first_name, :last_name)
+end
+
+def profile_params
+  params.require(:profile).permit(:phone, :city, :country, :birth_date, :bio)
+end
+```
 
 ### Session vs API Authentication
 - **Web интерфейс**: JWT хранится в `cookies.encrypted[:jwt_token]`
@@ -477,6 +591,75 @@ RAILS_ENV=production
 ```
 
 **См. `EMAIL_SETUP.md` и `GOOGLE_ANALYTICS_SETUP.md` для configuration guides**
+
+## Common Issues & Solutions
+
+### 1. Bullet N+1 Query Warnings
+**Проблема:** `AVOID eager loading detected Model => [:association]`
+
+**Решение:** Удалите избыточный `.includes()` если ассоциация не используется в view:
+```ruby
+# ❌ Если association не используется
+@events = Event.includes(:category, :organizer)
+
+# ✅ Убрать неиспользуемые includes
+@events = Event.all
+```
+
+### 2. Division by Zero в Views
+**Проблема:** `FloatDomainError (Infinity)` при делении на ноль
+
+**Решение:** Добавьте проверку перед делением:
+```erb
+<!-- ❌ Ошибка если points = 0 -->
+<%= (item[:points].to_f / @user.rating.points * 100).round %>%
+
+<!-- ✅ С проверкой -->
+<%= @user.rating.points > 0 ? (item[:points].to_f / @user.rating.points * 100).round : 0 %>%
+```
+
+### 3. Helper Methods Not Found
+**Проблема:** `undefined method 'some_helper' for view`
+
+**Решение:** Переместите helper методы из view в `app/helpers/application_helper.rb`:
+```ruby
+# ✅ В app/helpers/application_helper.rb
+module ApplicationHelper
+  def category_icon_svg(slug)
+    # ...
+  end
+end
+```
+
+**НЕ используйте** `content_for :helpers` в views - это не работает в Rails.
+
+### 4. Logout Not Working
+**Проблема:** Кнопка "Выйти" не разлогинивает
+
+**Решение:** Убедитесь что используется правильный маршрут:
+```erb
+<!-- ✅ ПРАВИЛЬНО -->
+<%= button_to "Выйти", logout_path, method: :delete %>
+
+<!-- ❌ НЕПРАВИЛЬНО -->
+<%= button_to "Выйти", "/api/v1/logout", method: :delete %>
+```
+
+`logout_path` → `sessions#destroy` (удаляет cookies + session)
+
+### 5. Turbo Form Submission Issues
+**Проблема:** Форма не отправляется, редирект не работает
+
+**Решение:** Отключите Turbo для форм логина/регистрации:
+```erb
+<!-- ✅ Отключить Turbo -->
+<%= form_with url: login_path, method: :post, data: { turbo: false } do |f| %>
+```
+
+### 6. Categories Helper Method Error
+**Проблема:** View пытается использовать helper из `content_for :helpers`
+
+**Решение:** Helper методы должны быть в `app/helpers/application_helper.rb`, не в view файлах.
 
 ## Additional Documentation
 

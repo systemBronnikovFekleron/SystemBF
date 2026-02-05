@@ -1,0 +1,50 @@
+<div class="admin-header">
+  <h1>Редактировать подроль: <%= @sub_role.display_name %></h1>
+  <%= link_to 'Назад', admin_sub_role_path(@sub_role), class: 'btn btn-secondary' %>
+</div>
+
+<div class="form-card">
+  <%= form_with model: @sub_role, url: admin_sub_role_path(@sub_role), method: :patch, local: true do |f| %>
+    <% if @sub_role.errors.any? %>
+      <div class="alert alert-danger">
+        <h4><%= pluralize(@sub_role.errors.count, "ошибка", "ошибки", "ошибок") %> при сохранении:</h4>
+        <ul>
+          <% @sub_role.errors.full_messages.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      </div>
+    <% end %>
+
+    <div class="form-group">
+      <%= f.label :name, 'Название (name)' %>
+      <%= f.text_field :name, class: 'form-control', placeholder: 'custom_role_name' %>
+      <small class="form-text">Используйте snake_case (например: premium_member, vip_client)</small>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :display_name, 'Отображаемое имя' %>
+      <%= f.text_field :display_name, class: 'form-control', placeholder: 'Премиум член' %>
+      <small class="form-text">Название, которое увидят пользователи</small>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :description, 'Описание (опционально)' %>
+      <%= f.text_area :description, class: 'form-control', rows: 3,
+          placeholder: 'Описание роли и её назначения' %>
+    </div>
+
+    <div class="form-group">
+      <%= f.label :level, 'Уровень' %>
+      <%= f.number_field :level, class: 'form-control', min: 0 %>
+      <small class="form-text">
+        Системные роли: 0-13. Кастомные роли: рекомендуется 50+
+      </small>
+    </div>
+
+    <div class="form-actions">
+      <%= f.submit 'Сохранить изменения', class: 'btn btn-primary' %>
+      <%= link_to 'Отмена', admin_sub_role_path(@sub_role), class: 'btn btn-secondary' %>
+    </div>
+  <% end %>
+</div>

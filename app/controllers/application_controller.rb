@@ -9,7 +9,7 @@ class ApplicationController < ActionController::Base
   include Pundit::Authorization
 
   # Аутентификация для web интерфейса
-  helper_method :current_user, :logged_in?
+  helper_method :current_user, :logged_in?, :impersonating?, :real_admin_user, :current_impersonation
 
   # Pundit: rescue from unauthorized access
   rescue_from Pundit::NotAuthorizedError, with: :user_not_authorized
@@ -30,13 +30,55 @@ class ApplicationController < ActionController::Base
 
     if token
       decoded = JsonWebToken.decode(token)
-      @current_user = User.find_by(id: decoded[:user_id]) if decoded
+
+      if decoded
+        # Проверить наличие метаданных имперсонации
+        if decoded[:impersonator_id].present?
+          # Это сессия имперсонации
+          impersonation_log = ImpersonationLog.find_by(session_token: decoded[:impersonation_session_token])
+
+          # Проверить активность сессии
+          if impersonation_log.nil? || !impersonation_log.active?
+            # Сессия истекла или не найдена - очистить cookies
+            cookies.delete(:jwt_token)
+            return nil
+          end
+
+          @current_impersonation = impersonation_log
+          @current_user = User.find_by(id: decoded[:user_id])
+        else
+          # Обычная сессия
+          @current_user = User.find_by(id: decoded[:user_id])
+        end
+      end
     end
 
     # Fallback на session если JWT не работает
     @current_user ||= User.find_by(id: session[:user_id]) if session[:user_id]
 
     @current_user
+  rescue JWT::DecodeError, ActiveRecord::RecordNotFound
+    nil
+  end
+
+  def impersonating?
+    current_user.present? && current_impersonation.present?
+  end
+
+  def real_admin_user
+    return nil unless impersonating?
+    current_impersonation.admin
+  end
+
+  def current_impersonation
+    current_user # Ensure current_user is set
+    @current_impersonation
+  end
+
+  # Блокировка доступа в админку во время имперсонации
+  def block_admin_during_impersonation
+    return unless impersonating?
+    redirect_to dashboard_path, alert: 'Во время имперсонации доступ в админку заблокирован. Завершите сессию.'
   end
 
   def logged_in?

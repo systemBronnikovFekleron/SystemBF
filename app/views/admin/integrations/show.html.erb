@@ -12,7 +12,7 @@
   </div>
 
   <div style="display: flex; gap: var(--space-3);">
-    <%= link_to 'Редактировать', edit_admin_integration_path(@integration), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; border-radius: var(--radius-md); text-decoration: none; font-weight: 500;" %>
+    <%= link_to 'Редактировать', edit_admin_integration_path(@integration), style: "padding: var(--space-3) var(--space-5); background: var(--primary); color: white; border-radius: var(--radius-md); text-decoration: none; font-weight: 500;" %>
     <%= button_to 'Проверить подключение', test_connection_admin_integration_path(@integration), style: "padding: var(--space-3) var(--space-5); background: var(--gray-100); color: var(--gray-700); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
     <% if @integration.enabled? %>
       <%= button_to 'Отключить', toggle_status_admin_integration_path(@integration), style: "padding: var(--space-3) var(--space-5); background: #ef4444; color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
@@ -26,8 +26,8 @@
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
   <div class="card" style="padding: var(--space-6);">
     <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-      <div style="width: 48px; height: 48px; background: var(--blue-50); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="width: 48px; height: 48px; background: rgba(79, 70, 229, 0.05); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
       </div>
@@ -159,7 +159,7 @@
     <h2 style="font-size: 1.125rem; font-weight: 600; color: var(--gray-900);">
       Последние события
     </h2>
-    <%= link_to 'Все логи →', logs_admin_integration_path(@integration), style: "color: var(--blue-600); text-decoration: none; font-weight: 500; font-size: 0.875rem;" %>
+    <%= link_to 'Все логи →', logs_admin_integration_path(@integration), style: "color: var(--primary); text-decoration: none; font-weight: 500; font-size: 0.875rem;" %>
   </div>
 
   <% if @recent_logs.any? %>

@@ -8,6 +8,8 @@ class Order < ApplicationRecord
   monetize :total_kopecks, as: :total, with_currency: :rub
 
   before_create :generate_order_number
+  after_commit :send_paid_notification, if: :saved_change_to_paid?
+  after_commit :send_completed_notification, if: :saved_change_to_completed?
 
   # State machine
   include AASM
@@ -57,5 +59,22 @@ class Order < ApplicationRecord
 
   def revoke_product_access
     ProductAccess.where(order: self).destroy_all
+  end
+
+  # Notification callbacks
+  def saved_change_to_paid?
+    saved_change_to_status? && status == 'paid'
+  end
+
+  def send_paid_notification
+    NotificationService.order_paid(user, self)
+  end
+
+  def saved_change_to_completed?
+    saved_change_to_status? && status == 'completed'
+  end
+
+  def send_completed_notification
+    NotificationService.order_completed(user, self)
   end
 end

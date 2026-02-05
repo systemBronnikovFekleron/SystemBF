@@ -1,0 +1,16 @@
+<div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+  <div style="margin-bottom: 2rem;">
+    <%= link_to '← Назад к категориям', admin_categories_path, style: 'color: var(--primary); font-weight: 500;' %>
+  </div>
+
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+      Редактировать: <%= @category.name %>
+    </h1>
+    <%= link_to 'Просмотр', admin_category_path(@category), class: 'btn btn-outline' %>
+  </div>
+
+  <div class="card">
+    <%= render 'form', category: @category %>
+  </div>
+</div>

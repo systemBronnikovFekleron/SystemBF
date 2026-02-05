@@ -155,4 +155,104 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe 'SubRole methods' do
+    let(:user) { create(:user) }
+    let(:client_role) { SubRole.find_or_create_by!(name: 'client', display_name: 'Клиент', level: 1, system_role: true) }
+    let(:instructor_role) { SubRole.find_or_create_by!(name: 'instructor_1', display_name: 'Инструктор 1', level: 5, system_role: true) }
+
+    describe '#grant_sub_role!' do
+      it 'grants a role to user by id' do
+        expect { user.grant_sub_role!(client_role.id) }.to change { user.sub_roles.count }.by(1)
+        expect(user.has_sub_role?(client_role.id)).to be true
+      end
+
+      it 'grants a role to user by name' do
+        expect { user.grant_sub_role!('client') }.to change { user.sub_roles.count }.by(1)
+        expect(user.has_sub_role?('client')).to be true
+      end
+
+      it 'does not raise error when granting duplicate role' do
+        user.grant_sub_role!(client_role.id)
+        expect { user.grant_sub_role!(client_role.id) }.not_to raise_error
+      end
+
+      it 'records granted_by when specified' do
+        admin = create(:user, :admin)
+        user.grant_sub_role!(client_role.id, granted_by: admin)
+        user_sub_role = user.user_sub_roles.last
+        expect(user_sub_role.granted_by).to eq(admin)
+      end
+
+      it 'records granted_via when specified' do
+        user.grant_sub_role!(client_role.id, granted_via: 'product_purchase')
+        user_sub_role = user.user_sub_roles.last
+        expect(user_sub_role.granted_via).to eq('product_purchase')
+      end
+    end
+
+    describe '#grant_sub_roles!' do
+      it 'grants multiple roles by ids' do
+        expect {
+          user.grant_sub_roles!([client_role.id, instructor_role.id])
+        }.to change { user.sub_roles.count }.by(2)
+      end
+
+      it 'grants multiple roles by names' do
+        expect {
+          user.grant_sub_roles!(['client', 'instructor_1'])
+        }.to change { user.sub_roles.count }.by(2)
+      end
+    end
+
+    describe '#has_sub_role?' do
+      before { user.grant_sub_role!(client_role.id) }
+
+      it 'returns true for granted role by id' do
+        expect(user.has_sub_role?(client_role.id)).to be true
+      end
+
+      it 'returns true for granted role by name' do
+        expect(user.has_sub_role?('client')).to be true
+      end
+
+      it 'returns false for not granted role' do
+        expect(user.has_sub_role?('instructor_1')).to be false
+      end
+    end
+
+    describe '#has_any_sub_role?' do
+      before { user.grant_sub_role!(client_role.id) }
+
+      it 'returns true when user has any of specified roles' do
+        expect(user.has_any_sub_role?(['client', 'instructor_1'])).to be true
+      end
+
+      it 'returns false when user has none of specified roles' do
+        expect(user.has_any_sub_role?(['instructor_1', 'specialist'])).to be false
+      end
+
+      it 'returns false for empty array' do
+        expect(user.has_any_sub_role?([])).to be false
+      end
+
+      it 'works with role ids' do
+        expect(user.has_any_sub_role?([client_role.id, instructor_role.id])).to be true
+      end
+    end
+
+    describe '#active_sub_roles' do
+      it 'returns only active roles' do
+        user.grant_sub_role!(client_role.id)
+        UserSubRole.create!(
+          user: user,
+          sub_role: instructor_role,
+          granted_at: 2.days.ago,
+          expires_at: 1.day.ago
+        )
+        expect(user.active_sub_roles).to include(client_role)
+        expect(user.active_sub_roles).not_to include(instructor_role)
+      end
+    end
+  end
 end

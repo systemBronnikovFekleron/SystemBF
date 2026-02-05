@@ -68,15 +68,15 @@
     </div>
   </div>
 
-  <div style="padding: var(--space-4); background: var(--blue-50); border: 1px solid var(--blue-200); border-radius: var(--radius-md);">
-    <p style="font-size: 0.875rem; color: var(--blue-700); line-height: 1.5;">
+  <div style="padding: var(--space-4); background: rgba(79, 70, 229, 0.05); border: 1px solid rgba(79, 70, 229, 0.15); border-radius: var(--radius-md);">
+    <p style="font-size: 0.875rem; color: var(--primary-dark); line-height: 1.5;">
       <strong>Совет:</strong> Используйте это для фиксации всех контактов с клиентами - звонки, встречи, переписка.
       Это поможет отслеживать историю взаимодействий и планировать следующие шаги.
     </p>
   </div>
 
   <div style="display: flex; gap: var(--space-3);">
-    <%= f.submit interaction_history.new_record? ? "Создать запись" : "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+    <%= f.submit interaction_history.new_record? ? "Создать запись" : "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
     <%= link_to "Отменить", interaction_history.new_record? ? admin_interaction_histories_path : admin_interaction_history_path(interaction_history), style: "padding: var(--space-3) var(--space-6); background: var(--gray-100); color: var(--gray-700); text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
   </div>
 <% end %>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_144430) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -42,6 +42,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_categories_on_position"
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "content_sub_roles", force: :cascade do |t|
+    t.bigint "content_id", null: false
+    t.string "content_type", null: false
+    t.datetime "created_at", null: false
+    t.bigint "sub_role_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["content_type", "content_id", "sub_role_id"], name: "index_content_sub_roles_unique", unique: true
+    t.index ["content_type", "content_id"], name: "index_content_sub_roles_on_content"
+    t.index ["sub_role_id"], name: "index_content_sub_roles_on_sub_role_id"
   end
 
   create_table "diagnostics", force: :cascade do |t|
@@ -131,7 +142,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
     t.index ["user_id"], name: "index_favorites_on_user_id"
   end
 
+  create_table "impersonation_logs", force: :cascade do |t|
+    t.bigint "admin_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "ended_at"
+    t.string "ip_address"
+    t.text "reason"
+    t.string "session_token", null: false
+    t.datetime "started_at", null: false
+    t.datetime "updated_at", null: false
+    t.string "user_agent"
+    t.bigint "user_id", null: false
+    t.index ["admin_id", "started_at"], name: "index_impersonation_logs_on_admin_id_and_started_at"
+    t.index ["admin_id"], name: "index_impersonation_logs_on_admin_id"
+    t.index ["session_token"], name: "index_impersonation_logs_on_session_token", unique: true
+    t.index ["started_at"], name: "index_impersonation_logs_on_started_at"
+    t.index ["user_id"], name: "index_impersonation_logs_on_user_id"
+  end
+
   create_table "initiations", force: :cascade do |t|
+    t.jsonb "auto_grant_sub_roles", default: []
     t.datetime "conducted_at"
     t.bigint "conducted_by_id"
     t.datetime "created_at", null: false
@@ -214,6 +244,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
     t.index ["user_id"], name: "index_interaction_histories_on_user_id"
   end
 
+  create_table "notifications", force: :cascade do |t|
+    t.string "action_text"
+    t.string "action_url"
+    t.datetime "created_at", null: false
+    t.text "message"
+    t.jsonb "metadata", default: {}
+    t.string "notification_type", null: false
+    t.boolean "read", default: false, null: false
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["created_at"], name: "index_notifications_on_created_at"
+    t.index ["notification_type"], name: "index_notifications_on_notification_type"
+    t.index ["read"], name: "index_notifications_on_read"
+    t.index ["user_id", "read"], name: "index_notifications_on_user_id_and_read"
+    t.index ["user_id"], name: "index_notifications_on_user_id"
+  end
+
   create_table "order_items", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "order_id", null: false
@@ -283,6 +331,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
 
   create_table "products", force: :cascade do |t|
     t.boolean "auto_approve", default: false, null: false
+    t.jsonb "auto_grant_sub_roles", default: []
     t.bigint "category_id"
     t.datetime "created_at", null: false
     t.text "description"
@@ -324,6 +373,38 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
     t.index ["level"], name: "index_ratings_on_level"
     t.index ["points"], name: "index_ratings_on_points"
     t.index ["user_id"], name: "index_ratings_on_user_id"
+  end
+
+  create_table "sub_roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.string "display_name", null: false
+    t.integer "level", default: 0
+    t.string "name", null: false
+    t.boolean "system_role", default: false
+    t.datetime "updated_at", null: false
+    t.index ["level"], name: "index_sub_roles_on_level"
+    t.index ["name"], name: "index_sub_roles_on_name", unique: true
+    t.index ["system_role"], name: "index_sub_roles_on_system_role"
+  end
+
+  create_table "user_sub_roles", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.datetime "expires_at"
+    t.datetime "granted_at", null: false
+    t.bigint "granted_by_id"
+    t.string "granted_via"
+    t.bigint "source_id"
+    t.string "source_type"
+    t.bigint "sub_role_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["expires_at"], name: "index_user_sub_roles_on_expires_at"
+    t.index ["granted_by_id"], name: "index_user_sub_roles_on_granted_by_id"
+    t.index ["source_type", "source_id"], name: "index_user_sub_roles_on_source"
+    t.index ["sub_role_id"], name: "index_user_sub_roles_on_sub_role_id"
+    t.index ["user_id", "sub_role_id"], name: "index_user_sub_roles_unique", unique: true
+    t.index ["user_id"], name: "index_user_sub_roles_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -393,6 +474,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
   end
 
   add_foreign_key "articles", "users", column: "author_id"
+  add_foreign_key "content_sub_roles", "sub_roles"
   add_foreign_key "diagnostics", "users"
   add_foreign_key "diagnostics", "users", column: "conducted_by_id"
   add_foreign_key "event_registrations", "events"
@@ -401,10 +483,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
   add_foreign_key "events", "categories"
   add_foreign_key "events", "users", column: "organizer_id"
   add_foreign_key "favorites", "users"
+  add_foreign_key "impersonation_logs", "users"
+  add_foreign_key "impersonation_logs", "users", column: "admin_id"
   add_foreign_key "initiations", "users"
   add_foreign_key "initiations", "users", column: "conducted_by_id"
   add_foreign_key "interaction_histories", "users"
   add_foreign_key "interaction_histories", "users", column: "admin_user_id"
+  add_foreign_key "notifications", "users"
   add_foreign_key "order_items", "orders"
   add_foreign_key "order_items", "products"
   add_foreign_key "order_requests", "orders"
@@ -418,6 +503,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
   add_foreign_key "products", "categories"
   add_foreign_key "profiles", "users"
   add_foreign_key "ratings", "users"
+  add_foreign_key "user_sub_roles", "sub_roles"
+  add_foreign_key "user_sub_roles", "users"
+  add_foreign_key "user_sub_roles", "users", column: "granted_by_id"
   add_foreign_key "wallet_transactions", "order_requests"
   add_foreign_key "wallet_transactions", "wallets"
   add_foreign_key "wallets", "users"

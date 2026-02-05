@@ -4,23 +4,25 @@
 <!-- Action Bar -->
 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-6);">
   <div style="display: flex; gap: var(--space-2);">
-    <button class="btn btn-sm" style="background: var(--blue-600); color: white;" onclick="filterNotifications('all')">
-      Все (<%= @notifications.count %>)
+    <button class="btn btn-sm" style="background: var(--primary); color: white;" onclick="filterNotifications('all')">
+      Все (<%= @notifications.total_count %>)
     </button>
     <button class="btn btn-sm btn-outline" onclick="filterNotifications('unread')">
-      Непрочитанные (<%= @notifications.select { |n| !n[:read] }.count %>)
+      Непрочитанные (<%= @unread_count %>)
     </button>
   </div>
 
-  <button class="btn btn-sm btn-outline" onclick="markAllAsRead()" style="color: var(--blue-600);">
-    ✓ Отметить все как прочитанные
-  </button>
+  <% if @unread_count > 0 %>
+    <button class="btn btn-sm btn-outline" onclick="markAllAsRead()" style="color: var(--primary);">
+      ✓ Отметить все как прочитанные
+    </button>
+  <% end %>
 </div>
 
 <% if @notifications.any? %>
   <!-- Notifications Timeline -->
   <div style="max-width: 800px;">
-    <% @notifications.group_by { |n| n[:created_at].to_date }.each do |date, day_notifications| %>
+    <% @notifications.group_by { |n| n.created_at.to_date }.each do |date, day_notifications| %>
       <!-- Date Header -->
       <div style="margin-bottom: var(--space-4); position: sticky; top: 0; background: var(--gray-50); padding: var(--space-2) 0; z-index: 10;">
         <h3 style="font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-transform: uppercase; letter-spacing: 0.05em;">
@@ -29,7 +31,7 @@
           <% elsif date == Date.yesterday %>
             Вчера
           <% else %>
-            <%= date.strftime('%d %B %Y') %>
+            <%= I18n.l(date, format: :long) %>
           <% end %>
         </h3>
       </div>
@@ -37,9 +39,10 @@
       <!-- Notifications for this day -->
       <div style="display: flex; flex-direction: column; gap: var(--space-3); margin-bottom: var(--space-8);">
         <% day_notifications.each do |notification| %>
-          <div class="card notification-card fade-in <%= 'unread' unless notification[:read] %>"
-               data-read="<%= notification[:read] %>"
-               style="position: relative; <%= 'border-left: 4px solid var(--blue-500);' unless notification[:read] %>">
+          <div class="card notification-card fade-in <%= 'unread' unless notification.read? %>"
+               data-notification-id="<%= notification.id %>"
+               data-read="<%= notification.read? %>"
+               style="position: relative; <%= 'border-left: 4px solid var(--primary);' unless notification.read? %>">
 
             <!-- Notification Icon & Type -->
             <div style="display: flex; gap: var(--space-4);">
@@ -49,51 +52,60 @@
                 height: 48px;
                 flex-shrink: 0;
                 border-radius: 50%;
-                background: <%= notification_background(notification[:type]) %>;
+                background: <%= notification_background(notification.notification_type) %>;
                 display: flex;
                 align-items: center;
                 justify-content: center;
                 font-size: 1.5rem;
               ">
-                <%= notification_icon(notification[:type]) %>
+                <%= notification.type_icon %>
               </div>
 
               <!-- Notification Content -->
               <div style="flex: 1;">
                 <!-- Title & Time -->
                 <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: var(--space-2);">
-                  <h4 style="font-size: 1rem; font-weight: <%= notification[:read] ? '500' : '600' %>; color: var(--gray-900);">
-                    <%= notification[:title] %>
+                  <h4 style="font-size: 1rem; font-weight: <%= notification.read? ? '500' : '600' %>; color: var(--gray-900);">
+                    <%= notification.title %>
                   </h4>
                   <span style="font-size: 0.75rem; color: var(--gray-500); white-space: nowrap; margin-left: var(--space-3);">
-                    <%= notification[:created_at].strftime('%H:%M') %>
+                    <%= notification.created_at.strftime('%H:%M') %>
                   </span>
                 </div>
 
                 <!-- Description -->
-                <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-3);">
-                  <%= notification[:message] %>
-                </p>
+                <% if notification.message.present? %>
+                  <p style="font-size: 0.875rem; color: var(--gray-600); line-height: 1.5; margin-bottom: var(--space-3);">
+                    <%= notification.message %>
+                  </p>
+                <% end %>
 
                 <!-- Action Button (if applicable) -->
-                <% if notification[:action_url] %>
-                  <a href="<%= notification[:action_url] %>" class="btn btn-sm btn-outline" style="margin-top: var(--space-2);">
-                    <%= notification[:action_text] || 'Подробнее' %> →
+                <% if notification.action_url.present? %>
+                  <a href="<%= notification.action_url %>" class="btn btn-sm btn-outline" style="margin-top: var(--space-2);">
+                    <%= notification.action_text || 'Подробнее' %> →
                   </a>
                 <% end %>
               </div>
             </div>
 
             <!-- Unread Badge -->
-            <% unless notification[:read] %>
+            <% unless notification.read? %>
               <div style="position: absolute; top: 16px; right: 16px;">
-                <div style="width: 8px; height: 8px; background: var(--blue-500); border-radius: 50%;"></div>
+                <button onclick="markAsRead(<%= notification.id %>)" style="border: none; background: none; cursor: pointer; padding: 0;">
+                  <div style="width: 8px; height: 8px; background: var(--primary); border-radius: 50%;"></div>
+                </button>
               </div>
             <% end %>
           </div>
         <% end %>
       </div>
     <% end %>
+  </div>
+
+  <!-- Pagination -->
+  <div style="margin-top: 2rem; display: flex; justify-content: center;">
+    <%= paginate @notifications %>
   </div>
 <% else %>
   <!-- Empty State -->
@@ -114,11 +126,11 @@
   }
 
   .notification-card:hover {
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 40px rgba(79, 70, 229, 0.12);
   }
 
   .notification-card.unread {
-    background: linear-gradient(to right, rgba(59, 130, 246, 0.03), transparent);
+    background: linear-gradient(to right, rgba(79, 70, 229, 0.03), transparent);
   }
 </style>
 
@@ -131,7 +143,7 @@
     buttons.forEach(btn => {
       if (btn.getAttribute('onclick').includes(`'${filter}'`)) {
         btn.className = 'btn btn-sm';
-        btn.style.background = 'var(--blue-600)';
+        btn.style.background = 'var(--primary)';
         btn.style.color = 'white';
       } else {
         btn.className = 'btn btn-sm btn-outline';
@@ -152,50 +164,80 @@
     });
   }
 
+  function markAsRead(notificationId) {
+    fetch(`/dashboard/notifications/${notificationId}/read`, {
+      method: 'POST',
+      headers: {
+        'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+        'Content-Type': 'application/json'
+      }
+    }).then(response => {
+      if (response.ok) {
+        const card = document.querySelector(`[data-notification-id="${notificationId}"]`);
+        if (card) {
+          card.classList.remove('unread');
+          card.style.borderLeft = 'none';
+          card.style.background = 'white';
+          card.dataset.read = 'true';
+
+          const badge = card.querySelector('[style*="width: 8px"]')?.closest('button')?.parentElement;
+          if (badge) badge.remove();
+
+          // Update counters
+          const unreadButton = document.querySelector('button[onclick*="unread"]');
+          if (unreadButton) {
+            const match = unreadButton.innerHTML.match(/\((\d+)\)/);
+            if (match) {
+              const count = parseInt(match[1]) - 1;
+              unreadButton.innerHTML = `Непрочитанные (${count})`;
+            }
+          }
+        }
+      }
+    });
+  }
+
   function markAllAsRead() {
     const unreadCards = document.querySelectorAll('.notification-card.unread');
+    const promises = [];
 
     unreadCards.forEach(card => {
-      card.classList.remove('unread');
-      card.style.borderLeft = 'none';
-      card.style.background = 'white';
-
-      const badge = card.querySelector('[style*="width: 8px"]')?.parentElement;
-      if (badge) badge.remove();
+      const notificationId = card.dataset.notificationId;
+      promises.push(
+        fetch(`/dashboard/notifications/${notificationId}/read`, {
+          method: 'POST',
+          headers: {
+            'X-CSRF-Token': document.querySelector('meta[name="csrf-token"]').content,
+            'Content-Type': 'application/json'
+          }
+        })
+      );
     });
 
-    // Update counters
-    const unreadButton = document.querySelector('button[onclick*="unread"]');
-    if (unreadButton) {
-      unreadButton.innerHTML = 'Непрочитанные (0)';
-    }
-
-    // Show success message (optional)
-    alert('Все уведомления отмечены как прочитанные');
+    Promise.all(promises).then(() => {
+      window.location.reload();
+    });
   }
 </script>
 
 <%
-# Helper methods for notification styling (inline for simplicity)
-def notification_icon(type)
-  {
-    'order_paid' => '✅',
-    'product_access_granted' => '🎓',
-    'achievement_unlocked' => '🏆',
-    'wallet_deposit' => '💰',
-    'profile_updated' => '👤',
-    'system' => '⚙️'
-  }[type] || '📢'
-end
-
+# Helper method for notification background
 def notification_background(type)
-  {
-    'order_paid' => 'var(--green-100)',
-    'product_access_granted' => 'var(--blue-100)',
-    'achievement_unlocked' => 'var(--yellow-100)',
-    'wallet_deposit' => 'var(--green-100)',
-    'profile_updated' => 'var(--gray-100)',
-    'system' => 'var(--gray-100)'
-  }[type] || 'var(--gray-100)'
+  case type
+  when 'order_paid', 'order_completed', 'wallet_deposit'
+    'rgba(15, 157, 88, 0.1)'
+  when 'product_access_granted', 'order_request_approved'
+    'rgba(79, 70, 229, 0.1)'
+  when 'achievement_unlocked'
+    'rgba(245, 158, 11, 0.1)'
+  when 'wallet_withdrawal', 'wallet_refund'
+    'rgba(147, 51, 234, 0.1)'
+  when 'event_registration', 'event_reminder'
+    'rgba(59, 130, 246, 0.1)'
+  when 'system'
+    'rgba(148, 163, 184, 0.1)'
+  else
+    'rgba(156, 163, 175, 0.1)'
+  end
 end
 %>

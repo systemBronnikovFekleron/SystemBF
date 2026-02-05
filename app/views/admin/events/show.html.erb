@@ -1,0 +1,28 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад', admin_events_path, style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div><h1 style="font-size: 2rem; font-weight: 700;"><%= @event.title %></h1>
+    <div style="display: flex; gap: 0.5rem; margin-top: 1rem;"><span class="badge <%= @event.status_published? ? 'badge-success' : 'badge-warning' %>"><%= @event.status.humanize %></span><span class="badge badge-secondary"><%= @event.format_location %></span><span class="badge badge-secondary"><%= @event.free? ? 'Бесплатно' : humanized_money_with_symbol(@event.price) %></span></div></div>
+    <div style="display: flex; gap: 0.75rem;"><%= link_to 'Изменить', edit_admin_event_path(@event), class: 'btn btn-primary' %><%= link_to 'Регистрации', registrations_admin_event_path(@event), class: 'btn btn-outline' %></div>
+  </div>
+
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <div style="margin-bottom: 1.5rem;"><strong>Описание:</strong><p style="margin-top: 0.5rem;"><%= simple_format(@event.description) %></p></div>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+      <div><strong>Начало:</strong> <%= l(@event.starts_at, format: :long) %></div>
+      <div><strong>Окончание:</strong> <%= @event.ends_at ? l(@event.ends_at, format: :long) : 'Не указано' %></div>
+      <div><strong>Макс. участников:</strong> <%= @event.max_participants || 'Неограничено' %></div>
+      <div><strong>Свободных мест:</strong> <%= @event.available_spots || 'Неограничено' %></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div style="padding: 1rem; border-bottom: 1px solid var(--gray-200);"><h3 style="font-weight: 600;">Последние регистрации</h3></div>
+    <% if @registrations.any? %>
+      <table class="admin-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Дата</th></tr></thead><tbody>
+        <% @registrations.each do |reg| %><tr><td><%= reg.user.full_name %></td><td><span class="badge <%= reg.confirmed? ? 'badge-success' : 'badge-warning' %>"><%= reg.status.humanize %></span></td><td><%= l(reg.created_at, format: :short) %></td></tr><% end %>
+      </tbody></table>
+      <div style="padding: 1rem; text-align: center;"><%= link_to 'Все регистрации →', registrations_admin_event_path(@event), class: 'btn btn-outline' %></div>
+    <% else %><div style="padding: 2rem; text-align: center; color: var(--gray-600);">Нет регистраций</div><% end %>
+  </div>
+</div>

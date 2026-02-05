@@ -2,7 +2,7 @@
 
 <div style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center;">
   <%= link_to "← Назад к списку", admin_interaction_histories_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
-  <%= link_to "Редактировать", edit_admin_interaction_history_path(@interaction_history), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+  <%= link_to "Редактировать", edit_admin_interaction_history_path(@interaction_history), style: "padding: var(--space-3) var(--space-5); background: var(--primary); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
 </div>
 
 <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">
@@ -74,7 +74,7 @@
       <% if @interaction_history.follow_up_date.present? %>
         <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
           <dt style="font-weight: 500; color: var(--gray-600);">Следующий шаг:</dt>
-          <dd style="font-weight: 500; color: var(--blue-600);"><%= l(@interaction_history.follow_up_date, format: :long) %></dd>
+          <dd style="font-weight: 500; color: var(--primary);"><%= l(@interaction_history.follow_up_date, format: :long) %></dd>
         </div>
       <% end %>
 

@@ -49,6 +49,14 @@ class User < ApplicationRecord
   # Favorites
   has_many :favorites, dependent: :destroy
 
+  # Notifications
+  has_many :notifications, dependent: :destroy
+
+  # SubRoles
+  has_many :user_sub_roles, dependent: :destroy
+  has_many :sub_roles, through: :user_sub_roles
+  has_many :granted_sub_roles, class_name: 'UserSubRole', foreign_key: :granted_by_id, dependent: :nullify
+
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 8 }, if: -> { new_record? || password.present? }
 
@@ -85,6 +93,49 @@ class User < ApplicationRecord
     self.reset_password_token = nil
     self.reset_password_sent_at = nil
     save!(validate: false)
+  end
+
+  # SubRole methods
+  def has_sub_role?(role_name_or_id)
+    if role_name_or_id.is_a?(Integer)
+      sub_role_ids.include?(role_name_or_id)
+    else
+      sub_roles.exists?(name: role_name_or_id)
+    end
+  end
+
+  def has_any_sub_role?(role_names_or_ids)
+    return false if role_names_or_ids.blank?
+
+    if role_names_or_ids.first.is_a?(Integer)
+      (sub_role_ids & role_names_or_ids).any?
+    else
+      sub_roles.where(name: role_names_or_ids).exists?
+    end
+  end
+
+  def grant_sub_role!(role_name_or_id, granted_by: nil, granted_via: 'manual', source: nil)
+    role = role_name_or_id.is_a?(Integer) ? SubRole.find(role_name_or_id) : SubRole.find_by!(name: role_name_or_id)
+
+    user_sub_roles.create!(
+      sub_role: role,
+      granted_by: granted_by,
+      granted_via: granted_via,
+      source: source,
+      granted_at: Time.current
+    )
+  rescue ActiveRecord::RecordInvalid => e
+    Rails.logger.info "User #{id} already has sub_role #{role.name}"
+  end
+
+  def grant_sub_roles!(role_ids_or_names, granted_by: nil, granted_via: 'manual', source: nil)
+    Array(role_ids_or_names).each do |role|
+      grant_sub_role!(role, granted_by: granted_by, granted_via: granted_via, source: source)
+    end
+  end
+
+  def active_sub_roles
+    user_sub_roles.active.includes(:sub_role).map(&:sub_role)
   end
 
   private

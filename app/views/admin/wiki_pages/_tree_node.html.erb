@@ -1,0 +1,23 @@
+<div style="padding: 0.75rem 1rem; border-bottom: 1px solid var(--gray-100); <%= "margin-left: #{depth * 2}rem;" if depth > 0 %>">
+  <div style="display: flex; justify-content: space-between; align-items: center;">
+    <div style="flex: 1;">
+      <div style="display: flex; align-items: center; gap: 0.5rem;">
+        <span style="font-size: 1.25rem;"><%= depth > 0 ? '└─' : '📄' %></span>
+        <strong style="color: var(--gray-900);"><%= page.title %></strong>
+        <span class="badge <%= page.status_published? ? 'badge-success' : 'badge-warning' %>"><%= page.status.humanize %></span>
+        <% if page.has_children? %><span class="badge badge-secondary"><%= page.children.count %> подстраниц</span><% end %>
+      </div>
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-top: 0.25rem; margin-left: 2rem;">
+        Автор: <%= page.created_by&.full_name || 'Не указан' %> • Обновлено: <%= l(page.updated_at, format: :short) %>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.5rem;">
+      <%= link_to 'Просмотр', admin_wiki_page_path(page), class: 'btn btn-sm btn-outline' %>
+      <%= link_to 'Изменить', edit_admin_wiki_page_path(page), class: 'btn btn-sm btn-outline' %>
+      <%= link_to '+', new_admin_wiki_page_path(parent_id: page.id), class: 'btn btn-sm', style: 'background: var(--secondary); color: white;', title: 'Добавить подстраницу' %>
+    </div>
+  </div>
+</div>
+<% if page.has_children? %>
+  <%= render partial: 'tree_node', collection: page.children.ordered, as: :page, locals: { depth: depth + 1 } %>
+<% end %>

@@ -1,0 +1,119 @@
+<div class="admin-header">
+  <h1>Подроли пользователя: <%= @user.full_name %></h1>
+  <%= link_to 'Назад к пользователю', admin_user_path(@user), class: 'btn btn-secondary' %>
+</div>
+
+<div class="row">
+  <!-- Активные роли -->
+  <div class="col-md-8">
+    <div class="detail-card">
+      <h2>Активные подроли (<%= @active_roles.count %>)</h2>
+
+      <% if @active_roles.any? %>
+        <table class="admin-table">
+          <thead>
+            <tr>
+              <th>Роль</th>
+              <th>Уровень</th>
+              <th>Назначена</th>
+              <th>Кем назначена</th>
+              <th>Способ</th>
+              <th>Истекает</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody>
+            <% @active_roles.each do |user_sub_role| %>
+              <tr>
+                <td>
+                  <strong><%= user_sub_role.sub_role.display_name %></strong>
+                  <br>
+                  <small class="text-muted"><code><%= user_sub_role.sub_role.name %></code></small>
+                </td>
+                <td>
+                  <span class="badge badge-info"><%= user_sub_role.sub_role.level %></span>
+                </td>
+                <td><%= l(user_sub_role.granted_at, format: :short) %></td>
+                <td>
+                  <% if user_sub_role.granted_by.present? %>
+                    <%= user_sub_role.granted_by.full_name %>
+                  <% else %>
+                    <span class="text-muted">Система</span>
+                  <% end %>
+                </td>
+                <td>
+                  <% case user_sub_role.granted_via %>
+                  <% when 'manual' %>
+                    <span class="badge badge-secondary">Вручную</span>
+                  <% when 'product_purchase' %>
+                    <span class="badge badge-success">Покупка</span>
+                  <% when 'initiation_completed' %>
+                    <span class="badge badge-primary">Инициация</span>
+                  <% else %>
+                    <span class="badge badge-light"><%= user_sub_role.granted_via %></span>
+                  <% end %>
+                </td>
+                <td>
+                  <% if user_sub_role.expires_at.present? %>
+                    <%= l(user_sub_role.expires_at, format: :short) %>
+                  <% else %>
+                    <span class="text-muted">Бессрочно</span>
+                  <% end %>
+                </td>
+                <td>
+                  <%= button_to 'Отозвать', admin_user_sub_role_path(@user, user_sub_role),
+                      method: :delete, data: { confirm: 'Отозвать эту роль?' },
+                      class: 'btn btn-sm btn-danger' %>
+                </td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-muted">У пользователя нет активных подролей.</p>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- Форма назначения новой роли -->
+  <div class="col-md-4">
+    <div class="detail-card">
+      <h2>Назначить подроль</h2>
+
+      <%= form_with url: admin_user_sub_roles_path(@user), method: :post, local: true do |f| %>
+        <div class="form-group">
+          <%= label_tag :sub_role_id, 'Выберите роль' %>
+          <%= select_tag :sub_role_id,
+              options_from_collection_for_select(@available_roles, :id, :display_name),
+              class: 'form-control', prompt: 'Выберите роль...' %>
+        </div>
+
+        <div class="alert alert-info">
+          <strong>Примечание:</strong> Роль будет назначена бессрочно.
+          Вы можете отозвать её в любой момент.
+        </div>
+
+        <%= f.submit 'Назначить роль', class: 'btn btn-primary btn-block' %>
+      <% end %>
+    </div>
+
+    <div class="detail-card">
+      <h3>Доступные роли</h3>
+      <div class="roles-list">
+        <% @available_roles.group_by { |r| r.system_role? ? 'Системные' : 'Кастомные' }.each do |group_name, roles| %>
+          <h4 class="text-muted"><%= group_name %></h4>
+          <ul class="list-unstyled">
+            <% roles.each do |role| %>
+              <li>
+                <strong><%= role.display_name %></strong>
+                <span class="badge badge-info"><%= role.level %></span>
+                <br>
+                <small class="text-muted"><code><%= role.name %></code></small>
+              </li>
+            <% end %>
+          </ul>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

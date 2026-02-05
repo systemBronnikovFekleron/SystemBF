@@ -1,0 +1,29 @@
+<div style="padding: 2rem;">
+  <%= link_to '← К событию', admin_event_path(@event), style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+  <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: 1rem;">Регистрации: <%= @event.title %></h1>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card"><div style="font-size: 0.875rem; color: var(--gray-600);">Подтверждено</div><div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @confirmed_count %></div></div>
+    <div class="admin-stat-card"><div style="font-size: 0.875rem; color: var(--gray-600);">Ожидают</div><div style="font-size: 2rem; font-weight: 700; color: var(--accent);"><%= @pending_count %></div></div>
+    <div class="admin-stat-card"><div style="font-size: 0.875rem; color: var(--gray-600);">Отменено</div><div style="font-size: 2rem; font-weight: 700; color: var(--gray-500);"><%= @cancelled_count %></div></div>
+  </div>
+
+  <div class="card">
+    <table class="admin-table">
+      <thead><tr><th>Пользователь</th><th>Email</th><th>Статус</th><th>Заказ</th><th>Дата регистрации</th></tr></thead>
+      <tbody>
+        <% @registrations.each do |reg| %>
+          <tr>
+            <td><%= reg.user.full_name %></td>
+            <td><%= reg.user.email %></td>
+            <td><span class="badge <%= reg.confirmed? ? 'badge-success' : reg.pending? ? 'badge-warning' : 'badge-secondary' %>"><%= reg.status.humanize %></span></td>
+            <td><% if reg.order %><%= link_to reg.order.order_number, admin_order_path(reg.order), class: 'badge badge-primary' %><% else %>-<% end %></td>
+            <td style="color: var(--gray-600); font-size: 0.875rem;"><%= l(reg.created_at, format: :short) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div style="margin-top: 2rem;"><%= paginate @registrations %></div>
+</div>

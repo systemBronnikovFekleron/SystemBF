@@ -4,7 +4,7 @@ class ProductsController < ApplicationController
   skip_before_action :verify_authenticity_token, only: [:index, :show]
 
   def index
-    @products = Product.includes(:category).published.ordered
+    @products = Product.includes(:category).published.accessible_by(current_user).ordered
     @products = @products.where(category_id: params[:category_id]) if params[:category_id].present?
     @products = @products.where(product_type: params[:product_type]) if params[:product_type].present?
     @products = @products.featured if params[:featured] == 'true'
@@ -19,6 +19,11 @@ class ProductsController < ApplicationController
 
   def show
     @product = Product.friendly.find(params[:id])
+
+    unless @product.accessible_by?(current_user)
+      redirect_to products_path, alert: 'У вас нет доступа к этому продукту'
+      return
+    end
 
     respond_to do |format|
       format.html

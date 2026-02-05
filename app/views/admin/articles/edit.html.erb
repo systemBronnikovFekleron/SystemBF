@@ -1,0 +1,8 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад', admin_articles_path, style: 'color: var(--primary); font-weight: 500; margin-bottom: 2rem; display: inline-block;' %>
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">Редактировать: <%= @article.title %></h1>
+    <%= link_to 'Просмотр', admin_article_path(@article), class: 'btn btn-outline' %>
+  </div>
+  <div class="card"><%= render 'form', article: @article %></div>
+</div>

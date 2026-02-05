@@ -11,9 +11,9 @@
 
 <!-- Period Selector -->
 <div class="card" style="padding: var(--space-4); margin-bottom: var(--space-6); display: flex; gap: var(--space-3);">
-  <%= link_to 'День', statistics_admin_integration_path(@integration, period: 'daily'), style: "padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); text-decoration: none; font-weight: 500; transition: all 0.2s; #{@period == 'daily' ? 'background: var(--blue-600); color: white;' : 'background: var(--gray-100); color: var(--gray-700);'}" %>
-  <%= link_to 'Неделя', statistics_admin_integration_path(@integration, period: 'weekly'), style: "padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); text-decoration: none; font-weight: 500; transition: all 0.2s; #{@period == 'weekly' ? 'background: var(--blue-600); color: white;' : 'background: var(--gray-100); color: var(--gray-700);'}" %>
-  <%= link_to 'Месяц', statistics_admin_integration_path(@integration, period: 'monthly'), style: "padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); text-decoration: none; font-weight: 500; transition: all 0.2s; #{@period == 'monthly' ? 'background: var(--blue-600); color: white;' : 'background: var(--gray-100); color: var(--gray-700);'}" %>
+  <%= link_to 'День', statistics_admin_integration_path(@integration, period: 'daily'), style: "padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); text-decoration: none; font-weight: 500; transition: all 0.2s; #{@period == 'daily' ? 'background: var(--primary); color: white;' : 'background: var(--gray-100); color: var(--gray-700);'}" %>
+  <%= link_to 'Неделя', statistics_admin_integration_path(@integration, period: 'weekly'), style: "padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); text-decoration: none; font-weight: 500; transition: all 0.2s; #{@period == 'weekly' ? 'background: var(--primary); color: white;' : 'background: var(--gray-100); color: var(--gray-700);'}" %>
+  <%= link_to 'Месяц', statistics_admin_integration_path(@integration, period: 'monthly'), style: "padding: var(--space-2) var(--space-4); border-radius: var(--radius-md); text-decoration: none; font-weight: 500; transition: all 0.2s; #{@period == 'monthly' ? 'background: var(--primary); color: white;' : 'background: var(--gray-100); color: var(--gray-700);'}" %>
 </div>
 
 <!-- Summary Stats -->
@@ -25,8 +25,8 @@
 
   <div class="card" style="padding: var(--space-6);">
     <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-      <div style="width: 48px; height: 48px; background: var(--blue-50); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="width: 48px; height: 48px; background: rgba(79, 70, 229, 0.05); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
         </svg>
       </div>

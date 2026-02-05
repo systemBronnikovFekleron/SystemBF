@@ -1,0 +1,63 @@
+<% content_for :title, "Детали сессии имперсонации ##{@impersonation_log.id}" %>
+
+<div style="margin-bottom: var(--space-6);">
+  <%= link_to "← Назад к истории", admin_impersonations_path, style: "color: var(--gray-600); text-decoration: none;" %>
+</div>
+
+<h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">
+  Сессия имперсонации #<%= @impersonation_log.id %>
+</h1>
+
+<div style="display: flex; gap: var(--space-3); margin-bottom: var(--space-8);">
+  <% if @impersonation_log.active? %>
+    <span style="padding: 4px 12px; background: rgba(245, 158, 11, 0.1); color: #D97706; border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">Активна</span>
+  <% else %>
+    <span style="padding: 4px 12px; background: rgba(107, 114, 128, 0.1); color: var(--gray-600); border-radius: 9999px; font-size: 0.875rem; font-weight: 500;">Завершена</span>
+  <% end %>
+</div>
+
+<div class="card" style="padding: var(--space-6);">
+  <dl style="display: grid; gap: var(--space-4);">
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">Администратор:</dt>
+      <dd><%= link_to @impersonation_log.admin.email, admin_user_path(@impersonation_log.admin), style: "color: var(--primary); text-decoration: none;" %></dd>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">Пользователь:</dt>
+      <dd><%= link_to @impersonation_log.user.email, admin_user_path(@impersonation_log.user), style: "color: var(--primary); text-decoration: none;" %></dd>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">Начало сессии:</dt>
+      <dd><%= l(@impersonation_log.started_at, format: :long) %></dd>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">Конец сессии:</dt>
+      <dd><%= @impersonation_log.ended_at ? l(@impersonation_log.ended_at, format: :long) : '—' %></dd>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">Длительность:</dt>
+      <dd><%= @impersonation_log.duration_human %></dd>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">IP адрес:</dt>
+      <dd><%= @impersonation_log.ip_address || '—' %></dd>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+      <dt style="font-weight: 500; color: var(--gray-600);">User Agent:</dt>
+      <dd style="font-size: 0.875rem; color: var(--gray-700); word-break: break-all;"><%= @impersonation_log.user_agent || '—' %></dd>
+    </div>
+
+    <% if @impersonation_log.reason.present? %>
+      <div style="display: grid; grid-template-columns: 200px 1fr; gap: var(--space-4);">
+        <dt style="font-weight: 500; color: var(--gray-600);">Причина:</dt>
+        <dd><%= @impersonation_log.reason %></dd>
+      </div>
+    <% end %>
+  </dl>
+</div>

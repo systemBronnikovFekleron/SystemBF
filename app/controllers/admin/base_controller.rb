@@ -5,6 +5,7 @@ module Admin
     layout 'admin'
     before_action :authenticate_user!
     before_action :authorize_admin!
+    before_action :block_admin_during_impersonation, unless: :impersonations_controller?
 
     private
 
@@ -17,6 +18,10 @@ module Admin
           format.json { render json: { error: 'Forbidden' }, status: :forbidden }
         end
       end
+    end
+
+    def impersonations_controller?
+      controller_name == 'impersonations' && action_name == 'destroy'
     end
   end
 end

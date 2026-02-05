@@ -10,8 +10,8 @@
 <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
   <div class="card" style="padding: var(--space-6);">
     <div style="display: flex; align-items: center; gap: var(--space-4); margin-bottom: var(--space-4);">
-      <div style="width: 48px; height: 48px; background: var(--blue-50); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
-        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <div style="width: 48px; height: 48px; background: rgba(79, 70, 229, 0.05); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
           <circle cx="12" cy="12" r="10"></circle>
           <line x1="2" y1="12" x2="22" y2="12"></line>
           <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
@@ -92,10 +92,10 @@
         <tr style="border-bottom: 1px solid var(--gray-100);">
           <td style="padding: var(--space-4);">
             <div style="display: flex; align-items: center; gap: var(--space-3);">
-              <% bg_color = case integration.integration_type.to_s when 'email' then 'var(--blue-50)' when 'telegram' then 'rgba(0, 136, 204, 0.1)' when 'google_analytics' then 'rgba(234, 67, 53, 0.1)' when 'cloudpayments' then 'rgba(168, 85, 247, 0.1)' end %>
+              <% bg_color = case integration.integration_type.to_s when 'email' then 'rgba(79, 70, 229, 0.05)' when 'telegram' then 'rgba(0, 136, 204, 0.1)' when 'google_analytics' then 'rgba(234, 67, 53, 0.1)' when 'cloudpayments' then 'rgba(168, 85, 247, 0.1)' end %>
               <div style="width: 40px; height: 40px; background: <%= bg_color %>; border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center;">
                 <% if integration.integration_type.to_s == 'email' %>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--blue-600)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
                     <polyline points="22,6 12,13 2,6"></polyline>
                   </svg>
@@ -143,7 +143,7 @@
           </td>
           <td style="padding: var(--space-4); text-align: right;">
             <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
-              <%= link_to "Настроить", admin_integration_path(integration), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= link_to "Настроить", admin_integration_path(integration), style: "padding: var(--space-2) var(--space-3); color: var(--primary); text-decoration: none; font-size: 0.875rem;" %>
               <%= button_to toggle_status_admin_integration_path(integration), method: :post, style: "padding: var(--space-2) var(--space-3); background: none; border: none; color: var(--gray-600); cursor: pointer; font-size: 0.875rem;" do %>
                 <%= integration.enabled? ? 'Выключить' : 'Включить' %>
               <% end %>

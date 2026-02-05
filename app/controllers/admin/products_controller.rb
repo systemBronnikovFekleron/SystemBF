@@ -2,7 +2,7 @@
 
 module Admin
   class ProductsController < BaseController
-    before_action :set_product, only: [:show, :edit, :update, :destroy]
+    before_action :set_product, only: [:show, :edit, :update, :destroy, :edit_sub_roles, :update_sub_roles]
 
     def index
       @products = Product.includes(:category).order(created_at: :desc)
@@ -96,6 +96,31 @@ module Admin
       end
     end
 
+    def edit_sub_roles
+      @available_roles = SubRole.ordered
+      @current_roles = @product.required_sub_roles
+    end
+
+    def update_sub_roles
+      role_ids = params[:sub_role_ids] || []
+      auto_grant_role_ids = params[:auto_grant_sub_role_ids] || []
+
+      ActiveRecord::Base.transaction do
+        @product.content_sub_roles.destroy_all
+        @product.add_required_roles(role_ids.map(&:to_i)) if role_ids.any?
+
+        if auto_grant_role_ids.present?
+          @product.update!(auto_grant_sub_roles: auto_grant_role_ids.map(&:to_i))
+        else
+          @product.update!(auto_grant_sub_roles: [])
+        end
+      end
+
+      redirect_to admin_product_path(@product), notice: 'Настройки доступа успешно обновлены'
+    rescue StandardError => e
+      redirect_to edit_sub_roles_admin_product_path(@product), alert: "Ошибка: #{e.message}"
+    end
+
     private
 
     def set_product
@@ -113,7 +138,8 @@ module Admin
         :status,
         :featured,
         :duration_minutes,
-        :access_duration_days
+        :access_duration_days,
+        auto_grant_sub_roles: []
       )
     end
   end

@@ -35,7 +35,7 @@
       ], {}, style: "width: 100%; padding: var(--space-3); border: 1px solid var(--gray-200); border-radius: var(--radius-md); font-size: 0.875rem;" %>
     </div>
 
-    <%= f.submit "Фильтровать", style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+    <%= f.submit "Фильтровать", style: "padding: var(--space-3) var(--space-5); background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
   <% end %>
 </div>
 
@@ -77,8 +77,8 @@
           </td>
           <td style="padding: var(--space-4); text-align: right;">
             <div style="display: flex; gap: var(--space-2); justify-content: flex-end;">
-              <%= link_to "Просмотр", admin_user_path(user), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
-              <%= link_to "Редактировать", edit_admin_user_path(user), style: "padding: var(--space-2) var(--space-3); color: var(--blue-600); text-decoration: none; font-size: 0.875rem;" %>
+              <%= link_to "Просмотр", admin_user_path(user), style: "padding: var(--space-2) var(--space-3); color: var(--primary); text-decoration: none; font-size: 0.875rem;" %>
+              <%= link_to "Редактировать", edit_admin_user_path(user), style: "padding: var(--space-2) var(--space-3); color: var(--primary); text-decoration: none; font-size: 0.875rem;" %>
             </div>
           </td>
         </tr>

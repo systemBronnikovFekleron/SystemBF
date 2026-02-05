@@ -19,8 +19,12 @@ class OrderRequest < ApplicationRecord
   # Callbacks
   before_create :generate_request_number
   before_create :set_total_from_product
+  after_create :send_created_notification
   after_save :auto_complete_if_paid, if: :should_auto_complete?
   after_commit :process_auto_payment_after_approve, if: :saved_change_to_approved?
+  after_commit :send_approved_notification, if: :saved_change_to_approved?
+  after_commit :send_rejected_notification, if: :saved_change_to_rejected?
+  after_commit :send_paid_notification, if: :saved_change_to_paid?
 
   # AASM State Machine
   aasm column: :status do
@@ -127,6 +131,17 @@ class OrderRequest < ApplicationRecord
         order: new_order
       )
 
+      # Auto-grant SubRoles if configured
+      if product.auto_grant_sub_roles.present?
+        user.grant_sub_roles!(
+          product.auto_grant_sub_roles,
+          granted_by: nil,
+          granted_via: 'product_purchase',
+          source: product
+        )
+        Rails.logger.info "Auto-granted sub_roles #{product.auto_grant_sub_roles} to user #{user.id} via product #{product.id}"
+      end
+
       # Link OrderRequest to Order (skip callbacks to avoid recursion)
       update_column(:order_id, new_order.id)
       self.order = new_order
@@ -154,5 +169,30 @@ class OrderRequest < ApplicationRecord
   def process_auto_payment_after_approve
     # This runs after commit, so status is already 'approved' in DB
     process_auto_payment
+  end
+
+  # Notification callbacks
+  def send_created_notification
+    NotificationService.order_request_created(user, self)
+  end
+
+  def send_approved_notification
+    NotificationService.order_request_approved(user, self)
+  end
+
+  def saved_change_to_rejected?
+    saved_change_to_status? && status == 'rejected'
+  end
+
+  def send_rejected_notification
+    NotificationService.order_request_rejected(user, self, reason: rejection_reason)
+  end
+
+  def saved_change_to_paid?
+    saved_change_to_status? && status == 'paid'
+  end
+
+  def send_paid_notification
+    NotificationService.order_request_paid(user, self)
   end
 end

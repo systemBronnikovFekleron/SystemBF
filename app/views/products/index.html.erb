@@ -4,7 +4,7 @@
 <section style="padding: 3rem 0 2rem; background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));">
   <div class="container">
     <h1 class="text-gradient" style="margin-bottom: 0.5rem;">Магазин</h1>
-    <p style="color: var(--color-gray-600); font-size: 1.125rem;">
+    <p style="color: var(--gray-600); font-size: 1.125rem;">
       Курсы, книги, видеоматериалы и услуги для вашего развития
     </p>
   </div>
@@ -14,7 +14,7 @@
 <section class="container" style="padding: 2rem 0;">
   <div class="card" style="padding: 1.5rem;">
     <div style="display: flex; gap: 1rem; flex-wrap: wrap; align-items: center;">
-      <span style="font-weight: 600; color: var(--color-gray-700);">Фильтры:</span>
+      <span style="font-weight: 600; color: var(--gray-700);">Фильтры:</span>
 
       <!-- Category Filter -->
       <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -27,7 +27,7 @@
         <% end %>
       </div>
 
-      <div style="width: 1px; height: 2rem; background: var(--color-gray-200);"></div>
+      <div style="width: 1px; height: 2rem; background: var(--gray-200);"></div>
 
       <!-- Type Filter -->
       <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
@@ -70,24 +70,24 @@
               </span>
 
               <% if product.category %>
-                <span style="font-size: 0.75rem; color: var(--color-gray-500);">
+                <span style="font-size: 0.75rem; color: var(--gray-500);">
                   <%= product.category.name %>
                 </span>
               <% end %>
             </div>
 
-            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--color-gray-900);">
+            <h3 style="font-size: 1.125rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--gray-900);">
               <%= product.name %>
             </h3>
 
-            <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
+            <p style="color: var(--gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
               <%= truncate(product.description, length: 80) %>
             </p>
 
             <!-- Price & Action -->
             <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto;">
               <div>
-                <div style="font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <div style="font-size: 1.5rem; font-weight: 700; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
                   <%= product.price.format %>
                 </div>
               </div>
@@ -104,7 +104,7 @@
     <div class="card" style="text-align: center; padding: 4rem 2rem;">
       <div style="font-size: 4rem; margin-bottom: 1rem; opacity: 0.5;">📦</div>
       <h3 style="margin-bottom: 0.5rem;">Продукты не найдены</h3>
-      <p style="color: var(--color-gray-600); margin-bottom: 2rem;">
+      <p style="color: var(--gray-600); margin-bottom: 2rem;">
         По выбранным фильтрам нет доступных продуктов
       </p>
       <%= link_to "Сбросить фильтры", products_path, class: "btn btn-outline" %>

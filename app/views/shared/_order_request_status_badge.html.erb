@@ -3,17 +3,17 @@
   when 'pending'
     { text: 'Ожидает одобрения', icon: '⏳', color: 'var(--color-warning)' }
   when 'approved'
-    { text: 'Одобрена', icon: '✓', color: 'var(--color-info)' }
+    { text: 'Одобрена', icon: '✓', color: '#3B82F6' }
   when 'rejected'
-    { text: 'Отклонена', icon: '✗', color: 'var(--color-danger)' }
+    { text: 'Отклонена', icon: '✗', color: 'var(--color-error)' }
   when 'paid'
     { text: 'Оплачена', icon: '💰', color: 'var(--color-success)' }
   when 'completed'
     { text: 'Завершена', icon: '✓', color: 'var(--color-success)' }
   when 'cancelled'
-    { text: 'Отменена', icon: '⊘', color: 'var(--color-gray-500)' }
+    { text: 'Отменена', icon: '⊘', color: 'var(--gray-500)' }
   else
-    { text: status, icon: '•', color: 'var(--color-gray-500)' }
+    { text: status, icon: '•', color: 'var(--gray-500)' }
   end
 %>
 

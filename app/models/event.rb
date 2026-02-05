@@ -2,6 +2,7 @@
 
 class Event < ApplicationRecord
   extend FriendlyId
+  include SubRoleRestrictable
 
   # FriendlyId
   friendly_id :title, use: :slugged

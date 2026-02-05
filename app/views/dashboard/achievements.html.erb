@@ -74,7 +74,7 @@
         height: 80px;
         margin: 0 auto var(--space-4);
         border-radius: 50%;
-        background: <%= achievement[:unlocked] ? 'linear-gradient(135deg, var(--blue-500), var(--blue-600))' : 'var(--gray-200)' %>;
+        background: <%= achievement[:unlocked] ? 'linear-gradient(135deg, var(--primary), var(--primary))' : 'var(--gray-200)' %>;
         display: flex;
         align-items: center;
         justify-content: center;
@@ -95,7 +95,7 @@
       </p>
 
       <!-- Reward Points -->
-      <div style="display: inline-flex; align-items: center; gap: var(--space-1); padding: 6px 12px; background: <%= achievement[:unlocked] ? 'var(--blue-50)' : 'var(--gray-100)' %>; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; color: <%= achievement[:unlocked] ? 'var(--blue-700)' : 'var(--gray-600)' %>;">
+      <div style="display: inline-flex; align-items: center; gap: var(--space-1); padding: 6px 12px; background: <%= achievement[:unlocked] ? 'rgba(79, 70, 229, 0.05)' : 'var(--gray-100)' %>; border-radius: var(--radius-full); font-size: 0.75rem; font-weight: 600; color: <%= achievement[:unlocked] ? 'var(--primary-dark)' : 'var(--gray-600)' %>;">
         <span>⭐</span>
         <span>+<%= achievement[:points] %> очков</span>
       </div>
@@ -124,12 +124,12 @@
   }
 
   .achievement-tab:hover {
-    color: var(--blue-600);
+    color: var(--primary);
   }
 
   .achievement-tab.active {
-    color: var(--blue-600);
-    border-bottom-color: var(--blue-600);
+    color: var(--primary);
+    border-bottom-color: var(--primary);
   }
 
   .achievement-card {

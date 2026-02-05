@@ -1,0 +1,131 @@
+<div style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+      Управление уведомлениями
+    </h1>
+    <%= link_to 'Создать уведомление', new_admin_notification_path, class: 'btn btn-primary' %>
+  </div>
+
+  <!-- Filters -->
+  <div class="admin-filters" style="margin-bottom: 2rem;">
+    <%= form_with url: admin_notifications_path, method: :get, local: true do |f| %>
+      <div>
+        <%= f.label :type, 'Тип' %>
+        <%= f.select :type,
+          options_for_select([
+            ['Все типы', ''],
+            ['Заказ оплачен', 'order_paid'],
+            ['Доступ открыт', 'product_access_granted'],
+            ['Пополнение', 'wallet_deposit'],
+            ['Списание', 'wallet_withdrawal'],
+            ['Заявка создана', 'order_request_created'],
+            ['Заявка одобрена', 'order_request_approved'],
+            ['Системное', 'system']
+          ], params[:type]),
+          {},
+          class: 'form-select'
+        %>
+      </div>
+
+      <div>
+        <%= f.label :read, 'Статус' %>
+        <%= f.select :read,
+          options_for_select([
+            ['Все', ''],
+            ['Непрочитанные', 'false'],
+            ['Прочитанные', 'true']
+          ], params[:read]),
+          {},
+          class: 'form-select'
+        %>
+      </div>
+
+      <div style="display: flex; align-items: flex-end;">
+        <%= f.submit 'Фильтровать', class: 'btn btn-secondary' %>
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Всего уведомлений</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= Notification.count %></div>
+    </div>
+
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Непрочитанных</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--accent);"><%= Notification.unread.count %></div>
+    </div>
+
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Сегодня</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= Notification.where('created_at >= ?', Time.current.beginning_of_day).count %></div>
+    </div>
+  </div>
+
+  <!-- Table -->
+  <div class="card">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>Пользователь</th>
+          <th>Тип</th>
+          <th>Заголовок</th>
+          <th>Сообщение</th>
+          <th>Статус</th>
+          <th>Дата</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @notifications.each do |notification| %>
+          <tr>
+            <td>
+              <%= link_to notification.user.email, admin_user_path(notification.user), style: 'color: var(--primary); font-weight: 500;' %>
+            </td>
+            <td>
+              <span class="badge badge-primary">
+                <%= notification.type_icon %> <%= notification.notification_type.humanize %>
+              </span>
+            </td>
+            <td style="font-weight: 500;"><%= notification.title %></td>
+            <td style="max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+              <%= notification.message %>
+            </td>
+            <td>
+              <% if notification.read? %>
+                <span class="badge badge-secondary">Прочитано</span>
+              <% else %>
+                <span class="badge badge-warning">Не прочитано</span>
+              <% end %>
+            </td>
+            <td style="color: var(--gray-600); font-size: 0.875rem;">
+              <%= l(notification.created_at, format: :short) %>
+            </td>
+            <td>
+              <%= button_to 'Удалить',
+                admin_notification_path(notification),
+                method: :delete,
+                data: { confirm: 'Вы уверены?' },
+                class: 'btn btn-sm',
+                style: 'color: var(--color-error); padding: 0.25rem 0.5rem;'
+              %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+
+    <% if @notifications.empty? %>
+      <div style="padding: 3rem; text-align: center; color: var(--gray-600);">
+        Уведомлений не найдено
+      </div>
+    <% end %>
+  </div>
+
+  <!-- Pagination -->
+  <div style="margin-top: 2rem; display: flex; justify-content: center;">
+    <%= paginate @notifications %>
+  </div>
+</div>

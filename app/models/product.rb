@@ -4,6 +4,8 @@ class Product < ApplicationRecord
   extend FriendlyId
   friendly_id :name, use: :slugged
 
+  include SubRoleRestrictable
+
   belongs_to :category, optional: true
   has_many :order_items, dependent: :restrict_with_error
   has_many :product_accesses, dependent: :destroy

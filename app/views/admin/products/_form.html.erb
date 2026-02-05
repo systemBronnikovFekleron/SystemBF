@@ -76,7 +76,7 @@
   </div>
 
   <div style="display: flex; gap: var(--space-3);">
-    <%= f.submit product.new_record? ? "Создать продукт" : "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
+    <%= f.submit product.new_record? ? "Создать продукт" : "Сохранить изменения", style: "padding: var(--space-3) var(--space-6); background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-weight: 500; cursor: pointer;" %>
     <%= link_to "Отменить", admin_products_path, style: "padding: var(--space-3) var(--space-6); background: var(--gray-100); color: var(--gray-700); text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
   </div>
 <% end %>

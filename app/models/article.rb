@@ -2,6 +2,7 @@
 
 class Article < ApplicationRecord
   extend FriendlyId
+  include SubRoleRestrictable
 
   # FriendlyId
   friendly_id :title, use: :slugged

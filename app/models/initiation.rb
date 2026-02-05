@@ -18,6 +18,9 @@ class Initiation < ApplicationRecord
   validates :level, numericality: { only_integer: true, greater_than: 0 }, allow_nil: true
   validates :status, presence: true
 
+  # Callbacks
+  after_commit :grant_sub_roles_on_completion, if: :saved_change_to_completed?
+
   # Scopes
   scope :ordered, -> { order(conducted_at: :desc, created_at: :desc) }
   scope :by_type, ->(type) { where(initiation_type: type) }
@@ -31,5 +34,24 @@ class Initiation < ApplicationRecord
 
   def conducted?
     conducted_at.present?
+  end
+
+  private
+
+  def saved_change_to_completed?
+    saved_change_to_status? && (status_completed? || status_passed?)
+  end
+
+  def grant_sub_roles_on_completion
+    return if auto_grant_sub_roles.blank?
+
+    user.grant_sub_roles!(
+      auto_grant_sub_roles,
+      granted_by: conducted_by,
+      granted_via: 'initiation_completed',
+      source: self
+    )
+
+    Rails.logger.info "Auto-granted sub_roles #{auto_grant_sub_roles} to user #{user.id} via initiation #{id}"
   end
 end

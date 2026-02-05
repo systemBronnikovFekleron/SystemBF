@@ -1,5 +1,5 @@
 <div class="container" style="max-width: 900px; margin: 0 auto; padding: 2rem 1rem;">
-  <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--text);">
+  <h1 style="font-size: 2rem; font-weight: 700; margin-bottom: 2rem; color: var(--gray-900);">
     Мой профиль
   </h1>
 
@@ -9,17 +9,17 @@
       <!-- Аватар -->
       <div style="width: 120px; height: 120px; border-radius: 50%; background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
         <span style="font-size: 3rem; font-weight: 700; color: white;">
-          <%= @user.profile&.first_name&.first&.upcase || @user.first_name&.first&.upcase || @user.email.first.upcase %>
+          <%= @user.first_name&.first&.upcase || @user.email.first.upcase %>
         </span>
       </div>
 
       <!-- Информация -->
       <div style="flex: 1;">
         <h2 style="font-size: 1.75rem; font-weight: 700; margin-bottom: 0.5rem;">
-          <%= @user.profile&.full_name || @user.email %>
+          <%= @user.full_name %>
         </h2>
 
-        <p style="color: var(--text-secondary); margin-bottom: 1rem;">
+        <p style="color: var(--gray-600); margin-bottom: 1rem;">
           <%= @user.email %>
         </p>
 
@@ -28,7 +28,7 @@
           <%= t("user_classification.#{@user.classification}") %>
         </div>
 
-        <div style="color: var(--text-secondary); font-size: 0.875rem;">
+        <div style="color: var(--gray-600); font-size: 0.875rem;">
           Зарегистрирован <%= l(@user.created_at, format: :long) %>
         </div>
       </div>
@@ -39,7 +39,7 @@
       type="button"
       data-controller="profile-edit"
       data-action="click->profile-edit#toggleEdit"
-      style="padding: 0.75rem 1.5rem; background: var(--surface); color: var(--text); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+      style="padding: 0.75rem 1.5rem; background: white; color: var(--gray-900); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
     >
       ✏️ Редактировать профиль
     </button>
@@ -59,79 +59,79 @@
         <div style="display: grid; gap: 1.5rem;">
           <!-- Имя -->
           <div>
-            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
               Имя
             </label>
-            <%= form.text_field "profile[first_name]",
-                value: @user.profile&.first_name || @user.first_name,
-                style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem;" %>
+            <%= form.text_field "first_name",
+                value: @user.first_name,
+                style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem;" %>
           </div>
 
           <!-- Фамилия -->
           <div>
-            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
               Фамилия
             </label>
-            <%= form.text_field "profile[last_name]",
-                value: @user.profile&.last_name || @user.last_name,
-                style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem;" %>
+            <%= form.text_field "last_name",
+                value: @user.last_name,
+                style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem;" %>
           </div>
 
           <!-- Телефон -->
           <div>
-            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
               Телефон
             </label>
             <%= form.text_field "profile[phone]",
                 value: @user.profile&.phone,
                 placeholder: "+7 (999) 123-45-67",
-                style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem;" %>
+                style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem;" %>
           </div>
 
           <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
             <!-- Город -->
             <div>
-              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
                 Город
               </label>
               <%= form.text_field "profile[city]",
                   value: @user.profile&.city,
                   placeholder: "Москва",
-                  style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem;" %>
+                  style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem;" %>
             </div>
 
             <!-- Страна -->
             <div>
-              <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+              <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
                 Страна
               </label>
               <%= form.text_field "profile[country]",
                   value: @user.profile&.country,
                   placeholder: "Россия",
-                  style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem;" %>
+                  style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem;" %>
             </div>
           </div>
 
           <!-- Дата рождения -->
           <div>
-            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
               Дата рождения
             </label>
             <%= form.date_field "profile[birth_date]",
                 value: @user.profile&.birth_date,
-                style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem;" %>
+                style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem;" %>
           </div>
 
           <!-- О себе -->
           <div>
-            <label style="display: block; margin-bottom: 0.5rem; color: var(--text-secondary); font-size: 0.875rem; font-weight: 500;">
+            <label style="display: block; margin-bottom: 0.5rem; color: var(--gray-600); font-size: 0.875rem; font-weight: 500;">
               О себе
             </label>
             <%= form.text_area "profile[bio]",
                 value: @user.profile&.bio,
                 rows: 4,
                 placeholder: "Расскажите немного о себе...",
-                style: "width: 100%; padding: 0.75rem 1rem; background: var(--surface); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--text); font-size: 1rem; resize: vertical;" %>
+                style: "width: 100%; padding: 0.75rem 1rem; background: white; border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; color: var(--gray-900); font-size: 1rem; resize: vertical;" %>
           </div>
 
           <!-- Кнопки -->
@@ -142,7 +142,7 @@
             <button
               type="button"
               data-action="click->profile-edit#toggleEdit"
-              style="padding: 0.75rem 1.5rem; background: var(--surface); color: var(--text); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
+              style="padding: 0.75rem 1.5rem; background: white; color: var(--gray-900); border: 1px solid rgba(255,255,255,0.1); border-radius: 0.5rem; font-weight: 500; cursor: pointer; transition: all 0.2s;"
             >
               Отменить
             </button>
@@ -161,14 +161,14 @@
     <div style="display: grid; gap: 1rem;">
       <% if @user.profile&.phone.present? %>
         <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-secondary);">Телефон:</span>
+          <span style="color: var(--gray-600);">Телефон:</span>
           <span style="font-weight: 500;"><%= @user.profile.phone %></span>
         </div>
       <% end %>
 
       <% if @user.profile&.city.present? || @user.profile&.country.present? %>
         <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-secondary);">Местоположение:</span>
+          <span style="color: var(--gray-600);">Местоположение:</span>
           <span style="font-weight: 500;">
             <%= [@user.profile&.city, @user.profile&.country].compact.join(', ') %>
           </span>
@@ -177,15 +177,15 @@
 
       <% if @user.profile&.birth_date.present? %>
         <div style="display: flex; justify-content: space-between; padding-bottom: 1rem; border-bottom: 1px solid rgba(255,255,255,0.05);">
-          <span style="color: var(--text-secondary);">Дата рождения:</span>
+          <span style="color: var(--gray-600);">Дата рождения:</span>
           <span style="font-weight: 500;"><%= l(@user.profile.birth_date, format: :long) %></span>
         </div>
       <% end %>
 
       <% if @user.profile&.bio.present? %>
         <div>
-          <div style="color: var(--text-secondary); margin-bottom: 0.5rem;">О себе:</div>
-          <div style="padding: 1rem; background: var(--surface); border-radius: 0.5rem; line-height: 1.6;">
+          <div style="color: var(--gray-600); margin-bottom: 0.5rem;">О себе:</div>
+          <div style="padding: 1rem; background: white; border-radius: 0.5rem; line-height: 1.6;">
             <%= @user.profile.bio %>
           </div>
         </div>

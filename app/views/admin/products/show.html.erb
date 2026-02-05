@@ -2,7 +2,10 @@
 
 <div style="margin-bottom: var(--space-6); display: flex; justify-content: space-between; align-items: center;">
   <%= link_to "← Назад к продуктам", admin_products_path, style: "color: var(--gray-600); text-decoration: none; transition: color 0.2s;" %>
-  <%= link_to "Редактировать", edit_admin_product_path(@product), style: "padding: var(--space-3) var(--space-5); background: var(--blue-600); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+  <div style="display: flex; gap: var(--space-3);">
+    <%= link_to "Настроить доступ", edit_sub_roles_admin_product_path(@product), style: "padding: var(--space-3) var(--space-5); background: var(--secondary); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+    <%= link_to "Редактировать", edit_admin_product_path(@product), style: "padding: var(--space-3) var(--space-5); background: var(--primary); color: white; text-decoration: none; border-radius: var(--radius-md); font-weight: 500;" %>
+  </div>
 </div>
 
 <h1 style="font-size: 1.875rem; font-weight: 700; margin-bottom: var(--space-2); color: var(--gray-900);">

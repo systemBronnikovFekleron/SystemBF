@@ -21,12 +21,12 @@
 
       <div style="margin-bottom: var(--space-5);">
         <%= f.label :name, 'Название', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
-        <%= f.text_field :name, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; transition: all 0.2s;", onfocus: "this.style.borderColor='var(--blue-600)';", onblur: "this.style.borderColor='var(--gray-200)';" %>
+        <%= f.text_field :name, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; transition: all 0.2s;", onfocus: "this.style.borderColor='var(--primary)';", onblur: "this.style.borderColor='var(--gray-200)';" %>
       </div>
 
       <div style="margin-bottom: var(--space-5);">
         <%= f.label :description, 'Описание', style: "display: block; font-weight: 600; color: var(--gray-700); margin-bottom: var(--space-2);" %>
-        <%= f.text_area :description, rows: 3, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; resize: vertical; transition: all 0.2s;", onfocus: "this.style.borderColor='var(--blue-600)';", onblur: "this.style.borderColor='var(--gray-200)';" %>
+        <%= f.text_area :description, rows: 3, style: "width: 100%; padding: var(--space-3); border: 2px solid var(--gray-200); border-radius: var(--radius-md); font-size: 1rem; resize: vertical; transition: all 0.2s;", onfocus: "this.style.borderColor='var(--primary)';", onblur: "this.style.borderColor='var(--gray-200)';" %>
       </div>
 
       <div style="display: flex; align-items: center; gap: var(--space-3); padding: var(--space-4); background: var(--gray-50); border-radius: var(--radius-md);">
@@ -74,7 +74,7 @@
     <!-- Actions -->
     <div style="display: flex; gap: var(--space-3); justify-content: flex-end;">
       <%= link_to 'Отмена', admin_integration_path(@integration), style: "padding: var(--space-3) var(--space-6); background: white; border: 2px solid var(--gray-300); color: var(--gray-700); border-radius: var(--radius-md); text-decoration: none; font-weight: 600; transition: all 0.2s;" %>
-      <%= f.submit 'Сохранить изменения', style: "padding: var(--space-3) var(--space-6); background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s;" %>
+      <%= f.submit 'Сохранить изменения', style: "padding: var(--space-3) var(--space-6); background: var(--primary); color: white; border: none; border-radius: var(--radius-md); font-weight: 600; cursor: pointer; transition: all 0.2s;" %>
     </div>
   <% end %>
 </div>

@@ -8,16 +8,16 @@
          data-analytics-price-value="<%= @product.price_kopecks / 100.0 %>"
          data-analytics-category-value="<%= @product.category&.name || 'Uncategorized' %>">
   <!-- Breadcrumbs -->
-  <nav style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center; color: var(--color-gray-500); font-size: 0.875rem;">
-    <%= link_to "Главная", root_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
+  <nav style="margin-bottom: 2rem; display: flex; gap: 0.5rem; align-items: center; color: var(--gray-500); font-size: 0.875rem;">
+    <%= link_to "Главная", root_path, style: "color: var(--gray-500); text-decoration: none;" %>
     <span>→</span>
-    <%= link_to "Магазин", products_path, style: "color: var(--color-gray-500); text-decoration: none;" %>
+    <%= link_to "Магазин", products_path, style: "color: var(--gray-500); text-decoration: none;" %>
     <% if @product.category %>
       <span>→</span>
-      <%= link_to @product.category.name, products_path(category_id: @product.category.id), style: "color: var(--color-gray-500); text-decoration: none;" %>
+      <%= link_to @product.category.name, products_path(category_id: @product.category.id), style: "color: var(--gray-500); text-decoration: none;" %>
     <% end %>
     <span>→</span>
-    <span style="color: var(--color-gray-900); font-weight: 500;"><%= @product.name %></span>
+    <span style="color: var(--gray-900); font-weight: 500;"><%= @product.name %></span>
   </nav>
 
   <div class="grid lg:grid-cols-2" style="gap: 3rem;">
@@ -27,7 +27,7 @@
         <div style="
           position: absolute;
           inset: 0;
-          background: linear-gradient(135deg, var(--color-primary-50), var(--color-secondary-50));
+          background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(147, 51, 234, 0.05));
           opacity: 0.5;
         "></div>
 
@@ -49,7 +49,7 @@
         <div class="stat-card">
           <div class="stat-icon">📊</div>
           <div class="stat-label">Тип</div>
-          <div style="color: var(--color-gray-700); font-weight: 600; margin-top: 0.5rem;">
+          <div style="color: var(--gray-700); font-weight: 600; margin-top: 0.5rem;">
             <%= product_type_label(@product.product_type) %>
           </div>
         </div>
@@ -57,7 +57,7 @@
         <div class="stat-card">
           <div class="stat-icon">⭐</div>
           <div class="stat-label">Рейтинг</div>
-          <div style="color: var(--color-gray-700); font-weight: 600; margin-top: 0.5rem;">
+          <div style="color: var(--gray-700); font-weight: 600; margin-top: 0.5rem;">
             4.9/5
           </div>
         </div>
@@ -65,7 +65,7 @@
         <div class="stat-card">
           <div class="stat-icon">👥</div>
           <div class="stat-label">Учеников</div>
-          <div style="color: var(--color-gray-700); font-weight: 600; margin-top: 0.5rem;">
+          <div style="color: var(--gray-700); font-weight: 600; margin-top: 0.5rem;">
             <%= rand(100..1000) %>
           </div>
         </div>
@@ -80,7 +80,7 @@
             <%= product_type_label(@product.product_type) %>
           </span>
           <% if @product.category %>
-            <span class="badge" style="background: var(--color-gray-100); color: var(--color-gray-700);">
+            <span class="badge" style="background: var(--gray-100); color: var(--gray-700);">
               <%= @product.category.name %>
             </span>
           <% end %>
@@ -90,30 +90,30 @@
           <%= @product.name %>
         </h1>
 
-        <div style="font-size: 3rem; font-weight: 700; margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+        <div style="font-size: 3rem; font-weight: 700; margin-bottom: 2rem; background: linear-gradient(135deg, var(--primary), var(--secondary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
           <%= @product.price.format %>
         </div>
       </div>
 
       <!-- Purchase Action -->
       <% if logged_in? %>
-        <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, var(--color-info-50), var(--color-primary-50));">
+        <div class="card" style="margin-bottom: 2rem; background: linear-gradient(135deg, rgba(59, 130, 246, 0.1), rgba(79, 70, 229, 0.05));">
           <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem;">
-            <span style="font-weight: 600; color: var(--color-gray-700);">
+            <span style="font-weight: 600; color: var(--gray-700);">
               💰 Баланс кошелька:
             </span>
-            <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">
+            <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">
               <%= humanized_money_with_symbol(current_user.wallet.balance) %>
             </span>
           </div>
 
           <% if current_user.wallet.balance_kopecks < @product.price_kopecks %>
-            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-warning); font-weight: 500; padding: 0.75rem; background: var(--color-warning-50); border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-warning); font-weight: 500; padding: 0.75rem; background: rgba(251, 191, 36, 0.1); border-radius: 8px;">
               <span>⚠️</span>
               <span>Недостаточно средств (не хватает <%= humanized_money_with_symbol(Money.new(@product.price_kopecks - current_user.wallet.balance_kopecks, 'RUB')) %>)</span>
             </div>
           <% else %>
-            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-success); font-weight: 500; padding: 0.75rem; background: var(--color-success-50); border-radius: 8px;">
+            <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--color-success); font-weight: 500; padding: 0.75rem; background: rgba(34, 197, 94, 0.1); border-radius: 8px;">
               <span>✓</span>
               <span>Достаточно средств для покупки</span>
             </div>
@@ -135,7 +135,7 @@
                        } %>
         <% end %>
 
-        <p style="text-align: center; color: var(--color-gray-600); font-size: 0.875rem;">
+        <p style="text-align: center; color: var(--gray-600); font-size: 0.875rem;">
           <% if @product.auto_approve %>
             ⚡ Мгновенный доступ после покупки
           <% else %>
@@ -143,8 +143,8 @@
           <% end %>
         </p>
       <% else %>
-        <div class="card" style="margin-bottom: 3rem; background: linear-gradient(135deg, var(--color-primary-50), var(--color-secondary-50)); text-align: center;">
-          <p style="margin-bottom: 1rem; color: var(--color-gray-700);">
+        <div class="card" style="margin-bottom: 3rem; background: linear-gradient(135deg, rgba(79, 70, 229, 0.05), rgba(147, 51, 234, 0.05)); text-align: center;">
+          <p style="margin-bottom: 1rem; color: var(--gray-700);">
             Для покупки необходимо войти в систему
           </p>
           <%= link_to "Войти", login_path, class: "btn btn-primary btn-lg", style: "margin-right: 0.5rem;" %>
@@ -155,7 +155,7 @@
       <!-- Description -->
       <div class="card" style="margin-bottom: 1.5rem;">
         <h3 style="margin-bottom: 1rem;">О продукте</h3>
-        <p style="color: var(--color-gray-700); line-height: 1.8; white-space: pre-line;">
+        <p style="color: var(--gray-700); line-height: 1.8; white-space: pre-line;">
           <%= @product.description %>
         </p>
       </div>
@@ -166,19 +166,19 @@
         <ul style="list-style: none; display: flex; flex-direction: column; gap: 0.75rem;">
           <li style="display: flex; align-items: start; gap: 0.75rem;">
             <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
-            <span style="color: var(--color-gray-700);">Пожизненный доступ к материалам</span>
+            <span style="color: var(--gray-700);">Пожизненный доступ к материалам</span>
           </li>
           <li style="display: flex; align-items: start; gap: 0.75rem;">
             <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
-            <span style="color: var(--color-gray-700);">Сертификат о прохождении</span>
+            <span style="color: var(--gray-700);">Сертификат о прохождении</span>
           </li>
           <li style="display: flex; align-items: start; gap: 0.75rem;">
             <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
-            <span style="color: var(--color-gray-700);">Поддержка преподавателя</span>
+            <span style="color: var(--gray-700);">Поддержка преподавателя</span>
           </li>
           <li style="display: flex; align-items: start; gap: 0.75rem;">
             <span style="color: var(--color-success); font-size: 1.25rem;">✓</span>
-            <span style="color: var(--color-gray-700);">Дополнительные материалы</span>
+            <span style="color: var(--gray-700);">Дополнительные материалы</span>
           </li>
         </ul>
       </div>
@@ -210,7 +210,7 @@
               </h3>
 
               <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
-                <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">
+                <span style="font-size: 1.25rem; font-weight: 700; color: var(--primary);">
                   <%= product.price.format %>
                 </span>
                 <button class="btn btn-primary btn-sm">
