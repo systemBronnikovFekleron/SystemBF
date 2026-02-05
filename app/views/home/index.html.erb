@@ -1,6 +1,6 @@
 <!-- Hero Section -->
 <section style="
-  padding: 6rem 0 4rem;
+  padding: 2rem 0 4rem;
   background: linear-gradient(135deg, rgba(99, 102, 241, 0.05), rgba(168, 85, 247, 0.05));
   position: relative;
   overflow: hidden;
@@ -179,16 +179,22 @@
             <%= product_type_label(product.product_type) %>
           </span>
 
-          <h3 style="font-size: 1.125rem; margin-bottom: 0.5rem;">
+          <h3 style="font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--color-gray-900);">
             <%= product.name %>
           </h3>
 
-          <div style="margin-top: 1rem; display: flex; justify-content: space-between; align-items: center;">
-            <span style="font-size: 1.25rem; font-weight: 700; color: var(--color-primary-600);">
-              <%= product.price.format %>
-            </span>
+          <p style="color: var(--color-gray-600); font-size: 0.875rem; margin-bottom: 1rem; line-height: 1.6;">
+            <%= truncate(product.description, length: 100) %>
+          </p>
+
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <div>
+              <div style="font-size: 1.75rem; font-weight: 700; background: linear-gradient(135deg, var(--color-primary-600), var(--color-secondary-600)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">
+                <%= product.price.format %>
+              </div>
+            </div>
             <button class="btn btn-primary btn-sm">
-              Купить
+              Подробнее
             </button>
           </div>
         </div>
@@ -230,11 +236,12 @@
       </p>
       <a href="/products" class="btn" style="
         background: white;
-        color: var(--color-primary-600);
+        color: #4F46E5;
         font-weight: 600;
         padding: 1rem 2.5rem;
         font-size: 1.125rem;
         box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        border: none;
       ">
         Выбрать курс
       </a>
