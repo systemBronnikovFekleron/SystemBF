@@ -1,30 +1,31 @@
-<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: var(--space-8);">
-  <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
-    Управление категориями
-  </h1>
-  <%= link_to 'Создать категорию', new_admin_category_path, class: 'btn btn-primary' %>
-</div>
-
-<!-- Stats -->
-<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: var(--space-6); margin-bottom: var(--space-8);">
-  <div class="admin-stat-card">
-    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Всего категорий</div>
-    <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @categories_count %></div>
+<div style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700; color: var(--gray-900);">
+      Управление категориями
+    </h1>
+    <%= link_to 'Создать категорию', new_admin_category_path, class: 'btn btn-primary' %>
   </div>
 
-  <div class="admin-stat-card">
-    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: var(--space-2);">Всего продуктов</div>
-    <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @products_count %></div>
-  </div>
-</div>
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Всего категорий</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @categories_count %></div>
+    </div>
 
-<!-- Help text -->
-<div style="background: rgba(79, 70, 229, 0.05); padding: var(--space-4); border-radius: var(--radius-lg); margin-bottom: var(--space-8); border-left: 4px solid var(--primary);">
-  <div style="font-weight: 600; color: var(--gray-900); margin-bottom: var(--space-1);">💡 Drag & Drop</div>
-  <div style="font-size: 0.875rem; color: var(--gray-700);">
-    Вы можете изменить порядок категорий, перетаскивая строки. Изменения сохраняются автоматически.
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Всего продуктов</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @products_count %></div>
+    </div>
   </div>
-</div>
+
+  <!-- Help text -->
+  <div style="background: rgba(79, 70, 229, 0.05); padding: 1rem; border-radius: var(--radius-lg); margin-bottom: 2rem; border-left: 4px solid var(--primary);">
+    <div style="font-weight: 600; color: var(--gray-900); margin-bottom: 0.25rem;">💡 Drag & Drop</div>
+    <div style="font-size: 0.875rem; color: var(--gray-700);">
+      Вы можете изменить порядок категорий, перетаскивая строки. Изменения сохраняются автоматически.
+    </div>
+  </div>
 
   <!-- Categories Table -->
   <div class="card" style="overflow-x: auto;">
@@ -50,7 +51,7 @@
               <div style="font-weight: 600; color: var(--gray-900);"><%= category.name %></div>
             </td>
             <td>
-              <code style="font-size: 0.875rem; color: var(--secondary); background: rgba(147, 51, 234, 0.05); padding: var(--space-1) var(--space-2); border-radius: var(--radius-sm);">
+              <code style="font-size: 0.875rem; color: var(--secondary); background: rgba(147, 51, 234, 0.05); padding: 0.25rem 0.5rem; border-radius: 4px;">
                 <%= category.slug %>
               </code>
             </td>
@@ -68,7 +69,7 @@
               <%= l(category.created_at, format: :short) %>
             </td>
             <td>
-              <div style="display: flex; gap: var(--space-2); align-items: center;">
+              <div style="display: flex; gap: 0.5rem; align-items: center;">
                 <%= link_to 'Просмотр', admin_category_path(category), class: 'btn btn-sm btn-outline' %>
                 <%= link_to 'Изменить', edit_admin_category_path(category), class: 'btn btn-sm btn-outline' %>
                 <% if category.products.any? %>
@@ -80,7 +81,8 @@
                     admin_category_path(category),
                     method: :delete,
                     data: { confirm: 'Удалить категорию? Это действие нельзя отменить.' },
-                    class: 'btn btn-sm btn-danger',
+                    class: 'btn btn-sm',
+                    style: 'background: white; color: #DC2626; border: 1px solid #DC2626;',
                     form: { style: 'display: inline;' }
                   %>
                 <% end %>
@@ -92,14 +94,14 @@
     </table>
 
     <% if @categories.empty? %>
-      <div style="padding: var(--space-12); text-align: center; color: var(--gray-600);">
-        <div style="font-size: 3rem; margin-bottom: var(--space-4); opacity: 0.3;">📂</div>
-        <div style="font-weight: 600; margin-bottom: var(--space-2);">Нет категорий</div>
+      <div style="padding: 3rem; text-align: center; color: var(--gray-600);">
+        <div style="font-size: 3rem; margin-bottom: 1rem; opacity: 0.3;">📂</div>
+        <div style="font-weight: 600; margin-bottom: 0.5rem;">Нет категорий</div>
         <div style="font-size: 0.875rem;">Создайте первую категорию для организации продуктов</div>
       </div>
     <% end %>
   </div>
-
+</div>
 
 <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
 <script>

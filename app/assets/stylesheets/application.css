@@ -215,17 +215,6 @@ a:hover {
   border-color: var(--gray-400);
 }
 
-.btn-danger {
-  background: white;
-  color: var(--color-error);
-  border: 1px solid var(--color-error);
-}
-
-.btn-danger:hover {
-  background: var(--color-error);
-  color: white;
-}
-
 .btn-ghost {
   background: transparent;
   color: var(--gray-700);
