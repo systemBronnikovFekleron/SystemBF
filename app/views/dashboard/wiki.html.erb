@@ -1,0 +1,60 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>База знаний</h1>
+    <p class="subtitle">Структурированная информация о системе Бронникова</p>
+  </div>
+
+  <% if @root_pages.any? %>
+    <div class="wiki-grid">
+      <% @root_pages.each do |page| %>
+        <div class="card glass-effect wiki-card">
+          <div class="card-body">
+            <h3 class="wiki-title"><%= page.title %></h3>
+            <% if page.content.present? %>
+              <p class="wiki-excerpt"><%= truncate(strip_tags(page.content), length: 150) %></p>
+            <% end %>
+            <div class="wiki-meta">
+              <% if page.has_children? %>
+                <span class="badge badge-secondary"><%= page.children.published.count %> подразделов</span>
+              <% end %>
+            </div>
+            <%= link_to 'Читать →', dashboard_wiki_page_path(page), class: 'btn btn-link' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-icon">📖</div>
+      <h3>База знаний пока пуста</h3>
+      <p>Материалы в разработке</p>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.wiki-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.wiki-card {
+  height: 100%;
+}
+
+.wiki-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.wiki-excerpt {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.wiki-meta {
+  margin-bottom: 1rem;
+}
+</style>

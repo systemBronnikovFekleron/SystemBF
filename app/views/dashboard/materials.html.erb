@@ -1,0 +1,34 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>Полезные материалы</h1>
+    <p class="subtitle">Статьи, гайды и рекомендации</p>
+  </div>
+
+  <% if @materials.any? %>
+    <% @materials.each do |material| %>
+      <div class="card glass-effect mb-3">
+        <div class="card-body">
+          <div class="article-meta">
+            <span class="article-date"><%= material.published_at&.strftime('%d.%m.%Y') %></span>
+            <% if material.featured? %>
+              <span class="badge badge-featured">Рекомендуем</span>
+            <% end %>
+          </div>
+          <h2 class="article-title"><%= material.title %></h2>
+          <% if material.excerpt.present? %>
+            <p class="article-excerpt"><%= material.excerpt %></p>
+          <% end %>
+          <%= link_to 'Читать далее →', '#', class: 'btn btn-link' %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= paginate @materials %>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-icon">📚</div>
+      <h3>Материалов пока нет</h3>
+      <p>Скоро здесь появятся полезные статьи</p>
+    </div>
+  <% end %>
+</div>

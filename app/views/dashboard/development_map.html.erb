@@ -1,0 +1,233 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>Карта развития</h1>
+    <p class="subtitle">Ваш путь в системе Бронникова</p>
+  </div>
+
+  <!-- Overall Progress -->
+  <div class="card glass-effect mb-4">
+    <div class="card-body">
+      <h2 class="section-title">Общий прогресс</h2>
+      <div class="row">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">🎓</div>
+            <div class="stat-value"><%= @initiations.completed_only.count %></div>
+            <div class="stat-label">Инициаций пройдено</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">🔬</div>
+            <div class="stat-value"><%= @diagnostics.completed_only.count %></div>
+            <div class="stat-label">Диагностик пройдено</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">📚</div>
+            <div class="stat-value"><%= @product_accesses.count %></div>
+            <div class="stat-label">Курсов доступно</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon">📅</div>
+            <div class="stat-value"><%= (Date.today - @user.created_at.to_date).to_i %></div>
+            <div class="stat-label">Дней в системе</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Classification Progress -->
+  <div class="card glass-effect mb-4">
+    <div class="card-body">
+      <h2 class="section-title">Уровень доступа</h2>
+      <div class="classification-display">
+        <div class="current-level">
+          <span class="level-badge"><%= @user.classification.humanize %></span>
+        </div>
+        <p class="mt-2">Ваш текущий уровень в системе Бронникова</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Initiations Section -->
+  <% if @initiations.any? %>
+    <div class="card glass-effect mb-4">
+      <div class="card-body">
+        <h2 class="section-title">Инициации</h2>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Тип</th>
+                <th>Уровень</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Проведена</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @initiations.each do |initiation| %>
+                <tr>
+                  <td><%= initiation.initiation_type %></td>
+                  <td><%= initiation.level %></td>
+                  <td><%= initiation.conducted_at&.strftime('%d.%m.%Y') || 'Не проведена' %></td>
+                  <td><span class="badge badge-<%= initiation.status %>"><%= initiation.status.humanize %></span></td>
+                  <td><%= initiation.conducted_by&.full_name || '-' %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Diagnostics Section -->
+  <% if @diagnostics.any? %>
+    <div class="card glass-effect mb-4">
+      <div class="card-body">
+        <h2 class="section-title">Диагностики</h2>
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>Тип</th>
+                <th>Дата</th>
+                <th>Статус</th>
+                <th>Балл</th>
+                <th>Проведена</th>
+              </tr>
+            </thead>
+            <tbody>
+              <% @diagnostics.each do |diagnostic| %>
+                <tr>
+                  <td><%= diagnostic.display_name %></td>
+                  <td><%= diagnostic.conducted_at&.strftime('%d.%m.%Y') || 'Не назначена' %></td>
+                  <td><span class="badge badge-<%= diagnostic.status %>"><%= diagnostic.status.humanize %></span></td>
+                  <td><%= diagnostic.score || '-' %></td>
+                  <td><%= diagnostic.conducted_by&.full_name || '-' %></td>
+                </tr>
+              <% end %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Timeline -->
+  <div class="card glass-effect">
+    <div class="card-body">
+      <h2 class="section-title">Временная шкала развития</h2>
+      <% if @timeline_events.any? %>
+        <div class="timeline">
+          <% @timeline_events.each do |event| %>
+            <div class="timeline-item">
+              <div class="timeline-marker"></div>
+              <div class="timeline-content">
+                <div class="timeline-date"><%= event[:date].strftime('%d.%m.%Y') %></div>
+                <div class="timeline-title"><%= event[:title] %></div>
+                <% if event[:type] == 'initiation' && event[:data].notes.present? %>
+                  <div class="timeline-description"><%= event[:data].notes %></div>
+                <% elsif event[:type] == 'diagnostic' && event[:data].recommendations.present? %>
+                  <div class="timeline-description"><%= event[:data].recommendations %></div>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      <% else %>
+        <p class="text-muted">Пока нет событий в вашей карте развития</p>
+      <% end %>
+    </div>
+  </div>
+</div>
+
+<style>
+.stat-card {
+  text-align: center;
+  padding: 1rem;
+}
+
+.stat-icon {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.stat-value {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: var(--primary);
+}
+
+.stat-label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.classification-display {
+  text-align: center;
+  padding: 2rem;
+}
+
+.level-badge {
+  display: inline-block;
+  padding: 0.75rem 2rem;
+  background: linear-gradient(135deg, var(--primary), var(--secondary));
+  color: white;
+  border-radius: 50px;
+  font-size: 1.25rem;
+  font-weight: bold;
+}
+
+.timeline {
+  position: relative;
+  padding-left: 2rem;
+}
+
+.timeline::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 2px;
+  background: var(--border);
+}
+
+.timeline-item {
+  position: relative;
+  padding-bottom: 2rem;
+}
+
+.timeline-marker {
+  position: absolute;
+  left: -2.5rem;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.timeline-date {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-title {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.timeline-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+</style>

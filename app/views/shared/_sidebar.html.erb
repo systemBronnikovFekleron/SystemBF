@@ -35,8 +35,64 @@
       <a href="/dashboard/my-courses" class="sidebar-nav-item">
         <span class="sidebar-nav-icon">🎓</span>
         <span>Мои курсы</span>
-        <span class="sidebar-nav-badge">3</span>
       </a>
+
+      <a href="/dashboard/development-map" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/development-map') %>">
+        <span class="sidebar-nav-icon">🗺️</span>
+        <span>Карта развития</span>
+      </a>
+
+      <a href="/dashboard/achievements" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/achievements') %>">
+        <span class="sidebar-nav-icon">🏆</span>
+        <span>Достижения</span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-section">
+      <div class="sidebar-nav-label">Материалы</div>
+
+      <a href="/dashboard/recommendations" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/recommendations') %>">
+        <span class="sidebar-nav-icon">✨</span>
+        <span>Рекомендации</span>
+      </a>
+
+      <a href="/dashboard/news" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/news') %>">
+        <span class="sidebar-nav-icon">📰</span>
+        <span>Новости</span>
+      </a>
+
+      <a href="/dashboard/wiki" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/wiki') %>">
+        <span class="sidebar-nav-icon">📖</span>
+        <span>База знаний</span>
+      </a>
+
+      <a href="/dashboard/favorites" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/favorites') %>">
+        <span class="sidebar-nav-icon">⭐</span>
+        <span>Избранное</span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-section">
+      <div class="sidebar-nav-label">События</div>
+
+      <a href="/events/calendar" class="sidebar-nav-item">
+        <span class="sidebar-nav-icon">📅</span>
+        <span>Календарь</span>
+      </a>
+
+      <a href="/events" class="sidebar-nav-item">
+        <span class="sidebar-nav-icon">🎪</span>
+        <span>Все события</span>
+      </a>
+
+      <a href="/dashboard/events" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/events') %>">
+        <span class="sidebar-nav-icon">📝</span>
+        <span>Мои регистрации</span>
+      </a>
+    </div>
+
+    <div class="sidebar-nav-section">
+      <div class="sidebar-nav-label">Прочее</div>
 
       <a href="/products" class="sidebar-nav-item">
         <span class="sidebar-nav-icon">🛍️</span>
@@ -47,17 +103,8 @@
         <span class="sidebar-nav-icon">📦</span>
         <span>Мои заказы</span>
       </a>
-    </div>
 
-    <div class="sidebar-nav-section">
-      <div class="sidebar-nav-label">Дополнительно</div>
-
-      <a href="/dashboard/achievements" class="sidebar-nav-item">
-        <span class="sidebar-nav-icon">🏆</span>
-        <span>Достижения</span>
-      </a>
-
-      <a href="/dashboard/notifications" class="sidebar-nav-item">
+      <a href="/dashboard/notifications" class="sidebar-nav-item <%= 'active' if current_page?('/dashboard/notifications') %>">
         <span class="sidebar-nav-icon">🔔</span>
         <span>Уведомления</span>
         <span class="sidebar-nav-badge badge badge-error">3</span>

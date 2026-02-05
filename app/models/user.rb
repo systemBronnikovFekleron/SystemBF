@@ -30,6 +30,25 @@ class User < ApplicationRecord
   has_many :order_requests, dependent: :destroy
   has_many :approved_requests, class_name: 'OrderRequest', foreign_key: :approved_by_id, dependent: :nullify, inverse_of: :approved_by
 
+  # New associations for development map
+  has_many :initiations, dependent: :destroy
+  has_many :diagnostics, dependent: :destroy
+  has_many :conducted_initiations, class_name: 'Initiation', foreign_key: :conducted_by_id, dependent: :nullify
+  has_many :conducted_diagnostics, class_name: 'Diagnostic', foreign_key: :conducted_by_id, dependent: :nullify
+
+  # Events
+  has_many :event_registrations, dependent: :destroy
+  has_many :registered_events, through: :event_registrations, source: :event
+  has_many :organized_events, class_name: 'Event', foreign_key: :organizer_id, dependent: :nullify
+
+  # Content
+  has_many :authored_articles, class_name: 'Article', foreign_key: :author_id, dependent: :nullify
+  has_many :created_wiki_pages, class_name: 'WikiPage', foreign_key: :created_by_id, dependent: :nullify
+  has_many :updated_wiki_pages, class_name: 'WikiPage', foreign_key: :updated_by_id, dependent: :nullify
+
+  # Favorites
+  has_many :favorites, dependent: :destroy
+
   validates :email, presence: true, uniqueness: { case_sensitive: false }
   validates :password, length: { minimum: 8 }, if: -> { new_record? || password.present? }
 

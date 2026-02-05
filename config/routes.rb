@@ -104,6 +104,15 @@ Rails.application.routes.draw do
     end
   end
 
+  # Events routes
+  resources :events, only: [:index, :show] do
+    collection do
+      get :calendar
+    end
+    resources :event_registrations, only: [:create], path: 'register'
+  end
+  resources :event_registrations, only: [:destroy], path: 'registrations'
+
   # Dashboard routes
   get 'dashboard', to: 'dashboard#index'
   get 'dashboard/profile', to: 'dashboard#profile', as: :dashboard_profile
@@ -116,4 +125,14 @@ Rails.application.routes.draw do
   get 'dashboard/achievements', to: 'dashboard#achievements', as: :dashboard_achievements
   get 'dashboard/notifications', to: 'dashboard#notifications', as: :dashboard_notifications
   get 'dashboard/settings', to: 'dashboard#settings', as: :dashboard_settings
+
+  # New dashboard routes for content
+  get 'dashboard/development-map', to: 'dashboard#development_map', as: :dashboard_development_map
+  get 'dashboard/favorites', to: 'dashboard#favorites', as: :dashboard_favorites
+  get 'dashboard/news', to: 'dashboard#news', as: :dashboard_news
+  get 'dashboard/materials', to: 'dashboard#materials', as: :dashboard_materials
+  get 'dashboard/wiki', to: 'dashboard#wiki', as: :dashboard_wiki
+  get 'dashboard/wiki/:slug', to: 'dashboard#wiki_show', as: :dashboard_wiki_page
+  get 'dashboard/recommendations', to: 'dashboard#recommendations', as: :dashboard_recommendations
+  get 'dashboard/events', to: 'dashboard#events', as: :dashboard_events
 end

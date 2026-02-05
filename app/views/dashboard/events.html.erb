@@ -1,0 +1,91 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>Мои события</h1>
+    <p class="subtitle">Регистрации на мероприятия</p>
+    <%= link_to 'Календарь событий →', calendar_events_path, class: 'btn btn-primary' %>
+  </div>
+
+  <!-- Upcoming Events -->
+  <% if @upcoming.any? %>
+    <div class="mb-4">
+      <h2 class="section-title">Предстоящие события</h2>
+      <% @upcoming.each do |registration| %>
+        <div class="card glass-effect mb-3">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h3 class="event-title"><%= registration.event.title %></h3>
+                <div class="event-meta">
+                  <span>📅 <%= registration.event.starts_at.strftime('%d.%m.%Y в %H:%M') %></span>
+                  <span>📍 <%= registration.event.format_location %></span>
+                  <span class="badge badge-<%= registration.status %>"><%= registration.status.humanize %></span>
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <%= link_to 'Подробнее', event_path(registration.event), class: 'btn btn-primary' %>
+                <% if registration.status_pending? || registration.status_confirmed? %>
+                  <%= button_to 'Отменить', event_registration_path(registration), method: :delete, class: 'btn btn-outline-danger', data: { confirm: 'Вы уверены?' } %>
+                <% end %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <!-- Past Events -->
+  <% if @past.any? %>
+    <div>
+      <h2 class="section-title">Прошедшие события</h2>
+      <% @past.each do |registration| %>
+        <div class="card glass-effect mb-3 opacity-75">
+          <div class="card-body">
+            <div class="row align-items-center">
+              <div class="col-md-8">
+                <h3 class="event-title"><%= registration.event.title %></h3>
+                <div class="event-meta">
+                  <span>📅 <%= registration.event.starts_at.strftime('%d.%m.%Y в %H:%M') %></span>
+                  <span>📍 <%= registration.event.format_location %></span>
+                  <span class="badge badge-<%= registration.status %>"><%= registration.status.humanize %></span>
+                </div>
+              </div>
+              <div class="col-md-4 text-end">
+                <%= link_to 'Подробнее', event_path(registration.event), class: 'btn btn-secondary' %>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @upcoming.empty? && @past.empty? %>
+    <div class="empty-state">
+      <div class="empty-icon">📅</div>
+      <h3>У вас нет зарегистрированных событий</h3>
+      <p>Посмотрите календарь предстоящих мероприятий</p>
+      <%= link_to 'Календарь событий', calendar_events_path, class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.event-title {
+  font-size: 1.25rem;
+  margin-bottom: 0.5rem;
+}
+
+.event-meta {
+  display: flex;
+  gap: 1.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.event-meta span {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+</style>

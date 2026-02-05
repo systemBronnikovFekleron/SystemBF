@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>События - Система Бронникова</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body>
+  <div class="container py-5">
+    <div class="page-header mb-4">
+      <h1>Календарь событий</h1>
+      <p class="subtitle">Предстоящие мероприятия системы Бронникова</p>
+      <%= link_to 'Календарный вид', calendar_events_path, class: 'btn btn-outline-primary' %>
+    </div>
+
+    <!-- Filters -->
+    <div class="card glass-effect mb-4">
+      <div class="card-body">
+        <%= form_with url: events_path, method: :get, class: 'row g-3' do |f| %>
+          <div class="col-md-4">
+            <%= f.select :category_id, Category.all.pluck(:name, :id), { include_blank: 'Все категории' }, class: 'form-select' %>
+          </div>
+          <div class="col-md-4">
+            <%= f.select :online, [['Все форматы', ''], ['Онлайн', 'true'], ['Офлайн', 'false']], {}, class: 'form-select' %>
+          </div>
+          <div class="col-md-4">
+            <%= f.submit 'Применить фильтр', class: 'btn btn-primary w-100' %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <!-- Events Grid -->
+    <% if @events.any? %>
+      <div class="events-grid">
+        <% @events.each do |event| %>
+          <div class="card glass-effect event-card">
+            <div class="card-body">
+              <div class="event-header">
+                <% if event.is_online? %>
+                  <span class="badge badge-online">Онлайн</span>
+                <% else %>
+                  <span class="badge badge-offline">Офлайн</span>
+                <% end %>
+                <% unless event.free? %>
+                  <span class="event-price"><%= humanized_money_with_symbol(event.price) %></span>
+                <% else %>
+                  <span class="badge badge-free">Бесплатно</span>
+                <% end %>
+              </div>
+
+              <h3 class="event-title"><%= event.title %></h3>
+
+              <div class="event-info">
+                <div class="info-item">
+                  <span class="info-icon">📅</span>
+                  <span><%= event.starts_at.strftime('%d.%m.%Y в %H:%M') %></span>
+                </div>
+                <div class="info-item">
+                  <span class="info-icon">📍</span>
+                  <span><%= event.format_location %></span>
+                </div>
+                <% if event.max_participants %>
+                  <div class="info-item">
+                    <span class="info-icon">👥</span>
+                    <span>Мест: <%= event.available_spots || 0 %> из <%= event.max_participants %></span>
+                  </div>
+                <% end %>
+              </div>
+
+              <% if event.description.present? %>
+                <p class="event-description"><%= truncate(event.description, length: 150) %></p>
+              <% end %>
+
+              <%= link_to 'Подробнее', event_path(event), class: 'btn btn-primary w-100' %>
+            </div>
+          </div>
+        <% end %>
+      </div>
+
+      <%= paginate @events %>
+    <% else %>
+      <div class="empty-state">
+        <div class="empty-icon">📅</div>
+        <h3>События не найдены</h3>
+        <p>Попробуйте изменить фильтры</p>
+      </div>
+    <% end %>
+  </div>
+</body>
+</html>
+
+<style>
+.events-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.event-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.badge-online {
+  background: var(--primary);
+  color: white;
+}
+
+.badge-offline {
+  background: var(--secondary);
+  color: white;
+}
+
+.badge-free {
+  background: var(--success);
+  color: white;
+}
+
+.event-price {
+  font-weight: bold;
+  color: var(--accent);
+}
+
+.event-title {
+  font-size: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.event-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.event-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+</style>

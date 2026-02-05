@@ -1,0 +1,88 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>Избранное</h1>
+    <p class="subtitle">Сохраненные материалы и курсы</p>
+  </div>
+
+  <% if @favorites.any? %>
+    <div class="favorites-grid">
+      <% @favorites.each do |favorite| %>
+        <div class="card glass-effect favorite-card">
+          <div class="card-body">
+            <div class="favorite-type">
+              <%= favorite.favoritable_type.constantize.model_name.human %>
+            </div>
+            <h3 class="favorite-title">
+              <%= favorite.favoritable.title rescue favorite.favoritable.name %>
+            </h3>
+            <% if favorite.favoritable.respond_to?(:excerpt) && favorite.favoritable.excerpt.present? %>
+              <p class="favorite-excerpt"><%= favorite.favoritable.excerpt %></p>
+            <% end %>
+            <div class="favorite-actions">
+              <% case favorite.favoritable_type %>
+              <% when 'Product' %>
+                <%= link_to 'Открыть', product_path(favorite.favoritable), class: 'btn btn-primary btn-sm' %>
+              <% when 'Article' %>
+                <%= link_to 'Читать', '#', class: 'btn btn-primary btn-sm' %>
+              <% when 'WikiPage' %>
+                <%= link_to 'Открыть', dashboard_wiki_page_path(favorite.favoritable), class: 'btn btn-primary btn-sm' %>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-icon">⭐</div>
+      <h3>У вас пока нет избранного</h3>
+      <p>Добавляйте интересные материалы в избранное для быстрого доступа</p>
+      <%= link_to 'Каталог продуктов', products_path, class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.favorites-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1.5rem;
+}
+
+.favorite-card {
+  height: 100%;
+}
+
+.favorite-type {
+  color: var(--primary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.favorite-title {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.favorite-excerpt {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.favorite-actions {
+  margin-top: auto;
+}
+
+.empty-state {
+  text-align: center;
+  padding: 4rem 2rem;
+}
+
+.empty-icon {
+  font-size: 4rem;
+  margin-bottom: 1rem;
+}
+</style>

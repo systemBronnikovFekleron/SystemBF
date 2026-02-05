@@ -1,0 +1,66 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>Новости</h1>
+    <p class="subtitle">Последние новости системы Бронникова</p>
+  </div>
+
+  <% if @news.any? %>
+    <% @news.each do |article| %>
+      <div class="card glass-effect mb-3">
+        <div class="card-body">
+          <div class="article-meta">
+            <span class="article-date"><%= article.published_at&.strftime('%d.%m.%Y') %></span>
+            <% if article.featured? %>
+              <span class="badge badge-featured">Важное</span>
+            <% end %>
+          </div>
+          <h2 class="article-title"><%= article.title %></h2>
+          <% if article.excerpt.present? %>
+            <p class="article-excerpt"><%= article.excerpt %></p>
+          <% end %>
+          <%= link_to 'Читать далее →', '#', class: 'btn btn-link' %>
+        </div>
+      </div>
+    <% end %>
+
+    <%= paginate @news %>
+  <% else %>
+    <div class="empty-state">
+      <div class="empty-icon">📰</div>
+      <h3>Новостей пока нет</h3>
+      <p>Следите за обновлениями</p>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.article-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-date {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.badge-featured {
+  background: var(--accent);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 12px;
+  font-size: 0.75rem;
+}
+
+.article-title {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.article-excerpt {
+  color: var(--text-secondary);
+  margin-bottom: 1rem;
+}
+</style>

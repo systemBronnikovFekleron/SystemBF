@@ -46,6 +46,56 @@ class DashboardController < ApplicationController
     @orders = @user.orders.order(created_at: :desc)
   end
 
+  # Development Map
+  def development_map
+    @initiations = @user.initiations.includes(:conducted_by).ordered
+    @diagnostics = @user.diagnostics.includes(:conducted_by).ordered
+    @product_accesses = @user.product_accesses.includes(:product)
+    @timeline_events = build_development_timeline
+  end
+
+  # Content pages
+  def favorites
+    @favorites = @user.favorites.includes(:favoritable).ordered
+  end
+
+  def news
+    @news = Article.published.article_type_news.ordered.page(params[:page]).per(10)
+  end
+
+  def materials
+    @materials = Article.published.article_type_useful_material.ordered.page(params[:page]).per(10)
+  end
+
+  def wiki
+    @root_pages = WikiPage.published.root_pages.ordered
+  end
+
+  def wiki_show
+    @page = WikiPage.friendly.find(params[:slug])
+    @children = @page.children.published.ordered
+  end
+
+  def recommendations
+    @recommended_products = recommend_products_for(@user)
+    @recommended_articles = recommend_articles_for(@user)
+  end
+
+  # Events
+  def events
+    @upcoming = @user.event_registrations
+                     .joins(:event)
+                     .where('events.starts_at > ?', Time.current)
+                     .includes(:event)
+                     .order('events.starts_at ASC')
+
+    @past = @user.event_registrations
+                 .joins(:event)
+                 .where('events.starts_at <= ?', Time.current)
+                 .includes(:event)
+                 .order('events.starts_at DESC')
+  end
+
   def update_profile
     if @user.profile.update(profile_params)
       redirect_to dashboard_profile_path, notice: 'Профиль успешно обновлен'
@@ -140,5 +190,54 @@ class DashboardController < ApplicationController
       # 5 days ago
       { id: 6, type: 'profile_updated', title: 'Профиль обновлен', message: 'Данные вашего профиля успешно сохранены', created_at: 5.days.ago, read: true, action_url: '/dashboard/profile' }
     ]
+  end
+
+  def build_development_timeline
+    events = []
+
+    # Add initiations
+    @initiations.each do |init|
+      events << {
+        type: 'initiation',
+        date: init.conducted_at || init.created_at,
+        title: "Инициация: #{init.initiation_type}",
+        data: init
+      }
+    end
+
+    # Add diagnostics
+    @diagnostics.each do |diag|
+      events << {
+        type: 'diagnostic',
+        date: diag.conducted_at || diag.created_at,
+        title: diag.display_name,
+        data: diag
+      }
+    end
+
+    # Add product accesses
+    @product_accesses.each do |access|
+      events << {
+        type: 'product_access',
+        date: access.created_at,
+        title: "Получен доступ: #{access.product.name}",
+        data: access
+      }
+    end
+
+    events.sort_by { |e| e[:date] }.reverse
+  end
+
+  def recommend_products_for(user)
+    # Simple algorithm: products from same categories user purchased
+    categories = user.product_accesses.joins(:product).pluck('products.category_id').uniq
+    Product.status_published
+           .where(category_id: categories)
+           .where.not(id: user.product_accesses.pluck(:product_id))
+           .limit(6)
+  end
+
+  def recommend_articles_for(user)
+    Article.published.featured.limit(3)
   end
 end

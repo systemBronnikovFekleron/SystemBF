@@ -10,9 +10,28 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_04_150855) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_05_073355) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "articles", force: :cascade do |t|
+    t.integer "article_type", default: 0
+    t.bigint "author_id"
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.text "excerpt"
+    t.boolean "featured", default: false
+    t.datetime "published_at"
+    t.string "slug", null: false
+    t.integer "status", default: 0
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["article_type"], name: "index_articles_on_article_type"
+    t.index ["author_id"], name: "index_articles_on_author_id"
+    t.index ["featured"], name: "index_articles_on_featured"
+    t.index ["slug"], name: "index_articles_on_slug", unique: true
+    t.index ["status"], name: "index_articles_on_status"
+  end
 
   create_table "categories", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -23,6 +42,23 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_150855) do
     t.datetime "updated_at", null: false
     t.index ["position"], name: "index_categories_on_position"
     t.index ["slug"], name: "index_categories_on_slug", unique: true
+  end
+
+  create_table "diagnostics", force: :cascade do |t|
+    t.datetime "conducted_at"
+    t.bigint "conducted_by_id"
+    t.datetime "created_at", null: false
+    t.string "diagnostic_type"
+    t.text "recommendations"
+    t.jsonb "results"
+    t.integer "score"
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["conducted_by_id"], name: "index_diagnostics_on_conducted_by_id"
+    t.index ["diagnostic_type"], name: "index_diagnostics_on_diagnostic_type"
+    t.index ["status"], name: "index_diagnostics_on_status"
+    t.index ["user_id"], name: "index_diagnostics_on_user_id"
   end
 
   create_table "email_templates", force: :cascade do |t|
@@ -43,6 +79,73 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_150855) do
     t.index ["active"], name: "index_email_templates_on_active"
     t.index ["category"], name: "index_email_templates_on_category"
     t.index ["template_key"], name: "index_email_templates_on_template_key", unique: true
+  end
+
+  create_table "event_registrations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "event_id", null: false
+    t.text "notes"
+    t.bigint "order_id"
+    t.datetime "registered_at", null: false
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["event_id"], name: "index_event_registrations_on_event_id"
+    t.index ["order_id"], name: "index_event_registrations_on_order_id"
+    t.index ["status"], name: "index_event_registrations_on_status"
+    t.index ["user_id", "event_id"], name: "index_event_registrations_on_user_id_and_event_id", unique: true
+    t.index ["user_id"], name: "index_event_registrations_on_user_id"
+  end
+
+  create_table "events", force: :cascade do |t|
+    t.boolean "auto_approve", default: true
+    t.bigint "category_id"
+    t.datetime "created_at", null: false
+    t.text "description"
+    t.datetime "ends_at"
+    t.boolean "is_online", default: false
+    t.string "location"
+    t.integer "max_participants"
+    t.bigint "organizer_id"
+    t.integer "price_kopecks", default: 0
+    t.string "slug", null: false
+    t.datetime "starts_at", null: false
+    t.integer "status", default: 0
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_events_on_category_id"
+    t.index ["organizer_id"], name: "index_events_on_organizer_id"
+    t.index ["slug"], name: "index_events_on_slug", unique: true
+    t.index ["starts_at"], name: "index_events_on_starts_at"
+    t.index ["status"], name: "index_events_on_status"
+  end
+
+  create_table "favorites", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "favoritable_id", null: false
+    t.string "favoritable_type", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["favoritable_type", "favoritable_id"], name: "index_favorites_on_favoritable"
+    t.index ["user_id", "favoritable_type", "favoritable_id"], name: "index_favorites_on_user_and_favoritable", unique: true
+    t.index ["user_id"], name: "index_favorites_on_user_id"
+  end
+
+  create_table "initiations", force: :cascade do |t|
+    t.datetime "conducted_at"
+    t.bigint "conducted_by_id"
+    t.datetime "created_at", null: false
+    t.string "initiation_type"
+    t.integer "level"
+    t.text "notes"
+    t.jsonb "results"
+    t.integer "status", default: 0
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["conducted_by_id"], name: "index_initiations_on_conducted_by_id"
+    t.index ["initiation_type"], name: "index_initiations_on_initiation_type"
+    t.index ["status"], name: "index_initiations_on_status"
+    t.index ["user_id"], name: "index_initiations_on_user_id"
   end
 
   create_table "integration_logs", force: :cascade do |t|
@@ -270,6 +373,36 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_150855) do
     t.index ["user_id"], name: "index_wallets_on_user_id"
   end
 
+  create_table "wiki_pages", force: :cascade do |t|
+    t.text "content"
+    t.datetime "created_at", null: false
+    t.bigint "created_by_id"
+    t.bigint "parent_id"
+    t.integer "position", default: 0
+    t.string "slug", null: false
+    t.integer "status", default: 0
+    t.string "title", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "updated_by_id"
+    t.index ["created_by_id"], name: "index_wiki_pages_on_created_by_id"
+    t.index ["parent_id"], name: "index_wiki_pages_on_parent_id"
+    t.index ["position"], name: "index_wiki_pages_on_position"
+    t.index ["slug"], name: "index_wiki_pages_on_slug", unique: true
+    t.index ["status"], name: "index_wiki_pages_on_status"
+    t.index ["updated_by_id"], name: "index_wiki_pages_on_updated_by_id"
+  end
+
+  add_foreign_key "articles", "users", column: "author_id"
+  add_foreign_key "diagnostics", "users"
+  add_foreign_key "diagnostics", "users", column: "conducted_by_id"
+  add_foreign_key "event_registrations", "events"
+  add_foreign_key "event_registrations", "orders"
+  add_foreign_key "event_registrations", "users"
+  add_foreign_key "events", "categories"
+  add_foreign_key "events", "users", column: "organizer_id"
+  add_foreign_key "favorites", "users"
+  add_foreign_key "initiations", "users"
+  add_foreign_key "initiations", "users", column: "conducted_by_id"
   add_foreign_key "interaction_histories", "users"
   add_foreign_key "interaction_histories", "users", column: "admin_user_id"
   add_foreign_key "order_items", "orders"
@@ -288,4 +421,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_04_150855) do
   add_foreign_key "wallet_transactions", "order_requests"
   add_foreign_key "wallet_transactions", "wallets"
   add_foreign_key "wallets", "users"
+  add_foreign_key "wiki_pages", "users", column: "created_by_id"
+  add_foreign_key "wiki_pages", "users", column: "updated_by_id"
+  add_foreign_key "wiki_pages", "wiki_pages", column: "parent_id"
 end

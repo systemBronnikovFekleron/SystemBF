@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= @event.title %> - Система Бронникова</title>
+  <%= csrf_meta_tags %>
+  <%= csp_meta_tag %>
+  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+  <%= javascript_importmap_tags %>
+</head>
+<body>
+  <div class="container py-5">
+    <%= link_to '← Все события', events_path, class: 'btn btn-link mb-3' %>
+
+    <div class="row">
+      <div class="col-lg-8">
+        <div class="card glass-effect">
+          <div class="card-body">
+            <div class="event-header mb-4">
+              <% if @event.is_online? %>
+                <span class="badge badge-online">Онлайн</span>
+              <% else %>
+                <span class="badge badge-offline">Офлайн</span>
+              <% end %>
+              <% unless @event.free? %>
+                <h2 class="event-price mb-0"><%= humanized_money_with_symbol(@event.price) %></h2>
+              <% else %>
+                <span class="badge badge-free badge-lg">Бесплатно</span>
+              <% end %>
+            </div>
+
+            <h1 class="event-title mb-4"><%= @event.title %></h1>
+
+            <div class="event-details mb-4">
+              <div class="detail-item">
+                <span class="detail-icon">📅</span>
+                <div>
+                  <div class="detail-label">Дата и время</div>
+                  <div class="detail-value"><%= @event.starts_at.strftime('%d %B %Y в %H:%M') %></div>
+                  <% if @event.ends_at %>
+                    <div class="detail-value text-muted">Окончание: <%= @event.ends_at.strftime('%d %B %Y в %H:%M') %></div>
+                  <% end %>
+                </div>
+              </div>
+
+              <div class="detail-item">
+                <span class="detail-icon">📍</span>
+                <div>
+                  <div class="detail-label">Место проведения</div>
+                  <div class="detail-value"><%= @event.format_location %></div>
+                </div>
+              </div>
+
+              <% if @event.max_participants %>
+                <div class="detail-item">
+                  <span class="detail-icon">👥</span>
+                  <div>
+                    <div class="detail-label">Количество мест</div>
+                    <div class="detail-value">
+                      Доступно: <%= @event.available_spots %> из <%= @event.max_participants %>
+                    </div>
+                  </div>
+                </div>
+              <% end %>
+
+              <% if @event.organizer %>
+                <div class="detail-item">
+                  <span class="detail-icon">👤</span>
+                  <div>
+                    <div class="detail-label">Организатор</div>
+                    <div class="detail-value"><%= @event.organizer.full_name %></div>
+                  </div>
+                </div>
+              <% end %>
+            </div>
+
+            <% if @event.description.present? %>
+              <div class="event-description">
+                <h3>Описание</h3>
+                <%= simple_format(@event.description) %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card glass-effect sticky-top" style="top: 2rem;">
+          <div class="card-body">
+            <% if current_user %>
+              <% if @registration %>
+                <div class="alert alert-info">
+                  <strong>Вы зарегистрированы</strong><br>
+                  Статус: <%= @registration.status.humanize %>
+                </div>
+                <% if @registration.status_pending? || @registration.status_confirmed? %>
+                  <%= button_to 'Отменить регистрацию', event_registration_path(@registration), method: :delete, class: 'btn btn-outline-danger w-100', data: { confirm: 'Вы уверены?' } %>
+                <% end %>
+              <% elsif @event.full? %>
+                <div class="alert alert-warning">
+                  <strong>Все места заняты</strong>
+                </div>
+              <% elsif @event.past? %>
+                <div class="alert alert-secondary">
+                  <strong>Событие завершено</strong>
+                </div>
+              <% else %>
+                <%= button_to 'Зарегистрироваться', event_event_registrations_path(@event), class: 'btn btn-primary w-100 btn-lg' %>
+                <% unless @event.free? %>
+                  <p class="text-muted text-center mt-2 small">После регистрации необходимо оплатить участие</p>
+                <% end %>
+              <% end %>
+            <% else %>
+              <p class="text-muted text-center">Войдите, чтобы зарегистрироваться</p>
+              <%= link_to 'Войти', login_path, class: 'btn btn-primary w-100' %>
+            <% end %>
+
+            <hr>
+
+            <div class="quick-info">
+              <div class="quick-info-item">
+                <span class="label">Формат:</span>
+                <span class="value"><%= @event.is_online? ? 'Онлайн' : 'Офлайн' %></span>
+              </div>
+              <div class="quick-info-item">
+                <span class="label">Цена:</span>
+                <span class="value"><%= @event.free? ? 'Бесплатно' : humanized_money_with_symbol(@event.price) %></span>
+              </div>
+              <% if @event.category %>
+                <div class="quick-info-item">
+                  <span class="label">Категория:</span>
+                  <span class="value"><%= @event.category.name %></span>
+                </div>
+              <% end %>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
+
+<style>
+.event-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.event-title {
+  font-size: 2rem;
+}
+
+.event-details {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.detail-item {
+  display: flex;
+  gap: 1rem;
+}
+
+.detail-icon {
+  font-size: 1.5rem;
+  flex-shrink: 0;
+}
+
+.detail-label {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.25rem;
+}
+
+.detail-value {
+  font-weight: 500;
+}
+
+.event-description {
+  margin-top: 2rem;
+  padding-top: 2rem;
+  border-top: 1px solid var(--border);
+}
+
+.quick-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.quick-info-item {
+  display: flex;
+  justify-content: space-between;
+}
+
+.quick-info-item .label {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+}
+
+.quick-info-item .value {
+  font-weight: 600;
+}
+</style>

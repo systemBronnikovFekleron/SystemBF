@@ -3,6 +3,14 @@
 # Очистка базы данных (только для development)
 if Rails.env.development?
   puts "🗑️  Очистка базы данных..."
+  # New models
+  Favorite.destroy_all
+  WikiPage.destroy_all
+  Article.destroy_all
+  EventRegistration.destroy_all
+  Event.destroy_all
+  Diagnostic.destroy_all
+  Initiation.destroy_all
   # Integration data
   IntegrationStatistic.destroy_all
   IntegrationLog.destroy_all
@@ -239,12 +247,192 @@ order3 = director.orders.create!(
 order3.order_items.create!(product: consultation, price_kopecks: consultation.price_kopecks, quantity: 1)
 puts "  ✓ Заказ ##{order3.order_number} (директор, ожидание оплаты)"
 
+puts "\n🗺️  Создание данных для карты развития..."
+
+# Initiations
+initiation1 = client.initiations.create!(
+  initiation_type: 'Первая ступень',
+  level: 1,
+  conducted_by: specialist,
+  conducted_at: 2.months.ago,
+  status: :passed,
+  notes: 'Успешно пройдена инициация первой ступени'
+)
+puts "  ✓ Инициация: #{initiation1.initiation_type} (клиент)"
+
+initiation2 = specialist.initiations.create!(
+  initiation_type: 'Третья ступень',
+  level: 3,
+  conducted_by: admin,
+  conducted_at: 6.months.ago,
+  status: :passed,
+  notes: 'Инициация третьей ступени завершена успешно'
+)
+puts "  ✓ Инициация: #{initiation2.initiation_type} (специалист)"
+
+# Diagnostics
+diagnostic1 = client.diagnostics.create!(
+  diagnostic_type: 'vision',
+  conducted_by: specialist,
+  conducted_at: 1.month.ago,
+  status: :completed,
+  score: 75,
+  recommendations: 'Продолжайте развивать навыки визуализации'
+)
+puts "  ✓ Диагностика: Видение (клиент)"
+
+diagnostic2 = specialist.diagnostics.create!(
+  diagnostic_type: 'bioenergy',
+  conducted_by: admin,
+  conducted_at: 3.months.ago,
+  status: :completed,
+  score: 88,
+  recommendations: 'Отличные результаты по биоэнергетике'
+)
+puts "  ✓ Диагностика: Биоэнергетика (специалист)"
+
+puts "\n📅 Создание событий..."
+
+event1 = Event.create!(
+  title: 'Введение в метод Бронникова',
+  description: 'Бесплатный вводный семинар для новичков. Узнайте основы метода и познакомьтесь с практиками.',
+  starts_at: 2.weeks.from_now,
+  ends_at: 2.weeks.from_now + 3.hours,
+  is_online: true,
+  price_kopecks: 0,
+  status: :published,
+  category: courses_cat,
+  organizer: specialist
+)
+puts "  ✓ #{event1.title} (онлайн, бесплатно)"
+
+event2 = Event.create!(
+  title: 'Мастер-класс по развитию видения',
+  description: 'Углубленная практика развития прямого видения с инструктором второй категории.',
+  starts_at: 1.month.from_now,
+  ends_at: 1.month.from_now + 4.hours,
+  location: 'Москва, ул. Примерная, 15',
+  is_online: false,
+  max_participants: 20,
+  price_kopecks: 350000, # 3,500 руб
+  status: :published,
+  category: courses_cat,
+  organizer: admin
+)
+puts "  ✓ #{event2.title} (офлайн, платно)"
+
+event3 = Event.create!(
+  title: 'Диагностика уровня развития',
+  description: 'Индивидуальная диагностика текущего уровня развития способностей.',
+  starts_at: 3.days.from_now,
+  ends_at: 3.days.from_now + 2.hours,
+  is_online: true,
+  max_participants: 10,
+  price_kopecks: 200000, # 2,000 руб
+  status: :published,
+  category: services_cat,
+  organizer: specialist
+)
+puts "  ✓ #{event3.title} (онлайн, платно)"
+
+# Event registrations
+reg1 = event1.event_registrations.create!(
+  user: client,
+  status: :confirmed
+)
+puts "  ✓ Регистрация клиента на бесплатное событие"
+
+puts "\n📰 Создание статей и новостей..."
+
+article1 = Article.create!(
+  title: 'Открытие нового филиала в Санкт-Петербурге',
+  excerpt: 'Рады сообщить об открытии нового центра развития в Санкт-Петербурге',
+  content: 'Мы рады сообщить об открытии нового центра развития по методу Бронникова в Санкт-Петербурге. Приглашаем всех желающих на бесплатный день открытых дверей.',
+  author: admin,
+  article_type: :news,
+  status: :published,
+  featured: true,
+  published_at: 1.week.ago
+)
+puts "  ✓ #{article1.title}"
+
+article2 = Article.create!(
+  title: 'Как начать практику развития видения',
+  excerpt: 'Практические советы для новичков',
+  content: 'В этой статье мы расскажем о первых шагах в практике развития прямого видения по методу Бронникова...',
+  author: specialist,
+  article_type: :useful_material,
+  status: :published,
+  featured: true,
+  published_at: 3.days.ago
+)
+puts "  ✓ #{article2.title}"
+
+article3 = Article.create!(
+  title: 'Расписание семинаров на март 2026',
+  excerpt: 'Обновленное расписание мероприятий',
+  content: 'Публикуем расписание семинаров и мастер-классов на март 2026 года...',
+  author: admin,
+  article_type: :announcement,
+  status: :published,
+  published_at: 1.day.ago
+)
+puts "  ✓ #{article3.title}"
+
+puts "\n📖 Создание Wiki страниц..."
+
+wiki1 = WikiPage.create!(
+  title: 'Основы метода Бронникова',
+  content: 'Метод Бронникова - это комплексная система развития скрытых возможностей человека...',
+  created_by: admin,
+  updated_by: admin,
+  status: :published,
+  position: 1
+)
+puts "  ✓ #{wiki1.title}"
+
+wiki2 = WikiPage.create!(
+  title: 'Прямое видение',
+  content: 'Прямое видение - способность воспринимать информацию без использования физических органов чувств...',
+  parent: wiki1,
+  created_by: specialist,
+  updated_by: specialist,
+  status: :published,
+  position: 1
+)
+puts "  ✓ #{wiki2.title} (подраздел)"
+
+wiki3 = WikiPage.create!(
+  title: 'Биоэнергетика',
+  content: 'Биоэнергетика изучает энергетические процессы в живых организмах...',
+  parent: wiki1,
+  created_by: specialist,
+  updated_by: specialist,
+  status: :published,
+  position: 2
+)
+puts "  ✓ #{wiki3.title} (подраздел)"
+
+puts "\n⭐ Создание избранного..."
+
+Favorite.create!(user: client, favoritable: book1)
+Favorite.create!(user: client, favoritable: article2)
+Favorite.create!(user: client, favoritable: wiki1)
+puts "  ✓ Клиент добавил 3 элемента в избранное"
+
 puts "\n📊 Статистика:"
 puts "  Пользователей: #{User.count}"
 puts "  Категорий: #{Category.count}"
 puts "  Продуктов: #{Product.count} (#{Product.published.count} опубликовано)"
 puts "  Заказов: #{Order.count}"
 puts "  Доступов к продуктам: #{ProductAccess.count}"
+puts "  Инициаций: #{Initiation.count}"
+puts "  Диагностик: #{Diagnostic.count}"
+puts "  Событий: #{Event.count}"
+puts "  Регистраций на события: #{EventRegistration.count}"
+puts "  Статей: #{Article.count}"
+puts "  Wiki страниц: #{WikiPage.count}"
+puts "  Избранного: #{Favorite.count}"
 
 puts "\n✅ Seed данные успешно загружены!"
 puts "\n🔑 Тестовые учетные записи:"

@@ -1,0 +1,82 @@
+<div class="dashboard-content">
+  <!-- Breadcrumbs -->
+  <nav class="breadcrumbs mb-4">
+    <%= link_to 'База знаний', dashboard_wiki_path %>
+    <% @page.breadcrumbs[0..-2].each do |crumb| %>
+      <span class="separator">→</span>
+      <%= link_to crumb.title, dashboard_wiki_page_path(crumb) %>
+    <% end %>
+    <span class="separator">→</span>
+    <span class="current"><%= @page.title %></span>
+  </nav>
+
+  <div class="wiki-page">
+    <h1 class="wiki-page-title"><%= @page.title %></h1>
+
+    <div class="wiki-page-content">
+      <%= simple_format(@page.content) %>
+    </div>
+
+    <% if @children.any? %>
+      <div class="wiki-children mt-5">
+        <h2 class="section-title">Подразделы</h2>
+        <div class="wiki-children-grid">
+          <% @children.each do |child| %>
+            <div class="card glass-effect">
+              <div class="card-body">
+                <h3><%= link_to child.title, dashboard_wiki_page_path(child) %></h3>
+                <% if child.content.present? %>
+                  <p class="text-muted small"><%= truncate(strip_tags(child.content), length: 100) %></p>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<style>
+.breadcrumbs {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+}
+
+.breadcrumbs a {
+  color: var(--primary);
+  text-decoration: none;
+}
+
+.breadcrumbs a:hover {
+  text-decoration: underline;
+}
+
+.separator {
+  color: var(--text-secondary);
+}
+
+.current {
+  color: var(--text);
+  font-weight: 500;
+}
+
+.wiki-page-title {
+  font-size: 2rem;
+  margin-bottom: 2rem;
+}
+
+.wiki-page-content {
+  line-height: 1.8;
+  font-size: 1rem;
+}
+
+.wiki-children-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+  gap: 1rem;
+}
+</style>

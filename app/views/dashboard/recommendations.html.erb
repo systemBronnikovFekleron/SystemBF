@@ -1,0 +1,120 @@
+<div class="dashboard-content">
+  <div class="dashboard-header">
+    <h1>Рекомендации</h1>
+    <p class="subtitle">Персональные рекомендации для вас</p>
+  </div>
+
+  <!-- Recommended Products -->
+  <% if @recommended_products.any? %>
+    <div class="recommendations-section mb-5">
+      <h2 class="section-title">Рекомендуемые курсы</h2>
+      <p class="section-subtitle">На основе ваших интересов</p>
+      <div class="products-grid">
+        <% @recommended_products.each do |product| %>
+          <div class="card glass-effect product-card">
+            <div class="card-body">
+              <div class="product-category"><%= product.category&.name %></div>
+              <h3 class="product-title"><%= product.name %></h3>
+              <% if product.description.present? %>
+                <p class="product-description"><%= truncate(product.description, length: 100) %></p>
+              <% end %>
+              <div class="product-footer">
+                <div class="product-price"><%= humanized_money_with_symbol(product.price) %></div>
+                <%= link_to 'Подробнее', product_path(product), class: 'btn btn-primary btn-sm' %>
+              </div>
+            </div>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Recommended Articles -->
+  <% if @recommended_articles.any? %>
+    <div class="recommendations-section">
+      <h2 class="section-title">Избранные материалы</h2>
+      <p class="section-subtitle">Популярные статьи</p>
+      <% @recommended_articles.each do |article| %>
+        <div class="card glass-effect mb-3">
+          <div class="card-body">
+            <div class="article-meta">
+              <span class="article-date"><%= article.published_at&.strftime('%d.%m.%Y') %></span>
+              <span class="badge badge-featured">Избранное</span>
+            </div>
+            <h3 class="article-title"><%= article.title %></h3>
+            <% if article.excerpt.present? %>
+              <p class="article-excerpt"><%= article.excerpt %></p>
+            <% end %>
+            <%= link_to 'Читать →', '#', class: 'btn btn-link' %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if @recommended_products.empty? && @recommended_articles.empty? %>
+    <div class="empty-state">
+      <div class="empty-icon">✨</div>
+      <h3>Рекомендации пока недоступны</h3>
+      <p>Начните изучать курсы, чтобы получить персональные рекомендации</p>
+      <%= link_to 'Перейти в магазин', products_path, class: 'btn btn-primary' %>
+    </div>
+  <% end %>
+</div>
+
+<style>
+.recommendations-section {
+  margin-bottom: 3rem;
+}
+
+.section-subtitle {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1.5rem;
+}
+
+.products-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1.5rem;
+}
+
+.product-card {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.product-category {
+  color: var(--primary);
+  font-size: 0.75rem;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.product-title {
+  font-size: 1.125rem;
+  margin-bottom: 0.5rem;
+}
+
+.product-description {
+  color: var(--text-secondary);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+  flex-grow: 1;
+}
+
+.product-footer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+}
+
+.product-price {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--accent);
+}
+</style>
