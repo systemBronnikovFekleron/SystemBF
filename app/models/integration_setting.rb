@@ -50,13 +50,12 @@ class IntegrationSetting < ApplicationRecord
 
   # Credentials management
   def credentials_hash
-    Rails.cache.fetch("integration_#{id}/credentials", expires_in: 5.minutes) do
-      return {} if encrypted_credentials.blank?
-      begin
-        JSON.parse(encrypted_credentials).with_indifferent_access
-      rescue JSON::ParserError
-        {}
-      end
+    return {} if encrypted_credentials.blank?
+
+    begin
+      JSON.parse(encrypted_credentials).with_indifferent_access
+    rescue JSON::ParserError
+      {}
     end
   end
 

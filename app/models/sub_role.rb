@@ -30,10 +30,10 @@ class SubRole < ApplicationRecord
   ADMIN = 'admin'
 
   def users_count
-    Rails.cache.fetch("sub_role_#{id}_users_count", expires_in: 1.hour) { users.count }
+    users.count
   end
 
   def content_count
-    Rails.cache.fetch("sub_role_#{id}_content_count", expires_in: 1.hour) { content_sub_roles.count }
+    content_sub_roles.count
   end
 end

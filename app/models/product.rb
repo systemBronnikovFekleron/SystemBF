@@ -51,11 +51,8 @@ class Product < ApplicationRecord
   scope :featured, -> { where(featured: true) }
   scope :ordered, -> { order(position: :asc, created_at: :desc) }
 
-  # Caching methods
   def formatted_price
-    Rails.cache.fetch("product_#{id}_formatted_price", expires_in: 1.hour) do
-      price.format
-    end
+    price.format
   end
 
   def cache_key_with_version
