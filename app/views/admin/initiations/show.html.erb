@@ -1,0 +1,125 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад к списку', admin_initiations_path, style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 700;"><%= @initiation.display_name %></h1>
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <% if @initiation.status_pending? %>
+          <span class="badge badge-secondary">Ожидает</span>
+        <% elsif @initiation.status_completed? %>
+          <span class="badge badge-info">Завершено</span>
+        <% elsif @initiation.status_passed? %>
+          <span class="badge badge-success">Пройдено</span>
+        <% elsif @initiation.status_failed? %>
+          <span class="badge badge-error">Не пройдено</span>
+        <% end %>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <%= link_to 'Изменить', edit_admin_initiation_path(@initiation), class: 'btn btn-primary' %>
+      <%= button_to 'Удалить', admin_initiation_path(@initiation), method: :delete,
+          data: { turbo_confirm: 'Вы уверены?' }, class: 'btn btn-outline btn-danger' %>
+    </div>
+  </div>
+
+  <!-- User Info -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Информация о пользователе</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <strong>ФИО:</strong>
+        <%= link_to @user.full_name, admin_user_path(@user), style: 'color: var(--primary);' %>
+      </div>
+      <div><strong>Email:</strong> <%= @user.email %></div>
+      <div><strong>Телефон:</strong> <%= @user.profile&.phone || 'Не указан' %></div>
+      <div><strong>Классификация:</strong> <%= @user.classification.humanize %></div>
+    </div>
+  </div>
+
+  <!-- Initiation Details -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Детали инициации</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <strong>Тип:</strong>
+        <% case @initiation.initiation_type %>
+        <% when 'first' %>
+          Первая инициация
+        <% when 'second' %>
+          Вторая инициация
+        <% when 'third' %>
+          Третья инициация
+        <% when 'advanced' %>
+          Продвинутая инициация
+        <% else %>
+          <%= @initiation.initiation_type %>
+        <% end %>
+      </div>
+      <div>
+        <strong>Уровень:</strong>
+        <%= @initiation.level.present? ? @initiation.level : 'Не указан' %>
+      </div>
+      <div>
+        <strong>Дата проведения:</strong>
+        <%= @initiation.conducted_at.present? ? l(@initiation.conducted_at, format: :long) : 'Не назначена' %>
+      </div>
+      <div>
+        <strong>Специалист:</strong>
+        <% if @initiation.conducted_by.present? %>
+          <%= link_to @initiation.conducted_by.full_name, admin_user_path(@initiation.conducted_by), style: 'color: var(--primary);' %>
+        <% else %>
+          Не назначен
+        <% end %>
+      </div>
+      <div>
+        <strong>Создано:</strong>
+        <%= l(@initiation.created_at, format: :long) %>
+      </div>
+      <div>
+        <strong>Обновлено:</strong>
+        <%= l(@initiation.updated_at, format: :long) %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Auto-grant SubRoles -->
+  <% if @initiation.auto_grant_sub_roles.present? %>
+    <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+      <h3 style="font-weight: 600; margin-bottom: 1rem;">Авто-выдача подролей</h3>
+      <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+        <% @initiation.auto_grant_sub_roles.each do |role_id| %>
+          <% role = SubRole.find_by(id: role_id) %>
+          <% if role %>
+            <span class="badge badge-primary"><%= role.display_name %></span>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Granted SubRoles -->
+  <% if @granted_sub_roles.any? %>
+    <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+      <h3 style="font-weight: 600; margin-bottom: 1rem;">Выданные подроли</h3>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th>Подроль</th>
+            <th>Дата выдачи</th>
+            <th>Выдал</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% @granted_sub_roles.each do |usr| %>
+            <tr>
+              <td><span class="badge badge-success"><%= usr.sub_role.display_name %></span></td>
+              <td><%= l(usr.granted_at, format: :short) %></td>
+              <td><%= usr.granted_by&.full_name || 'Автоматически' %></td>
+            </tr>
+          <% end %>
+        </tbody>
+      </table>
+    </div>
+  <% end %>
+</div>

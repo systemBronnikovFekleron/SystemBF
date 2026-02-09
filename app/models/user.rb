@@ -78,6 +78,12 @@ class User < ApplicationRecord
     [first_name, last_name].compact.join(' ').presence || email
   end
 
+  # Полное имя с email для select-ов в админке
+  def full_name_with_email
+    name = [first_name, last_name].compact.join(' ')
+    name.present? ? "#{name} (#{email})" : email
+  end
+
   # Password reset methods
   def create_reset_password_token!
     self.reset_password_token = SecureRandom.urlsafe_base64(32)

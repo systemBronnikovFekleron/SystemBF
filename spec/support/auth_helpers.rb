@@ -2,6 +2,7 @@
 
 module AuthHelpers
   # Sign in user for request specs
+  # Uses Authorization header which is always checked by ApplicationController
   def sign_in(user)
     @signed_in_user = user
     @jwt_token = JsonWebToken.encode(user_id: user.id)
@@ -84,4 +85,10 @@ end
 RSpec.configure do |config|
   config.include AuthHelpers, type: :request
   config.include AuthHelpers, type: :feature
+
+  # Reset auth state between tests
+  config.before(:each, type: :request) do
+    @jwt_token = nil
+    @signed_in_user = nil
+  end
 end

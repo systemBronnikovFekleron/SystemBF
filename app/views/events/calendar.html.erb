@@ -1,91 +1,463 @@
-<!DOCTYPE html>
-<html>
-<head>
-  <title>Календарь событий - Система Бронникова</title>
-  <%= csrf_meta_tags %>
-  <%= csp_meta_tag %>
-  <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-  <%= javascript_importmap_tags %>
-</head>
-<body>
-  <div class="container py-5">
-    <div class="page-header mb-4">
-      <h1>Календарь событий</h1>
-      <p class="subtitle">Все предстоящие мероприятия</p>
+<div class="container py-5">
+  <div class="page-header mb-4">
+    <h1>Календарь событий</h1>
+    <p class="subtitle">Все предстоящие мероприятия</p>
+    <div class="header-actions">
       <%= link_to 'Список событий', events_path, class: 'btn btn-outline-primary' %>
+      <%= link_to 'Экспорт календаря', dashboard_calendar_ics_path, class: 'btn btn-outline-secondary' if logged_in? %>
+    </div>
+  </div>
+
+  <div class="calendar-container" data-controller="calendar" data-calendar-events-value="<%= @events_json.to_json %>">
+    <!-- Calendar Grid Section -->
+    <div class="calendar-main">
+      <!-- Calendar Header with Navigation -->
+      <div class="calendar-header">
+        <button type="button" class="calendar-nav-btn" data-action="click->calendar#previousMonth">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 18l-6-6 6-6"/>
+          </svg>
+        </button>
+        <div class="calendar-title">
+          <span data-calendar-target="month"></span>
+          <span data-calendar-target="year"></span>
+        </div>
+        <button type="button" class="calendar-nav-btn" data-action="click->calendar#nextMonth">
+          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M9 18l6-6-6-6"/>
+          </svg>
+        </button>
+        <button type="button" class="calendar-today-btn" data-action="click->calendar#today">
+          Сегодня
+        </button>
+      </div>
+
+      <!-- Weekday Headers -->
+      <div class="calendar-weekdays">
+        <div class="calendar-weekday">Пн</div>
+        <div class="calendar-weekday">Вт</div>
+        <div class="calendar-weekday">Ср</div>
+        <div class="calendar-weekday">Чт</div>
+        <div class="calendar-weekday">Пт</div>
+        <div class="calendar-weekday calendar-weekday--weekend">Сб</div>
+        <div class="calendar-weekday calendar-weekday--weekend">Вс</div>
+      </div>
+
+      <!-- Calendar Grid (populated by JS) -->
+      <div class="calendar-grid" data-calendar-target="grid">
+        <!-- JS will populate this -->
+      </div>
+
+      <!-- Legend -->
+      <div class="calendar-legend">
+        <div class="legend-item">
+          <span class="calendar-dot dot--online"></span>
+          <span>Онлайн</span>
+        </div>
+        <div class="legend-item">
+          <span class="calendar-dot dot--offline"></span>
+          <span>Офлайн</span>
+        </div>
+      </div>
     </div>
 
-    <% if @events_by_date.any? %>
-      <div class="calendar-view">
-        <% current_month = nil %>
-        <% @events_by_date.each do |date, events| %>
-          <% if current_month != date.beginning_of_month %>
-            <% current_month = date.beginning_of_month %>
-            <h2 class="month-header"><%= l(date, format: '%B %Y') %></h2>
-          <% end %>
+    <!-- Selected Day Events Sidebar -->
+    <div class="calendar-sidebar">
+      <h3 class="sidebar-title" data-calendar-target="selectedDay">Выберите день</h3>
+      <div class="sidebar-events" data-calendar-target="eventList">
+        <div class="calendar-no-events">Выберите день на календаре</div>
+      </div>
+    </div>
+  </div>
 
-          <div class="calendar-day">
-            <div class="day-header">
-              <div class="day-date">
-                <div class="day-number"><%= date.day %></div>
-                <div class="day-name"><%= l(date, format: '%A') %></div>
-              </div>
-            </div>
-            <div class="day-events">
-              <% events.each do |event| %>
-                <div class="calendar-event-card">
-                  <div class="event-time"><%= event.starts_at.strftime('%H:%M') %></div>
-                  <div class="event-details">
-                    <h4 class="event-title"><%= link_to event.title, event_path(event) %></h4>
-                    <div class="event-meta">
-                      <span class="<%= event.is_online? ? 'badge-online' : 'badge-offline' %>">
-                        <%= event.is_online? ? '🌐 Онлайн' : '📍 ' + event.location %>
-                      </span>
-                      <% unless event.free? %>
-                        <span class="event-price"><%= humanized_money_with_symbol(event.price) %></span>
-                      <% end %>
-                    </div>
-                  </div>
-                </div>
-              <% end %>
+  <!-- List view fallback / alternative -->
+  <% if @events_by_date.any? %>
+    <div class="calendar-list-view mt-5">
+      <h2 class="section-title">Список событий</h2>
+      <% current_month = nil %>
+      <% @events_by_date.each do |date, events| %>
+        <% if current_month != date.beginning_of_month %>
+          <% current_month = date.beginning_of_month %>
+          <h3 class="month-header"><%= l(date, format: '%B %Y') %></h3>
+        <% end %>
+
+        <div class="calendar-day">
+          <div class="day-header">
+            <div class="day-date">
+              <div class="day-number"><%= date.day %></div>
+              <div class="day-name"><%= l(date, format: '%A') %></div>
             </div>
           </div>
-        <% end %>
-      </div>
-    <% else %>
-      <div class="empty-state">
-        <div class="empty-icon">📅</div>
-        <h3>Предстоящих событий нет</h3>
-        <p>Следите за обновлениями</p>
-      </div>
-    <% end %>
-  </div>
-</body>
-</html>
+          <div class="day-events">
+            <% events.each do |event| %>
+              <div class="calendar-event-card">
+                <div class="event-time"><%= event.starts_at.strftime('%H:%M') %></div>
+                <div class="event-details">
+                  <h4 class="event-title"><%= link_to event.title, event_path(event) %></h4>
+                  <div class="event-meta">
+                    <span class="<%= event.is_online? ? 'badge-online' : 'badge-offline' %>">
+                      <%= event.is_online? ? 'Онлайн' : event.location %>
+                    </span>
+                    <% unless event.free? %>
+                      <span class="event-price"><%= humanized_money_with_symbol(event.price) %></span>
+                    <% end %>
+                  </div>
+                </div>
+                <%= link_to 'ICS', ics_event_path(event), class: 'btn-ics', title: 'Добавить в календарь' %>
+              </div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+</div>
 
 <style>
-.calendar-view {
-  max-width: 900px;
-  margin: 0 auto;
+/* Calendar Container */
+.calendar-container {
+  display: grid;
+  grid-template-columns: 1fr 350px;
+  gap: 2rem;
+  margin-bottom: 3rem;
 }
 
-.month-header {
-  font-size: 1.75rem;
-  margin: 2rem 0 1.5rem;
+@media (max-width: 1024px) {
+  .calendar-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Calendar Main */
+.calendar-main {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+}
+
+/* Calendar Header */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.calendar-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  flex: 1;
+  text-align: center;
+}
+
+.calendar-nav-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--gray-600);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-nav-btn:hover {
+  background: var(--gray-50);
+  color: var(--primary);
+  border-color: var(--primary);
+}
+
+.calendar-today-btn {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--primary);
+  border-radius: var(--radius-md);
+  background: white;
+  color: var(--primary);
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.calendar-today-btn:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Weekdays */
+.calendar-weekdays {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+  margin-bottom: 0.5rem;
+}
+
+.calendar-weekday {
+  text-align: center;
+  font-weight: 600;
+  color: var(--gray-600);
+  font-size: 0.875rem;
+  padding: 0.5rem;
+}
+
+.calendar-weekday--weekend {
+  color: var(--accent);
+}
+
+/* Calendar Grid */
+.calendar-grid {
+  min-height: 320px;
+}
+
+.calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 4px;
+}
+
+.calendar-cell {
+  aspect-ratio: 1;
+  min-height: 50px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0.5rem;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: all 0.2s;
+  background: var(--gray-50);
+}
+
+.calendar-cell:hover {
+  background: var(--gray-100);
+}
+
+.calendar-cell--empty {
+  background: transparent;
+  cursor: default;
+}
+
+.calendar-cell--today {
+  background: linear-gradient(135deg, rgba(79, 70, 229, 0.1), rgba(147, 51, 234, 0.1));
+  border: 2px solid var(--primary);
+}
+
+.calendar-cell--selected {
+  background: var(--primary);
+  color: white;
+}
+
+.calendar-cell--selected .calendar-day-number {
+  color: white;
+}
+
+.calendar-cell--has-events {
+  font-weight: 600;
+}
+
+.calendar-day-number {
+  font-size: 0.875rem;
+  color: var(--gray-900);
+}
+
+/* Event Dots */
+.calendar-event-dots {
+  display: flex;
+  gap: 3px;
+  margin-top: 4px;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.calendar-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+}
+
+.dot--online {
+  background: var(--primary);
+}
+
+.dot--offline {
+  background: var(--secondary);
+}
+
+.calendar-dot-more {
+  font-size: 0.625rem;
+  color: var(--gray-500);
+}
+
+/* Legend */
+.calendar-legend {
+  display: flex;
+  gap: 1.5rem;
+  justify-content: center;
+  margin-top: 1rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: var(--gray-600);
+}
+
+.legend-item .calendar-dot {
+  width: 10px;
+  height: 10px;
+}
+
+/* Sidebar */
+.calendar-sidebar {
+  background: white;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  padding: 1.5rem;
+  max-height: 500px;
+  overflow-y: auto;
+}
+
+.sidebar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 1rem;
   padding-bottom: 0.75rem;
-  border-bottom: 2px solid var(--border);
+  border-bottom: 2px solid var(--primary);
   text-transform: capitalize;
 }
 
+.sidebar-events {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.calendar-no-events {
+  text-align: center;
+  color: var(--gray-500);
+  padding: 2rem;
+  font-size: 0.875rem;
+}
+
+/* Event Cards in Sidebar */
+.calendar-event-card {
+  display: block;
+  padding: 1rem;
+  background: var(--gray-50);
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: all 0.2s;
+  border: 1px solid transparent;
+}
+
+.calendar-event-card:hover {
+  background: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+}
+
+.event-card--online {
+  border-left: 3px solid var(--primary);
+}
+
+.event-card--offline {
+  border-left: 3px solid var(--secondary);
+}
+
+.event-card-time {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--primary);
+  margin-bottom: 0.5rem;
+}
+
+.event-card-title {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--gray-900);
+  margin-bottom: 0.5rem;
+  line-height: 1.3;
+}
+
+.event-card-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  font-size: 0.75rem;
+}
+
+.event-badge {
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  font-weight: 500;
+}
+
+.event-badge--online {
+  background: rgba(79, 70, 229, 0.1);
+  color: var(--primary);
+}
+
+.event-badge--offline {
+  background: rgba(16, 185, 129, 0.1);
+  color: var(--secondary);
+}
+
+.event-location {
+  color: var(--gray-600);
+}
+
+.event-price {
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.event-free {
+  color: var(--secondary);
+}
+
+/* List View (fallback) */
+.calendar-list-view {
+  padding-top: 2rem;
+  border-top: 2px solid var(--border);
+}
+
+.section-title {
+  font-size: 1.5rem;
+  margin-bottom: 1.5rem;
+  color: var(--gray-900);
+}
+
+.month-header {
+  font-size: 1.25rem;
+  margin: 2rem 0 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--border);
+  text-transform: capitalize;
+  color: var(--gray-700);
+}
+
 .calendar-day {
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
 }
 
 .day-header {
-  background: white;
-  padding: 1rem;
+  background: var(--gray-50);
+  padding: 0.75rem 1rem;
   border-radius: var(--radius-md);
-  margin-bottom: 1rem;
+  margin-bottom: 0.75rem;
 }
 
 .day-date {
@@ -95,15 +467,15 @@
 }
 
 .day-number {
-  font-size: 2rem;
+  font-size: 1.5rem;
   font-weight: bold;
   color: var(--primary);
-  width: 3rem;
+  width: 2.5rem;
   text-align: center;
 }
 
 .day-name {
-  font-size: 1.25rem;
+  font-size: 1rem;
   color: var(--gray-600);
   text-transform: capitalize;
 }
@@ -111,30 +483,23 @@
 .day-events {
   display: flex;
   flex-direction: column;
-  gap: 1rem;
-  padding-left: 1rem;
+  gap: 0.75rem;
+  padding-left: 0.5rem;
 }
 
-.calendar-event-card {
+.day-events .calendar-event-card {
   display: flex;
-  gap: 1.5rem;
-  padding: 1.5rem;
+  align-items: center;
+  gap: 1rem;
   background: white;
-  border-radius: var(--radius-md);
   border: 1px solid var(--border);
-  transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.calendar-event-card:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 .event-time {
-  font-size: 1rem;
+  font-size: 0.875rem;
   font-weight: 600;
   color: var(--primary);
-  min-width: 4rem;
+  min-width: 3.5rem;
 }
 
 .event-details {
@@ -142,8 +507,8 @@
 }
 
 .event-title {
-  font-size: 1.125rem;
-  margin-bottom: 0.5rem;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
 }
 
 .event-title a {
@@ -158,7 +523,7 @@
 .event-meta {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   font-size: 0.875rem;
   color: var(--gray-600);
 }
@@ -171,8 +536,25 @@
   color: var(--secondary);
 }
 
-.event-price {
-  font-weight: 600;
-  color: var(--accent);
+.btn-ics {
+  padding: 0.5rem 0.75rem;
+  font-size: 0.75rem;
+  color: var(--gray-600);
+  background: var(--gray-100);
+  border-radius: var(--radius-sm);
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.btn-ics:hover {
+  background: var(--primary);
+  color: white;
+}
+
+/* Header Actions */
+.header-actions {
+  display: flex;
+  gap: 0.75rem;
+  margin-top: 1rem;
 }
 </style>

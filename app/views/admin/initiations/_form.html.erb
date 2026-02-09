@@ -1,0 +1,71 @@
+<%= form_with model: [:admin, initiation] do |f| %>
+  <% if initiation.errors.any? %>
+    <div style="background: rgba(220,76,62,0.1); padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+      <strong><%= initiation.errors.count %> ошибок:</strong>
+      <%= initiation.errors.full_messages.join(', ') %>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :user_id, 'Пользователь *' %>
+    <%= f.collection_select :user_id, users, :id, :full_name_with_email,
+        { prompt: 'Выберите пользователя' }, class: 'form-select', required: true %>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group">
+      <%= f.label :initiation_type, 'Тип инициации *' %>
+      <%= f.select :initiation_type, [
+        ['Первая', 'first'],
+        ['Вторая', 'second'],
+        ['Третья', 'third'],
+        ['Продвинутая', 'advanced']
+      ], { prompt: 'Выберите тип' }, class: 'form-select', required: true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :level, 'Уровень' %>
+      <%= f.number_field :level, class: 'form-input', min: 1, max: 10 %>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group">
+      <%= f.label :status, 'Статус *' %>
+      <%= f.select :status, [
+        ['Ожидает', 'pending'],
+        ['Завершено', 'completed'],
+        ['Пройдено', 'passed'],
+        ['Не пройдено', 'failed']
+      ], {}, class: 'form-select', required: true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :conducted_at, 'Дата проведения' %>
+      <%= f.datetime_local_field :conducted_at, class: 'form-input' %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :conducted_by_id, 'Специалист' %>
+    <%= f.collection_select :conducted_by_id, conductors, :id, :full_name,
+        { include_blank: 'Не назначен' }, class: 'form-select' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :auto_grant_sub_roles, 'Авто-выдача подролей при завершении' %>
+    <div style="display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem;">
+      <% sub_roles.each do |role| %>
+        <label style="display: flex; align-items: center; gap: 0.25rem; cursor: pointer;">
+          <%= check_box_tag 'initiation[auto_grant_sub_roles][]', role.id,
+              initiation.auto_grant_sub_roles&.include?(role.id.to_s) || initiation.auto_grant_sub_roles&.include?(role.id) %>
+          <%= role.display_name %>
+        </label>
+      <% end %>
+    </div>
+    <small style="color: var(--gray-600);">Выберите подроли, которые будут автоматически выданы при успешном завершении инициации</small>
+  </div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+    <%= f.submit initiation.new_record? ? 'Создать инициацию' : 'Сохранить изменения', class: 'btn btn-primary' %>
+    <%= link_to 'Отмена', admin_initiations_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

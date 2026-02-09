@@ -1,0 +1,121 @@
+<div style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700;">Доступы к продуктам</h1>
+  </div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Всего доступов</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @total_count %></div>
+    </div>
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Активные</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--color-success);"><%= @active_count %></div>
+    </div>
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Истёкшие</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--color-error);"><%= @expired_count %></div>
+    </div>
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Бессрочные</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--secondary);"><%= @permanent_count %></div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <%= form_with url: admin_product_accesses_path, method: :get do |f| %>
+    <div class="admin-filters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+      <div>
+        <%= f.label :product_id, 'Продукт', style: 'display: block; font-size: 0.875rem; margin-bottom: 0.25rem;' %>
+        <%= f.collection_select :product_id, Product.order(:title), :id, :title,
+            { include_blank: 'Все продукты' }, class: 'form-select' %>
+      </div>
+      <div>
+        <%= f.label :status, 'Статус', style: 'display: block; font-size: 0.875rem; margin-bottom: 0.25rem;' %>
+        <%= f.select :status, [
+          ['Все', ''],
+          ['Активные', 'active'],
+          ['Истёкшие', 'expired']
+        ], {}, class: 'form-select' %>
+      </div>
+      <div style="display: flex; align-items: flex-end;">
+        <%= f.submit 'Фильтровать', class: 'btn btn-secondary' %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Table -->
+  <div class="card">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Пользователь</th>
+          <th>Продукт</th>
+          <th>Статус</th>
+          <th>Истекает</th>
+          <th>Заказ</th>
+          <th>Создано</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @product_accesses.each do |access| %>
+          <tr>
+            <td><%= access.id %></td>
+            <td>
+              <strong><%= access.user.full_name %></strong>
+              <br><small style="color: var(--gray-600);"><%= access.user.email %></small>
+            </td>
+            <td>
+              <%= link_to access.product.title, admin_product_path(access.product), style: 'color: var(--primary);' %>
+              <br><small style="color: var(--gray-600);"><%= access.product.product_type.humanize %></small>
+            </td>
+            <td>
+              <% if access.active? %>
+                <span class="badge badge-success">Активен</span>
+              <% else %>
+                <span class="badge badge-error">Истёк</span>
+              <% end %>
+            </td>
+            <td>
+              <% if access.expires_at.present? %>
+                <% if access.expires_at > Time.current %>
+                  <%= l(access.expires_at, format: :short) %>
+                  <br><small style="color: var(--gray-600);">через <%= distance_of_time_in_words_to_now(access.expires_at) %></small>
+                <% else %>
+                  <span style="color: var(--color-error);"><%= l(access.expires_at, format: :short) %></span>
+                <% end %>
+              <% else %>
+                <span class="badge badge-secondary">Бессрочный</span>
+              <% end %>
+            </td>
+            <td>
+              <% if access.order.present? %>
+                <%= link_to "##{access.order.id}", admin_order_path(access.order),
+                    class: 'badge badge-primary', style: 'text-decoration: none;' %>
+              <% else %>
+                <span style="color: var(--gray-500);">—</span>
+              <% end %>
+            </td>
+            <td><%= l(access.created_at, format: :short) %></td>
+            <td>
+              <div style="display: flex; gap: 0.5rem;">
+                <%= link_to 'Просмотр', admin_product_access_path(access), class: 'btn btn-sm btn-outline' %>
+              </div>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @product_accesses.empty? %>
+    <div style="text-align: center; padding: 3rem; color: var(--gray-600);">
+      Доступы не найдены
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem;"><%= paginate @product_accesses %></div>
+</div>

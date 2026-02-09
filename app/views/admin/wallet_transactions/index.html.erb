@@ -1,0 +1,130 @@
+<div style="padding: 2rem;">
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <h1 style="font-size: 1.875rem; font-weight: 700;">Транзакции кошельков</h1>
+  </div>
+
+  <!-- Stats -->
+  <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5rem; margin-bottom: 2rem;">
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Всего транзакций</div>
+      <div style="font-size: 2rem; font-weight: 700; color: var(--primary);"><%= @total_count %></div>
+    </div>
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Пополнения</div>
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-success);">
+        +<%= number_to_currency(@deposits_sum / 100.0, unit: '₽', format: '%n %u') %>
+      </div>
+    </div>
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Списания</div>
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-error);">
+        -<%= number_to_currency(@withdrawals_sum / 100.0, unit: '₽', format: '%n %u') %>
+      </div>
+    </div>
+    <div class="admin-stat-card">
+      <div style="font-size: 0.875rem; color: var(--gray-600);">Возвраты</div>
+      <div style="font-size: 1.5rem; font-weight: 700; color: var(--color-info);">
+        <%= number_to_currency(@refunds_sum / 100.0, unit: '₽', format: '%n %u') %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Filters -->
+  <%= form_with url: admin_wallet_transactions_path, method: :get do |f| %>
+    <div class="admin-filters" style="display: flex; gap: 1rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+      <div>
+        <%= f.label :transaction_type, 'Тип', style: 'display: block; font-size: 0.875rem; margin-bottom: 0.25rem;' %>
+        <%= f.select :transaction_type, [
+          ['Все типы', ''],
+          ['Пополнение', 'deposit'],
+          ['Списание', 'withdrawal'],
+          ['Возврат', 'refund']
+        ], {}, class: 'form-select' %>
+      </div>
+      <div>
+        <%= f.label :date_from, 'Дата с', style: 'display: block; font-size: 0.875rem; margin-bottom: 0.25rem;' %>
+        <%= f.date_field :date_from, value: params[:date_from], class: 'form-input' %>
+      </div>
+      <div>
+        <%= f.label :date_to, 'Дата по', style: 'display: block; font-size: 0.875rem; margin-bottom: 0.25rem;' %>
+        <%= f.date_field :date_to, value: params[:date_to], class: 'form-input' %>
+      </div>
+      <div style="display: flex; align-items: flex-end;">
+        <%= f.submit 'Фильтровать', class: 'btn btn-secondary' %>
+      </div>
+    </div>
+  <% end %>
+
+  <!-- Table -->
+  <div class="card">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th>ID</th>
+          <th>Дата</th>
+          <th>Пользователь</th>
+          <th>Тип</th>
+          <th>Сумма</th>
+          <th>Баланс до</th>
+          <th>Баланс после</th>
+          <th>Связанная заявка</th>
+          <th>Действия</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @transactions.each do |transaction| %>
+          <tr>
+            <td><%= transaction.id %></td>
+            <td><%= l(transaction.created_at, format: :short) %></td>
+            <td>
+              <strong><%= transaction.wallet.user.full_name %></strong>
+              <br><small style="color: var(--gray-600);"><%= transaction.wallet.user.email %></small>
+            </td>
+            <td>
+              <% case transaction.transaction_type %>
+              <% when 'deposit' %>
+                <span class="badge badge-success">Пополнение</span>
+              <% when 'withdrawal' %>
+                <span class="badge badge-error">Списание</span>
+              <% when 'refund' %>
+                <span class="badge badge-info">Возврат</span>
+              <% end %>
+            </td>
+            <td>
+              <% if transaction.transaction_type_deposit? || transaction.transaction_type_refund? %>
+                <strong style="color: var(--color-success);">
+                  +<%= number_to_currency(transaction.amount_kopecks / 100.0, unit: '₽', format: '%n %u') %>
+                </strong>
+              <% else %>
+                <strong style="color: var(--color-error);">
+                  -<%= number_to_currency(transaction.amount_kopecks.abs / 100.0, unit: '₽', format: '%n %u') %>
+                </strong>
+              <% end %>
+            </td>
+            <td><%= number_to_currency(transaction.balance_before_kopecks / 100.0, unit: '₽', format: '%n %u') %></td>
+            <td><%= number_to_currency(transaction.balance_after_kopecks / 100.0, unit: '₽', format: '%n %u') %></td>
+            <td>
+              <% if transaction.order_request.present? %>
+                <%= link_to "##{transaction.order_request.id}", admin_order_request_path(transaction.order_request),
+                    class: 'badge badge-primary', style: 'text-decoration: none;' %>
+              <% else %>
+                <span style="color: var(--gray-500);">—</span>
+              <% end %>
+            </td>
+            <td>
+              <%= link_to 'Просмотр', admin_wallet_transaction_path(transaction), class: 'btn btn-sm btn-outline' %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <% if @transactions.empty? %>
+    <div style="text-align: center; padding: 3rem; color: var(--gray-600);">
+      Транзакции не найдены
+    </div>
+  <% end %>
+
+  <div style="margin-top: 2rem;"><%= paginate @transactions %></div>
+</div>

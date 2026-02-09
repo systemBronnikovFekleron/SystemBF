@@ -1,0 +1,115 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад к списку', admin_product_accesses_path, style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 700;">Доступ #<%= @product_access.id %></h1>
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <% if @product_access.active? %>
+          <span class="badge badge-success">Активен</span>
+        <% else %>
+          <span class="badge badge-error">Истёк</span>
+        <% end %>
+        <% if @product_access.expires_at.nil? %>
+          <span class="badge badge-secondary">Бессрочный</span>
+        <% end %>
+      </div>
+    </div>
+    <div style="display: flex; gap: 0.75rem;">
+      <%= button_to 'Отозвать доступ', admin_product_access_path(@product_access), method: :delete,
+          data: { turbo_confirm: 'Вы уверены, что хотите отозвать доступ?' }, class: 'btn btn-outline btn-danger' %>
+    </div>
+  </div>
+
+  <!-- User Info -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Пользователь</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <strong>ФИО:</strong>
+        <%= link_to @user.full_name, admin_user_path(@user), style: 'color: var(--primary);' %>
+      </div>
+      <div><strong>Email:</strong> <%= @user.email %></div>
+      <div><strong>Телефон:</strong> <%= @user.profile&.phone || 'Не указан' %></div>
+      <div><strong>Классификация:</strong> <%= @user.classification.humanize %></div>
+    </div>
+  </div>
+
+  <!-- Product Info -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Продукт</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <strong>Название:</strong>
+        <%= link_to @product.title, admin_product_path(@product), style: 'color: var(--primary);' %>
+      </div>
+      <div>
+        <strong>Тип:</strong>
+        <span class="badge badge-secondary"><%= @product.product_type.humanize %></span>
+      </div>
+      <div>
+        <strong>Цена:</strong>
+        <%= number_to_currency(@product.price_kopecks / 100.0, unit: '₽', format: '%n %u') %>
+      </div>
+      <div>
+        <strong>Статус продукта:</strong>
+        <% if @product.published? %>
+          <span class="badge badge-success">Опубликован</span>
+        <% else %>
+          <span class="badge badge-warning"><%= @product.status.humanize %></span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Access Details -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Детали доступа</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <strong>ID доступа:</strong> <%= @product_access.id %>
+      </div>
+      <div>
+        <strong>Создан:</strong> <%= l(@product_access.created_at, format: :long) %>
+      </div>
+      <div>
+        <strong>Истекает:</strong>
+        <% if @product_access.expires_at.present? %>
+          <%= l(@product_access.expires_at, format: :long) %>
+          <% if @product_access.expires_at > Time.current %>
+            <br><small style="color: var(--gray-600);">через <%= distance_of_time_in_words_to_now(@product_access.expires_at) %></small>
+          <% else %>
+            <br><small style="color: var(--color-error);">истёк <%= distance_of_time_in_words_to_now(@product_access.expires_at) %> назад</small>
+          <% end %>
+        <% else %>
+          Бессрочный доступ
+        <% end %>
+      </div>
+      <div>
+        <strong>Заказ:</strong>
+        <% if @product_access.order.present? %>
+          <%= link_to "##{@product_access.order.id}", admin_order_path(@product_access.order), style: 'color: var(--primary);' %>
+        <% else %>
+          Не связан
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Extend Access -->
+  <div class="card" style="padding: 2rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Продлить доступ</h3>
+    <%= form_with url: extend_admin_product_access_path(@product_access), method: :patch do |f| %>
+      <div style="display: flex; gap: 1rem; align-items: flex-end;">
+        <div class="form-group" style="margin-bottom: 0;">
+          <%= f.label :days, 'Количество дней' %>
+          <%= f.number_field :days, value: 30, min: 1, max: 365, class: 'form-input', style: 'width: 150px;' %>
+        </div>
+        <%= f.submit 'Продлить', class: 'btn btn-primary' %>
+      </div>
+      <small style="color: var(--gray-600); display: block; margin-top: 0.5rem;">
+        Доступ будет продлён от текущей даты окончания (или от текущего момента, если бессрочный)
+      </small>
+    <% end %>
+  </div>
+</div>

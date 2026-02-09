@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Диагностика завершена</title>
+</head>
+<body style="margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; background: #f9fafb;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background: #f9fafb; padding: 40px 20px;">
+    <tr>
+      <td align="center">
+        <!-- Email Container -->
+        <table width="600" cellpadding="0" cellspacing="0" style="max-width: 600px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1); overflow: hidden;">
+
+          <!-- Header -->
+          <tr>
+            <td style="background: linear-gradient(135deg, #059669, #10B981); padding: 40px 30px; text-align: center;">
+              <h1 style="margin: 0; color: white; font-size: 28px; font-weight: 700;">
+                ✅ Диагностика завершена
+              </h1>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding: 40px 30px;">
+              <h2 style="margin: 0 0 20px; color: #1f2937; font-size: 22px; font-weight: 600;">
+                Здравствуйте, <%= @user.first_name.presence || 'участник' %>!
+              </h2>
+
+              <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                Ваша диагностика успешно завершена:
+              </p>
+
+              <!-- Diagnostic Card -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="background: #f0fdf4; border-radius: 8px; margin-bottom: 24px; border: 1px solid #bbf7d0;">
+                <tr>
+                  <td style="padding: 20px;">
+                    <h3 style="margin: 0 0 12px; color: #166534; font-size: 20px; font-weight: 600;">
+                      <%= @diagnostic.display_name %>
+                    </h3>
+
+                    <table width="100%" cellpadding="0" cellspacing="0">
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #166534; font-size: 14px;">📆 Дата проведения:</span>
+                          <strong style="color: #166534; margin-left: 8px;"><%= I18n.l(@diagnostic.conducted_at, format: :long) %></strong>
+                        </td>
+                      </tr>
+                      <% if @conducted_by.present? %>
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #166534; font-size: 14px;">👤 Специалист:</span>
+                          <strong style="color: #166534; margin-left: 8px;"><%= @conducted_by.first_name %> <%= @conducted_by.last_name %></strong>
+                        </td>
+                      </tr>
+                      <% end %>
+                      <% if @diagnostic.score.present? %>
+                      <tr>
+                        <td style="padding: 8px 0;">
+                          <span style="color: #166534; font-size: 14px;">📊 Результат:</span>
+                          <strong style="color: #166534; margin-left: 8px;"><%= @diagnostic.score %> баллов</strong>
+                        </td>
+                      </tr>
+                      <% end %>
+                    </table>
+                  </td>
+                </tr>
+              </table>
+
+              <% if @diagnostic.recommendations.present? %>
+              <div style="background: #fef3c7; border-radius: 8px; padding: 16px; margin-bottom: 24px; border: 1px solid #fde68a;">
+                <p style="margin: 0 0 8px; color: #92400e; font-size: 14px; font-weight: 600;">
+                  💡 Рекомендации специалиста:
+                </p>
+                <p style="margin: 0; color: #92400e; font-size: 14px; line-height: 1.5;">
+                  <%= @diagnostic.recommendations %>
+                </p>
+              </div>
+              <% end %>
+
+              <p style="margin: 0 0 20px; color: #4b5563; font-size: 16px; line-height: 1.6;">
+                Полные результаты диагностики доступны в вашем личном кабинете.
+              </p>
+
+              <!-- CTA Button -->
+              <table width="100%" cellpadding="0" cellspacing="0" style="margin-bottom: 20px;">
+                <tr>
+                  <td align="center">
+                    <a href="<%= dashboard_development_map_url(host: ENV.fetch('APP_HOST', 'localhost:3000')) %>" style="display: inline-block; padding: 14px 32px; background: linear-gradient(135deg, #059669, #10B981); color: white; text-decoration: none; border-radius: 8px; font-weight: 600; font-size: 16px;">
+                      Посмотреть результаты →
+                    </a>
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="padding: 30px; background: #f9fafb; border-top: 1px solid #e5e7eb; text-align: center;">
+              <p style="margin: 0 0 10px; color: #6b7280; font-size: 14px;">
+                © <%= Date.today.year %> Система Бронникова. Все права защищены.
+              </p>
+            </td>
+          </tr>
+
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

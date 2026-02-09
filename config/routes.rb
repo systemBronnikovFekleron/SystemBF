@@ -153,12 +153,35 @@ Rails.application.routes.draw do
         post :reorder
       end
     end
+
+    # Diagnostics management
+    resources :diagnostics
+
+    # Initiations management
+    resources :initiations do
+      collection do
+        post :bulk_action
+      end
+    end
+
+    # Wallet transactions (read-only audit)
+    resources :wallet_transactions, only: [:index, :show]
+
+    # Product accesses management
+    resources :product_accesses, only: [:index, :show, :destroy] do
+      member do
+        patch :extend
+      end
+    end
   end
 
   # Events routes
   resources :events, only: [:index, :show] do
     collection do
       get :calendar
+    end
+    member do
+      get :ics  # Download single event as ICS
     end
     resources :event_registrations, only: [:create], path: 'register'
   end
@@ -187,4 +210,5 @@ Rails.application.routes.draw do
   get 'dashboard/wiki/:slug', to: 'dashboard#wiki_show', as: :dashboard_wiki_page
   get 'dashboard/recommendations', to: 'dashboard#recommendations', as: :dashboard_recommendations
   get 'dashboard/events', to: 'dashboard#events', as: :dashboard_events
+  get 'dashboard/calendar.ics', to: 'dashboard#calendar_ics', as: :dashboard_calendar_ics
 end

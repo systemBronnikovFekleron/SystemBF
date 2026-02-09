@@ -16,7 +16,7 @@
           <tr>
             <td><%= reg.user.full_name %></td>
             <td><%= reg.user.email %></td>
-            <td><span class="badge <%= reg.confirmed? ? 'badge-success' : reg.pending? ? 'badge-warning' : 'badge-secondary' %>"><%= reg.status.humanize %></span></td>
+            <td><span class="badge <%= reg.status_confirmed? ? 'badge-success' : reg.status_pending? ? 'badge-warning' : 'badge-secondary' %>"><%= reg.status.humanize %></span></td>
             <td><% if reg.order %><%= link_to reg.order.order_number, admin_order_path(reg.order), class: 'badge badge-primary' %><% else %>-<% end %></td>
             <td style="color: var(--gray-600); font-size: 0.875rem;"><%= l(reg.created_at, format: :short) %></td>
           </tr>

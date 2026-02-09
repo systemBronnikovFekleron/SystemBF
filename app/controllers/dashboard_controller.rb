@@ -105,6 +105,16 @@ class DashboardController < ApplicationController
                  .order('events.starts_at DESC')
   end
 
+  # Export user calendar as ICS
+  def calendar_ics
+    ics_content = IcsGeneratorService.generate_user_calendar(@user)
+
+    send_data ics_content,
+              type: 'text/calendar; charset=utf-8',
+              disposition: 'attachment',
+              filename: 'my-calendar.ics'
+  end
+
   def update_profile
     ActiveRecord::Base.transaction do
       if @user.update(user_params) && @user.profile.update(profile_params)

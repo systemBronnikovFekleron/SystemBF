@@ -92,3 +92,5 @@ group :test do
   gem "shoulda-matchers"
   gem "database_cleaner-active_record"
 end
+
+gem "icalendar", "~> 2.12"

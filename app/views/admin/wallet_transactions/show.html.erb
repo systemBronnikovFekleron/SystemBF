@@ -1,0 +1,99 @@
+<div style="padding: 2rem; max-width: 900px; margin: 0 auto;">
+  <%= link_to '← Назад к списку', admin_wallet_transactions_path, style: 'color: var(--primary); margin-bottom: 2rem; display: block;' %>
+
+  <div style="display: flex; justify-content: space-between; margin-bottom: 2rem;">
+    <div>
+      <h1 style="font-size: 2rem; font-weight: 700;">Транзакция #<%= @transaction.id %></h1>
+      <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+        <% case @transaction.transaction_type %>
+        <% when 'deposit' %>
+          <span class="badge badge-success">Пополнение</span>
+        <% when 'withdrawal' %>
+          <span class="badge badge-error">Списание</span>
+        <% when 'refund' %>
+          <span class="badge badge-info">Возврат</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Amount Card -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem; text-align: center;">
+    <div style="font-size: 0.875rem; color: var(--gray-600); margin-bottom: 0.5rem;">Сумма транзакции</div>
+    <div style="font-size: 3rem; font-weight: 700;
+      <% if @transaction.transaction_type_deposit? || @transaction.transaction_type_refund? %>
+        color: var(--color-success);">
+        +<%= number_to_currency(@transaction.amount_kopecks / 100.0, unit: '₽', format: '%n %u') %>
+      <% else %>
+        color: var(--color-error);">
+        -<%= number_to_currency(@transaction.amount_kopecks.abs / 100.0, unit: '₽', format: '%n %u') %>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- User Info -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Владелец кошелька</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+      <div>
+        <strong>ФИО:</strong>
+        <%= link_to @user.full_name, admin_user_path(@user), style: 'color: var(--primary);' %>
+      </div>
+      <div><strong>Email:</strong> <%= @user.email %></div>
+      <div><strong>Текущий баланс:</strong> <%= number_to_currency(@transaction.wallet.balance_kopecks / 100.0, unit: '₽', format: '%n %u') %></div>
+      <div><strong>Классификация:</strong> <%= @user.classification.humanize %></div>
+    </div>
+  </div>
+
+  <!-- Transaction Details -->
+  <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+    <h3 style="font-weight: 600; margin-bottom: 1rem;">Детали транзакции</h3>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+      <div>
+        <strong>ID транзакции:</strong> <%= @transaction.id %>
+      </div>
+      <div>
+        <strong>Дата:</strong> <%= l(@transaction.created_at, format: :long) %>
+      </div>
+      <div>
+        <strong>Баланс до:</strong>
+        <%= number_to_currency(@transaction.balance_before_kopecks / 100.0, unit: '₽', format: '%n %u') %>
+      </div>
+      <div>
+        <strong>Баланс после:</strong>
+        <%= number_to_currency(@transaction.balance_after_kopecks / 100.0, unit: '₽', format: '%n %u') %>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Order Request -->
+  <% if @transaction.order_request.present? %>
+    <div class="card" style="padding: 2rem; margin-bottom: 1.5rem;">
+      <h3 style="font-weight: 600; margin-bottom: 1rem;">Связанная заявка</h3>
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.875rem;">
+        <div>
+          <strong>Заявка:</strong>
+          <%= link_to "##{@transaction.order_request.id}", admin_order_request_path(@transaction.order_request),
+              style: 'color: var(--primary);' %>
+        </div>
+        <div>
+          <strong>Статус:</strong>
+          <span class="badge badge-<%= @transaction.order_request.status == 'completed' ? 'success' : 'secondary' %>">
+            <%= @transaction.order_request.status.humanize %>
+          </span>
+        </div>
+        <% if @transaction.order_request.product.present? %>
+          <div>
+            <strong>Продукт:</strong>
+            <%= link_to @transaction.order_request.product.title, admin_product_path(@transaction.order_request.product),
+                style: 'color: var(--primary);' %>
+          </div>
+          <div>
+            <strong>Сумма заявки:</strong>
+            <%= number_to_currency(@transaction.order_request.total_kopecks / 100.0, unit: '₽', format: '%n %u') %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+  <% end %>
+</div>

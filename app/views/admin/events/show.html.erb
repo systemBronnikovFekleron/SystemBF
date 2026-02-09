@@ -20,7 +20,7 @@
     <div style="padding: 1rem; border-bottom: 1px solid var(--gray-200);"><h3 style="font-weight: 600;">Последние регистрации</h3></div>
     <% if @registrations.any? %>
       <table class="admin-table"><thead><tr><th>Пользователь</th><th>Статус</th><th>Дата</th></tr></thead><tbody>
-        <% @registrations.each do |reg| %><tr><td><%= reg.user.full_name %></td><td><span class="badge <%= reg.confirmed? ? 'badge-success' : 'badge-warning' %>"><%= reg.status.humanize %></span></td><td><%= l(reg.created_at, format: :short) %></td></tr><% end %>
+        <% @registrations.each do |reg| %><tr><td><%= reg.user.full_name %></td><td><span class="badge <%= reg.status_confirmed? ? 'badge-success' : 'badge-warning' %>"><%= reg.status.humanize %></span></td><td><%= l(reg.created_at, format: :short) %></td></tr><% end %>
       </tbody></table>
       <div style="padding: 1rem; text-align: center;"><%= link_to 'Все регистрации →', registrations_admin_event_path(@event), class: 'btn btn-outline' %></div>
     <% else %><div style="padding: 2rem; text-align: center; color: var(--gray-600);">Нет регистраций</div><% end %>

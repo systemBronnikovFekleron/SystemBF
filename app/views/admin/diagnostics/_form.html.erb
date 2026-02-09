@@ -1,0 +1,68 @@
+<%= form_with model: [:admin, diagnostic] do |f| %>
+  <% if diagnostic.errors.any? %>
+    <div style="background: rgba(220,76,62,0.1); padding: 1rem; margin-bottom: 1rem; border-radius: 4px;">
+      <strong><%= diagnostic.errors.count %> ошибок:</strong>
+      <%= diagnostic.errors.full_messages.join(', ') %>
+    </div>
+  <% end %>
+
+  <div class="form-group">
+    <%= f.label :user_id, 'Пользователь *' %>
+    <%= f.collection_select :user_id, users, :id, :full_name_with_email,
+        { prompt: 'Выберите пользователя' }, class: 'form-select', required: true %>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group">
+      <%= f.label :diagnostic_type, 'Тип диагностики *' %>
+      <%= f.select :diagnostic_type, [
+        ['Видение', 'vision'],
+        ['Биоэнергетика', 'bioenergy'],
+        ['Психобиокомпьютер', 'psychobiocomputer']
+      ], { prompt: 'Выберите тип' }, class: 'form-select', required: true %>
+    </div>
+    <div class="form-group">
+      <%= f.label :status, 'Статус *' %>
+      <%= f.select :status, [
+        ['Запланировано', 'scheduled'],
+        ['Проведено', 'completed'],
+        ['Отменено', 'cancelled']
+      ], {}, class: 'form-select', required: true %>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+    <div class="form-group">
+      <%= f.label :conducted_at, 'Дата проведения' %>
+      <%= f.datetime_local_field :conducted_at, class: 'form-input' %>
+    </div>
+    <div class="form-group">
+      <%= f.label :conducted_by_id, 'Специалист' %>
+      <%= f.collection_select :conducted_by_id, conductors, :id, :full_name,
+          { include_blank: 'Не назначен' }, class: 'form-select' %>
+    </div>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :score, 'Балл' %>
+    <%= f.number_field :score, class: 'form-input', min: 0, max: 100, step: 1 %>
+    <small style="color: var(--gray-600);">От 0 до 100</small>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :results, 'Результаты' %>
+    <%= f.text_area :results, class: 'form-textarea', rows: 5,
+        placeholder: 'Опишите результаты диагностики...' %>
+  </div>
+
+  <div class="form-group">
+    <%= f.label :recommendations, 'Рекомендации' %>
+    <%= f.text_area :recommendations, class: 'form-textarea', rows: 5,
+        placeholder: 'Введите рекомендации для пользователя...' %>
+  </div>
+
+  <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+    <%= f.submit diagnostic.new_record? ? 'Создать диагностику' : 'Сохранить изменения', class: 'btn btn-primary' %>
+    <%= link_to 'Отмена', admin_diagnostics_path, class: 'btn btn-secondary' %>
+  </div>
+<% end %>

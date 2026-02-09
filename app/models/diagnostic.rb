@@ -43,4 +43,17 @@ class Diagnostic < ApplicationRecord
   def has_recommendations?
     recommendations.present?
   end
+
+  def diagnostic_type_i18n
+    case diagnostic_type
+    when 'vision'
+      'Видение'
+    when 'bioenergy'
+      'Биоэнергетика'
+    when 'psychobiocomputer'
+      'Психобиокомпьютер'
+    else
+      diagnostic_type.to_s.humanize
+    end
+  end
 end
